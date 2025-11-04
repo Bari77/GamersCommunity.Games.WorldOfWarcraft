@@ -36,7 +36,7 @@ namespace WorldOfWarcraft.Consumer
                         #region Initialize app settings
 
                         var loggerSettings = context.Configuration.GetSection("LoggerSettings").Get<LoggerSettings>()
-                            ?? throw new InternalServerErrorException("Can't parse LoggerSettings section");
+                            ?? throw new InternalServerErrorException("PARSE_SETTINGS", "Can't parse LoggerSettings section");
 
                         #endregion
 
