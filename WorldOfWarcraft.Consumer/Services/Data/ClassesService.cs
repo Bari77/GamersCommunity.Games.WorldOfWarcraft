@@ -3,7 +3,7 @@ using GamersCommunity.Core.Services;
 using WorldOfWarcraft.Database.Context;
 using WorldOfWarcraft.Database.Models;
 
-namespace WorldOfWarcraft.Consumer.Services
+namespace WorldOfWarcraft.Consumer.Services.Data
 {
     /// <summary>
     /// Specialized table service for handling <see cref="Class"/> entities.
