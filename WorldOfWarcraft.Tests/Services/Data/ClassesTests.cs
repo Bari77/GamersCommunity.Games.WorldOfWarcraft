@@ -7,7 +7,16 @@ namespace WorldOfWarcraft.Tests.Services.Data
 {
     public class ClassesTests(TestsDataFixture fixture) : GenericDataServiceTests<WorldOfWarcraftDbContext, ClassesService, Class>, IClassFixture<TestsDataFixture>
     {
-        protected override ClassesService CreateService() => fixture.CreateClassesService();
+        protected override ClassesService CreateService()
+        {
+            var ctx = fixture.CreateContext();
+            ctx.Classes.AddRange(GetFakeData());
+            ctx.SaveChanges();
+
+            fixture.SeedFullDataset(ctx);
+
+            return new ClassesService(ctx);
+        }
 
         protected override List<Class> GetFakeData()
         {
@@ -18,7 +27,9 @@ namespace WorldOfWarcraft.Tests.Services.Data
         {
             return new Class
             {
-                Entitled = "Class test"
+                Entitled = "New class",
+                CreationDate = DateTime.Now,
+                ModificationDate = DateTime.Now,
             };
         }
     }
