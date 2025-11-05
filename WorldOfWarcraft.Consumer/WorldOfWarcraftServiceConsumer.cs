@@ -13,16 +13,16 @@ namespace WorldOfWarcraft.Consumer
     /// </para>
     /// <para>
     /// This consumer will listen on the queue <c>"worldofwarcraft_queue"</c> and use the provided
-    /// <see cref="TableRouter"/> to dispatch incoming messages to the appropriate table service.
+    /// <see cref="BusRouter"/> to dispatch incoming messages to the appropriate service.
     /// </para>
     /// </remarks>
     /// <remarks>
     /// Initializes a new instance of the <see cref="WorldOfWarcraftServiceConsumer"/> class.
     /// </remarks>
     /// <param name="otps">RabbitMQ settings injected from configuration.</param>
-    /// <param name="tableRouter">Router responsible for message dispatch.</param>
+    /// <param name="router">Router responsible for message dispatch.</param>
     /// <param name="logger">Application logger (Serilog).</param>
-    public class WorldOfWarcraftServiceConsumer(IOptions<RabbitMQSettings> otps, TableRouter tableRouter, ILogger logger) : BasicServiceConsumer(otps, tableRouter, logger)
+    public class WorldOfWarcraftServiceConsumer(IOptions<RabbitMQSettings> otps, BusRouter router, ILogger logger) : BasicServiceConsumer(otps, router, logger)
     {
         /// <summary>
         /// Gets or sets the queue name this consumer will listen on.

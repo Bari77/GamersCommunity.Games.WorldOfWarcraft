@@ -8,7 +8,6 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using WorldOfWarcraft.Consumer.Configuration;
-using WorldOfWarcraft.Consumer.Services;
 using WorldOfWarcraft.Database.Context;
 
 namespace WorldOfWarcraft.Consumer
@@ -60,8 +59,13 @@ namespace WorldOfWarcraft.Consumer
 
                         // Register application services
                         services.AddSingleton<Serilog.ILogger>(sp => Log.Logger);
-                        services.AddScoped<ITableService, ClassesService>();
-                        services.AddScoped<TableRouter>();
+
+                        services.Scan(scan => scan
+                            .FromAssembliesOf(typeof(AppSettings))
+                            .AddClasses(c => c.AssignableTo<IBusService>())
+                            .AsImplementedInterfaces()
+                            .WithScopedLifetime());
+                        services.AddScoped<BusRouter>();
                         services.AddScoped<WorldOfWarcraftServiceConsumer>();
 
                         // Register the background worker that runs the consumer
