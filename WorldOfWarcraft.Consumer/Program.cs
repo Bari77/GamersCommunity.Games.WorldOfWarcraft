@@ -8,6 +8,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using WorldOfWarcraft.Consumer.Configuration;
+using WorldOfWarcraft.Consumer.Services.Infra;
 using WorldOfWarcraft.Database.Context;
 
 namespace WorldOfWarcraft.Consumer
@@ -65,6 +66,7 @@ namespace WorldOfWarcraft.Consumer
                             .AddClasses(c => c.AssignableTo<IBusService>())
                             .AsImplementedInterfaces()
                             .WithScopedLifetime());
+                        services.AddScoped<HealthService>();
                         services.AddScoped<BusRouter>();
                         services.AddScoped<WorldOfWarcraftServiceConsumer>();
 
