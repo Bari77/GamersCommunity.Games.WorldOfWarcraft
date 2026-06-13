@@ -1,0 +1,16 @@
+.wow-home {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.wow-home__classes {
+    h2 {
+        margin: 0 0 0.75rem;
+    }
+
+    ul {
+        margin: 0;
+        padding-left: 1.25rem;
+    }
+}

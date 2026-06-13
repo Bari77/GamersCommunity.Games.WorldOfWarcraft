@@ -2,6 +2,7 @@
 using GamersCommunity.Core.Logging;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Services;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -55,7 +56,12 @@ namespace WorldOfWarcraft.Consumer
                         services.AddOptions<AppSettings>().Bind(context.Configuration.GetSection("AppSettings")).ValidateOnStart();
 
                         // Register EF Core DbContext
-                        services.AddDbContext<WorldOfWarcraftDbContext>();
+                        services.AddDbContext<WorldOfWarcraftDbContext>((sp, options) =>
+                        {
+                            var connectionString = context.Configuration.GetConnectionString("Database")
+                                ?? throw new InvalidOperationException("Connection string 'Database' is missing.");
+                            options.UseSqlServer(connectionString);
+                        });
 
                         // Register application services
                         services.AddSingleton<Serilog.ILogger>(sp => Log.Logger);
@@ -75,6 +81,8 @@ namespace WorldOfWarcraft.Consumer
 
                 var host = builder.Build();
 
+                await ApplyDatabaseMigrationsAsync(host.Services);
+
                 var environment = host.Services.GetRequiredService<IHostEnvironment>();
 
                 Log.Information("Started in {Environment} environment...", environment.EnvironmentName);
@@ -93,6 +101,14 @@ namespace WorldOfWarcraft.Consumer
             {
                 Log.Information("Stopped ...");
             }
+        }
+
+        private static async Task ApplyDatabaseMigrationsAsync(IServiceProvider services)
+        {
+            using var scope = services.CreateScope();
+            var dbContext = scope.ServiceProvider.GetRequiredService<WorldOfWarcraftDbContext>();
+            await dbContext.Database.MigrateAsync();
+            Log.Information("Database migrations applied.");
         }
     }
 }
