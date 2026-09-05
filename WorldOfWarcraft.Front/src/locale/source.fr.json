@@ -1,0 +1,8 @@
+{
+  "locale": "fr",
+  "translations": {
+    "wow.playground.banner": "WoW Playground",
+    "wow.home.title": "World of Warcraft",
+    "wow.home.introVideo": "Vidéo d'introduction World of Warcraft"
+  }
+}

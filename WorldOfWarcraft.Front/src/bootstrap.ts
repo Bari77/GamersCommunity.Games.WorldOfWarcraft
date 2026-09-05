@@ -1,3 +1,5 @@
+/// <reference types="@angular/localize" />
+
 import { bootstrapApplication } from "@angular/platform-browser";
 import { bootstrapMocks, shouldUseMocks } from "@bari77/gc-playground";
 import { appConfig } from "./app/app.config";

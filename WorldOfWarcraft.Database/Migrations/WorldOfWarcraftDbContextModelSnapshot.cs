@@ -49,22 +49,6 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasName("PK_Alignement");
 
                     b.ToTable("Alignments");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ALLIANCE",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HORDE",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Character", b =>
@@ -128,6 +112,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasMaxLength(50)
                         .HasColumnType("nvarchar(50)");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<string>("Sentence")
                         .HasColumnType("text");
 
@@ -149,6 +138,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasIndex("IdSecondarySpecializationClass");
 
                     b.HasIndex("IdServer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("Characters");
                 });
@@ -180,11 +172,19 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCharacter");
 
                     b.HasIndex("IdJob");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("CharacterJob", (string)null);
                 });
@@ -216,99 +216,6 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasName("PK_Class");
 
                     b.ToTable("Classes");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "WARRIOR",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "PALADIN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HUNTER",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ROGUE",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "PRIEST",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "SHAMAN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "MAGE",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "WARLOCK",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "MONK",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DRUID",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DEMON_HUNTER",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DEATH_KNIGHT",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "EVOKER",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Direction", b =>
@@ -338,29 +245,6 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasName("PK_Direction");
 
                     b.ToTable("Directions");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "TANK",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HEAL",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DPS",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Event", b =>
@@ -422,12 +306,20 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Property<int>("Places")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id")
                         .HasName("PK_Event");
 
                     b.HasIndex("IdAlignments");
 
                     b.HasIndex("IdOrganizer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("Events");
                 });
@@ -459,12 +351,20 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id")
                         .HasName("PK_tb_wow_ge_event_participant");
 
                     b.HasIndex("IdCharacters");
 
                     b.HasIndex("IdEvent");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("EventParticipants");
                 });
@@ -511,6 +411,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<string>("Sentence")
                         .HasColumnType("text");
 
@@ -519,6 +424,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasIndex("IdLeader");
 
                     b.HasIndex("IdMainDirection");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("Guilds");
                 });
@@ -548,10 +456,18 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id")
                         .HasName("PK_GuildAnnouncement");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("GuildAnnouncements");
                 });
@@ -584,9 +500,17 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("GuildLinks");
                 });
@@ -619,11 +543,19 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCharacter");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("GuildMessages");
                 });
@@ -646,6 +578,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<string>("Request")
                         .IsRequired()
                         .HasColumnType("text");
@@ -658,6 +595,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("GuildRequest", (string)null);
                 });
@@ -696,9 +636,17 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("GuildVip", (string)null);
                 });
@@ -729,92 +677,6 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Jobs");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "MINING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HERBALISM",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "SKINNING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "BLACKSMITHING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "TAILORING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "JEWELCRAFTING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ENCHANTING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "INSCRIPTION",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ENGINEERING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ALCHEMY",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "COOKING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "FISHING",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Player", b =>
@@ -852,12 +714,20 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Property<string>("PresentationIrl")
                         .HasColumnType("text");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<int?>("SuccessPoints")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasDefaultValue(0);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("Players");
                 });
@@ -887,9 +757,17 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerAnnouncements");
                 });
@@ -918,6 +796,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<string>("Url")
                         .IsRequired()
                         .HasColumnType("text");
@@ -925,6 +808,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerLinks");
                 });
@@ -950,6 +836,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<bool>("Share")
                         .HasColumnType("bit");
 
@@ -965,6 +856,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerPictures");
                 });
@@ -993,9 +887,17 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerRank", (string)null);
                 });
@@ -1024,6 +926,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<bool>("Share")
                         .HasColumnType("bit");
 
@@ -1034,6 +941,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerStream", (string)null);
                 });
@@ -1059,6 +969,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.Property<bool>("Share")
                         .HasColumnType("bit");
 
@@ -1074,6 +989,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerVideos");
                 });
@@ -1112,9 +1030,17 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdPlayer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("PlayerVip", (string)null);
                 });
@@ -1145,113 +1071,6 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Races");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HUMAN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ORC",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DWARF",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "NIGHT_ELF",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "UNDEAD",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "TAUREN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "GNOME",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 8,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "TROLL",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 9,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "BLOOD_ELF",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 10,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DRAENEI",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 11,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "WORGEN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 12,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "GOBLIN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 13,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "PANDAREN",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 14,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "VULPERA",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 15,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DRACTHYR",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.RaceClass", b =>
@@ -1314,11 +1133,19 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Property<int>("Number")
                         .HasColumnType("int");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdDirection");
 
                     b.HasIndex("IdGuild");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("Rosters");
                 });
@@ -1350,6 +1177,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
                     b.HasKey("Id");
 
                     b.HasIndex("IdCharacter");
@@ -1357,6 +1189,9 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasIndex("IdRoster");
 
                     b.HasIndex("IdSpecialization");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
 
                     b.ToTable("RosterMembers");
                 });
@@ -1390,40 +1225,6 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Servers");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ARCHIMONDE",
-                            IdLocale = 3,
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "KHAZ_MODAN",
-                            IdLocale = 3,
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HYJAL",
-                            IdLocale = 3,
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ILLIDAN",
-                            IdLocale = 3,
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Specialization", b =>
@@ -1452,57 +1253,6 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Specializations");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "ARMS",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 2,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "FURY",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 3,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "PROTECTION",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 4,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "HOLY",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 5,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "RETRIBUTION",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 6,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "DISCIPLINE",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        },
-                        new
-                        {
-                            Id = 7,
-                            CreationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Entitled = "SHADOW",
-                            ModificationDate = new DateTime(2026, 6, 13, 0, 0, 0, 0, DateTimeKind.Utc)
-                        });
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.SpecializationClass", b =>

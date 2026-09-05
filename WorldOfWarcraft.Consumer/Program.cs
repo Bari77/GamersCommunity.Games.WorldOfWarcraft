@@ -11,6 +11,7 @@ using Serilog;
 using WorldOfWarcraft.Consumer.Configuration;
 using WorldOfWarcraft.Consumer.Services.Infra;
 using WorldOfWarcraft.Database.Context;
+using WorldOfWarcraft.Database.Seed;
 
 namespace WorldOfWarcraft.Consumer
 {
@@ -109,6 +110,10 @@ namespace WorldOfWarcraft.Consumer
             var dbContext = scope.ServiceProvider.GetRequiredService<WorldOfWarcraftDbContext>();
             await dbContext.Database.MigrateAsync();
             Log.Information("Database migrations applied.");
+            var seedLogger = scope.ServiceProvider
+                .GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()
+                .CreateLogger("ReferenceDataSeed");
+            await ReferenceDataSeed.EnsureAsync(dbContext, seedLogger);
         }
     }
 }

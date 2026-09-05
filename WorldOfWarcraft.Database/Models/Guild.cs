@@ -6,6 +6,8 @@ public partial class Guild : IKeyTable
 {
     public int Id { get; set; }
 
+    public Guid PublicId { get; set; }
+
     public DateTime CreationDate { get; set; }
 
     public DateTime ModificationDate { get; set; }

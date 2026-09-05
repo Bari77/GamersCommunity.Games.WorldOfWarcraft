@@ -13,7 +13,7 @@ import { environment } from "../environments/environment";
           @if (showBanner) {
             <span class="playground-banner">{{ banner }}</span>
           } @else {
-            <span class="playground-banner">WoW Playground</span>
+            <span class="playground-banner" i18n="@@wow.playground.banner">WoW Playground</span>
           }
         </nb-layout-header>
         <nb-layout-column>
