@@ -26,6 +26,8 @@ npm install
 npm start
 ```
 
+Default `apiUrl` is the **platform Gateway** (`http://localhost:5000/api`) so the remote works when loaded from the Shell. For game-full (DevGateway `:8081`), use `npm run start:api`.
+
 ## Game-full
 
 ```powershell
