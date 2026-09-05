@@ -4,8 +4,8 @@ using WorldOfWarcraft.Database.Models;
 namespace WorldOfWarcraft.Database.Seed;
 
 /// <summary>
-/// Données de référence World of Warcraft. Les champs <c>Entitled</c> sont des clés i18n (EN, majuscules).
-/// <c>IdLocale</c> référence un identifiant technique (Blizzard), pas une clé i18n.
+/// World of Warcraft reference data. <c>Entitled</c> fields are i18n keys (EN, uppercase).
+/// <c>IdLocale</c> references a technical id (Blizzard), not an i18n key.
 /// </summary>
 public static class ReferenceDataSeed
 {

@@ -2,7 +2,8 @@
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "version": 1,
   "cli": {
-    "packageManager": "npm"
+    "packageManager": "npm",
+    "analytics": false
   },
   "newProjectRoot": "projects",
   "projects": {
@@ -51,6 +52,10 @@
             "development": {
               "target": "WorldOfWarcraft.Front:esbuild:development",
               "dev": true
+            },
+            "api": {
+              "target": "WorldOfWarcraft.Front:esbuild:api",
+              "dev": true
             }
           },
           "defaultConfiguration": "production"
@@ -64,6 +69,13 @@
             "dev": true,
             "devServer": true,
             "port": 0
+          },
+          "configurations": {
+            "api": {
+              "target": "WorldOfWarcraft.Front:serve-original:api",
+              "dev": true,
+              "devServer": true
+            }
           }
         },
         "esbuild": {
@@ -78,7 +90,10 @@
                 "input": "public"
               }
             ],
-            "styles": ["src/styles.scss"],
+            "styles": [
+              "node_modules/@nebular/theme/styles/prebuilt/cosmic.css",
+              "src/styles.scss"
+            ],
             "polyfills": ["zone.js", "es-module-shims"]
           },
           "configurations": {
@@ -101,6 +116,17 @@
               "optimization": false,
               "extractLicenses": false,
               "sourceMap": true
+            },
+            "api": {
+              "optimization": false,
+              "extractLicenses": false,
+              "sourceMap": true,
+              "fileReplacements": [
+                {
+                  "replace": "src/environments/environment.ts",
+                  "with": "src/environments/environment.api.ts"
+                }
+              ]
             }
           },
           "defaultConfiguration": "production"
@@ -113,6 +139,9 @@
             },
             "development": {
               "buildTarget": "WorldOfWarcraft.Front:esbuild:development"
+            },
+            "api": {
+              "buildTarget": "WorldOfWarcraft.Front:esbuild:api"
             }
           },
           "defaultConfiguration": "development",

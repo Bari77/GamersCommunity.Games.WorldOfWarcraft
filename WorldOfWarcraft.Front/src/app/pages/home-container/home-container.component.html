@@ -1,16 +1,3 @@
 <section class="wow-home">
     <wow-game-video [name]="'world-of-warcraft'" />
-
-    <div class="wow-home__classes">
-        <h2>Classes</h2>
-        @if (classesStore.classes.isLoading()) {
-            <p>Chargement des classes…</p>
-        } @else {
-            <ul>
-                @for (wowClass of classesStore.classes.value(); track wowClass.id) {
-                    <li>{{ wowClass.entitled }}</li>
-                }
-            </ul>
-        }
-    </div>
 </section>

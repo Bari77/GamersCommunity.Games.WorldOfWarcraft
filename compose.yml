@@ -1,0 +1,79 @@
+# Game-full stack. Needs only this repo + published DevKit image / Core NuGet packages.
+# Auth for private GitHub Packages: set GITHUB_TOKEN (read:packages) in the environment
+# before `podman compose build` / `docker compose build`.
+
+name: gc-wow-dev
+
+services:
+  rabbitmq:
+    image: docker.io/library/rabbitmq:3.13-management-alpine
+    # Rootless Podman on Windows: rabbitmq user gets eacces on .erlang.cookie
+    user: "0:0"
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: ${RABBITMQ_USER:-admin}
+      RABBITMQ_DEFAULT_PASS: ${RABBITMQ_PASSWORD:-admin}
+      RABBITMQ_ERLANG_COOKIE: ${RABBITMQ_ERLANG_COOKIE:-gc-wow-dev}
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - wow
+
+  mssql:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    # Host 1433 is often already taken by a local Windows SQL Server instance.
+    ports:
+      - "${MSSQL_HOST_PORT:-14333}:1433"
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: ${MSSQL_SA_PASSWORD:-Your_password123}
+    networks:
+      - wow
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        GITHUB_TOKEN: ${GITHUB_TOKEN}
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      ConnectionStrings__Database: "Server=mssql;User Id=sa;Password=${MSSQL_SA_PASSWORD:-Your_password123};Initial Catalog=WorldOfWarcraft;TrustServerCertificate=True;Encrypt=True;"
+      RabbitMQ__Hostname: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USER:-admin}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-admin}
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      mssql:
+        condition: service_started
+    networks:
+      - wow
+
+  devgateway:
+    image: ghcr.io/bari77/gc-devgateway:${DEVGATEWAY_VERSION:-latest}
+    ports:
+      - "8081:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Docker
+      RabbitMQ__Hostname: rabbitmq
+      RabbitMQ__Username: ${RABBITMQ_USER:-admin}
+      RabbitMQ__Password: ${RABBITMQ_PASSWORD:-admin}
+      DevGateway__MicroserviceId: worldofwarcraft
+      DevGateway__Queue: worldofwarcraft_queue
+    depends_on:
+      rabbitmq:
+        condition: service_healthy
+      consumer:
+        condition: service_started
+    networks:
+      - wow
+
+networks:
+  wow:
+    driver: bridge

@@ -1,0 +1,6 @@
+{
+  "remoteName": "worldOfWarcraft",
+  "expose": "./Routes",
+  "routePrefix": "/world-of-warcraft",
+  "remoteEntryDev": "http://localhost:4201/remoteEntry.json"
+}

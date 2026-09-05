@@ -1,5 +1,5 @@
 /**
- * Utilitaires pour les promesses (attente conditionnelle, etc.).
+ * Promise helpers (conditional wait, etc.).
  */
 export class PromiseUtils {
     public static waitUntilFalse(

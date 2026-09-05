@@ -1,0 +1,75 @@
+openapi: 3.0.3
+info:
+  title: World of Warcraft API (gateway contract)
+  version: 0.1.0
+  description: >
+    HTTP contracts exposed via Gateway / DevGateway for the worldofwarcraft microservice.
+servers:
+  - url: http://localhost:8081
+    description: Local DevGateway
+paths:
+  /api/worldofwarcraft/Classes:
+    get:
+      operationId: listClasses
+      summary: List WoW classes
+      responses:
+        '200':
+          description: ClassDto array
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/ClassDto'
+  /api/worldofwarcraft/Classes/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+    get:
+      operationId: getClass
+      summary: Class by id
+      responses:
+        '200':
+          description: ClassDto
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClassDto'
+  /api/health:
+    get:
+      operationId: health
+      summary: DevGateway health
+      responses:
+        '200':
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: Healthy
+                  gateway:
+                    type: string
+                    example: dev
+components:
+  schemas:
+    ClassDto:
+      type: object
+      required: [id, creationDate, modificationDate, entitled]
+      properties:
+        id:
+          type: integer
+        creationDate:
+          type: string
+          format: date-time
+        modificationDate:
+          type: string
+          format: date-time
+        entitled:
+          type: string
+          example: Warrior

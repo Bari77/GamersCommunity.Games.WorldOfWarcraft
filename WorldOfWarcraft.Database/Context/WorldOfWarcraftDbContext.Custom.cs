@@ -3,8 +3,8 @@
 namespace WorldOfWarcraft.Database.Context;
 
 /// <summary>
-/// Configuration design-time du DbContext (outils <c>dotnet ef</c>).
-/// En runtime, la chaîne de connexion est injectée via DI dans <c>WorldOfWarcraft.Consumer</c>.
+/// Design-time DbContext configuration (<c>dotnet ef</c> tools).
+/// At runtime, the connection string is injected via DI in <c>WorldOfWarcraft.Consumer</c>.
 /// </summary>
 public partial class WorldOfWarcraftDbContext
 {

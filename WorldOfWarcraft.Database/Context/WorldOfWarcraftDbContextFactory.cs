@@ -5,7 +5,7 @@ using Microsoft.Extensions.Configuration;
 namespace WorldOfWarcraft.Database.Context;
 
 /// <summary>
-/// Factory utilisée par les outils EF Core (<c>dotnet ef</c>) en design-time.
+/// Factory used by EF Core tools (<c>dotnet ef</c>) at design-time.
 /// </summary>
 public class WorldOfWarcraftDbContextFactory : IDesignTimeDbContextFactory<WorldOfWarcraftDbContext>
 {

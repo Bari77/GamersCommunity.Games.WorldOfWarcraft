@@ -1,57 +1,27 @@
 # WorldOfWarcraft.Front
 
-Micro-frontend Angular (Native Federation) pour le jeu World of Warcraft.
+Angular remote (Native Federation) — port `4201`, exposes `./Routes`.
 
-## Rôle
+## Modes
 
-Ce projet est un **remote** fédéré, consommé par le shell `GamersCommunity.Front` via `loadRemoteModule`.
-
-- **Port dev** : `4201`
-- **Entrée fédérée** : `./Routes` → `worldOfWarcraftRoutes`
-
-## Structure
-
-```
-src/app/
-├── core/           # stores transverses (LoadingStore)
-├── shared/         # BaseService, composants partagés
-├── features/       # domaines métier (classes, …)
-├── pages/          # pages avec resolvers
-└── world-of-warcraft.routes.ts
-```
-
-## Patterns
-
-- **Stores** : `@Injectable()` + `signal` / `resource()` + injection des services HTTP
-- **Resolvers** : `resolve: { load: xxxResolver }` qui appellent `store.reload()` puis `store.loaded()`
-- **Pages** : consomment directement les stores via `inject()`
-
-## Démarrage
+### UI-only (mocks) — default
 
 ```bash
+# NODE_AUTH_TOKEN = PAT read:packages
 npm install
 npm start
 ```
 
-Pour tester avec le shell :
+Packages: `@bari77/gc-sdk`, `@bari77/gc-msw`, `@bari77/gc-playground` (GitHub Packages).
+
+### Game-full
+
+Compose stack at the repo root, then:
 
 ```bash
-# Terminal 1 — remote WoW
-npm start
-
-# Terminal 2 — shell GamersCommunity.Front
-cd ../../GamersCommunity.Front
-npm run dev:federation
+npm run start:api
 ```
 
-Ou depuis le shell uniquement :
+### Platform (Shell)
 
-```bash
-npm run dev:federation
-```
-
-## API
-
-Les services HTTP ciblent le gateway : `/api/worldofwarcraft/{Resource}`.
-
-Exemple : `ClassesService` → `GET /api/worldofwarcraft/Classes`
+The Shell team loads `remoteEntry.json`; this remote does **not** use an iframe — see platform federation docs.

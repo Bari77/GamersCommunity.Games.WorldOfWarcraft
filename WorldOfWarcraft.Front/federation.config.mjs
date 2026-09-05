@@ -12,12 +12,31 @@ export default withNativeFederation({
       { singleton: true, strictVersion: true, requiredVersion: 'auto', build: 'package' },
       {
         overrides: {
-          // includeSecondaries is an opt-out of ignoreUnusedDeps, so all of
-          // @angular/core is shared to prevent mismatches.
           '@angular/core': {
             singleton: true,
             strictVersion: true,
             requiredVersion: 'auto',
+            build: 'package',
+            includeSecondaries: { keepAll: true },
+          },
+          '@angular/platform-browser': {
+            singleton: true,
+            strictVersion: true,
+            requiredVersion: 'auto',
+            build: 'package',
+            includeSecondaries: { keepAll: true },
+          },
+          '@angular/animations': {
+            singleton: true,
+            strictVersion: true,
+            requiredVersion: 'auto',
+            build: 'package',
+            includeSecondaries: { keepAll: true },
+          },
+          '@angular/cdk': {
+            singleton: true,
+            strictVersion: true,
+            requiredVersion: '21.0.6',
             build: 'package',
             includeSecondaries: { keepAll: true },
           },
