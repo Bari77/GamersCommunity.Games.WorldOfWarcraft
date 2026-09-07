@@ -9,6 +9,8 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
 using WorldOfWarcraft.Consumer.Configuration;
+using WorldOfWarcraft.Consumer.Integration;
+using WorldOfWarcraft.Consumer.Realtime;
 using WorldOfWarcraft.Consumer.Services.Infra;
 using WorldOfWarcraft.Database.Context;
 using WorldOfWarcraft.Database.Seed;
@@ -66,6 +68,7 @@ namespace WorldOfWarcraft.Consumer
 
                         // Register application services
                         services.AddSingleton<Serilog.ILogger>(sp => Log.Logger);
+                        services.AddSingleton<IRealtimeEventPublisher, RealtimeEventPublisher>();
 
                         services.Scan(scan => scan
                             .FromAssembliesOf(typeof(AppSettings))
@@ -78,6 +81,7 @@ namespace WorldOfWarcraft.Consumer
 
                         // Register the background worker that runs the consumer
                         services.AddHostedService<ConsumerWorker>();
+                        services.AddHostedService<PlatformEventsSubscriber>();
                     });
 
                 var host = builder.Build();

@@ -1,0 +1,82 @@
+<section class="guild-sheet gc-enter">
+    @if (sheet.isLoading()) {
+        <div class="guild-sheet__loading" [nbSpinner]="true" nbSpinnerStatus="primary" nbSpinnerSize="large"></div>
+    } @else if (sheet.error()) {
+        <p i18n="@@wow.guild.notFound">Guild not found.</p>
+    } @else if (sheet.value(); as guild) {
+        <nb-card>
+            <nb-card-header>
+                <h1 class="guild-sheet__handle gc-display">{{ guild.handleLabel() }}</h1>
+                <p class="guild-sheet__meta">
+                    {{ guild.serverName }} · {{ guild.directionName }} ·
+                    <span i18n="@@wow.guild.level">Level</span> {{ guild.level }} ·
+                    <span i18n="@@wow.guild.since">Created</span> {{ guild.creationDate | date: "mediumDate" }}
+                </p>
+            </nb-card-header>
+            <nb-card-body>
+                @if (guild.sentence) {
+                    <p class="guild-sheet__sentence">{{ guild.sentence }}</p>
+                }
+
+                <div class="guild-sheet__links">
+                    @if (guild.linkDiscord) {
+                        <a [href]="guild.linkDiscord" target="_blank" rel="noopener" nbButton ghost status="basic">
+                            Discord
+                        </a>
+                    }
+                    @if (guild.linkForum) {
+                        <a [href]="guild.linkForum" target="_blank" rel="noopener" nbButton ghost status="basic">
+                            <span i18n="@@wow.guild.forum">Forum</span>
+                        </a>
+                    }
+                </div>
+            </nb-card-body>
+        </nb-card>
+
+        <nb-card>
+            <nb-card-header i18n="@@wow.guild.members">Members</nb-card-header>
+            <nb-card-body>
+                <ul class="guild-members">
+                    @for (member of guild.members; track member.characterPublicId) {
+                        <li class="guild-member">
+                            <div class="guild-member__avatar-wrap" aria-hidden="true">
+                                @if (member.avatarUrl) {
+                                    <img class="guild-member__avatar" [src]="member.avatarUrl" alt="" />
+                                } @else {
+                                    <span class="guild-member__avatar guild-member__avatar--fallback">
+                                        {{ member.initials() }}
+                                    </span>
+                                }
+                            </div>
+
+                            <div class="guild-member__main">
+                                <div class="guild-member__head">
+                                    <strong class="guild-member__pseudo">{{ member.pseudo }}</strong>
+                                    <span class="guild-member__rank">{{ member.rank }}</span>
+                                </div>
+                                <span class="guild-member__spec">
+                                    {{ member.raceName }} {{ member.className }} · {{ member.level }}
+                                </span>
+                            </div>
+
+                            @if (member.isContactable()) {
+                                <a
+                                    class="guild-member__contact"
+                                    [routerLink]="['/users', member.platformUserPublicId]"
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="basic"
+                                >
+                                    {{ member.handleLabel() }}
+                                </a>
+                            }
+                        </li>
+                    } @empty {
+                        <li class="guild-members__empty" i18n="@@wow.guild.members.empty">No members yet.</li>
+                    }
+                </ul>
+            </nb-card-body>
+        </nb-card>
+    }
+</section>

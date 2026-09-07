@@ -1,1 +1,54 @@
-<wow-game-video [name]="'world-of-warcraft'" />
+<section class="wow-home gc-enter">
+    <div class="wow-home__chats">
+        <wow-lfg-chat kind="lfg" />
+        <wow-lfg-chat kind="recruit" />
+    </div>
+
+    @if (store.loading()) {
+        <div class="wow-home__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
+    } @else if (store.feed.value(); as feed) {
+        <div class="wow-home__grid">
+            <nb-card class="wow-home__rail">
+                <nb-card-header i18n="@@wow.home.players">Latest player sheets</nb-card-header>
+                <nb-card-body>
+                    <wow-home-latest-players [players]="feed.latestPlayers" />
+                </nb-card-body>
+            </nb-card>
+
+            <nb-card class="wow-home__rail">
+                <nb-card-header i18n="@@wow.home.characters">Latest characters</nb-card-header>
+                <nb-card-body>
+                    <ul class="wow-home__list">
+                        @for (character of feed.latestCharacters; track character.publicId) {
+                            <li>
+                                <strong>{{ character.pseudo }}</strong>
+                                <span> — {{ character.raceName }}, {{ character.serverName }} ({{ character.level }})</span>
+                            </li>
+                        } @empty {
+                            <li i18n="@@wow.home.characters.empty">No characters yet.</li>
+                        }
+                    </ul>
+                </nb-card-body>
+            </nb-card>
+
+            <nb-card class="wow-home__rail">
+                <nb-card-header i18n="@@wow.home.guilds">Latest guilds</nb-card-header>
+                <nb-card-body>
+                    <ul class="wow-home__list">
+                        @for (guild of feed.latestGuilds; track guild.publicId) {
+                            <li>
+                                <a [routerLink]="['/world-of-warcraft/guilds', guild.publicId]">
+                                    <strong>{{ guild.handleLabel() }}</strong>
+                                </a>
+                                <span> — {{ guild.serverName }} ({{ guild.level }})</span>
+                                <small>{{ guild.creationDate | date: "shortDate" }}</small>
+                            </li>
+                        } @empty {
+                            <li i18n="@@wow.home.guilds.empty">No guilds yet.</li>
+                        }
+                    </ul>
+                </nb-card-body>
+            </nb-card>
+        </div>
+    }
+</section>

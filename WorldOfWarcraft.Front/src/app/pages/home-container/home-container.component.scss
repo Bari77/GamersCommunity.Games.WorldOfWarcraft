@@ -1,0 +1,44 @@
+.wow-home__loading {
+    min-height: 10rem;
+}
+
+.wow-home__chats {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(22rem, 1fr));
+    margin-bottom: 1rem;
+}
+
+.wow-home__grid {
+    display: grid;
+    gap: 1rem;
+    grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+}
+
+.wow-home__rail--wide {
+    grid-column: 1 / -1;
+}
+
+.wow-home__list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.85rem;
+}
+
+.wow-home__list li {
+    border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+    padding-bottom: 0.75rem;
+}
+
+.wow-home__lfg-form {
+    display: grid;
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.wow-home__muted {
+    margin: 0 0 1rem;
+    opacity: 0.85;
+}

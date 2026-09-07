@@ -1,0 +1,45 @@
+<section class="player-sheet gc-enter">
+    @if (sheet.isLoading()) {
+        <div class="player-sheet__loading" [nbSpinner]="true" nbSpinnerStatus="primary" nbSpinnerSize="large"></div>
+    } @else if (sheet.error()) {
+        <p i18n="@@wow.player.notFound">WoW player sheet not found.</p>
+    } @else if (sheet.value(); as player) {
+        <nb-card>
+            <nb-card-header>
+                <h1 class="gc-display" i18n="@@wow.player.title">WoW player sheet</h1>
+                <p class="player-sheet__meta">
+                    <span i18n="@@wow.player.since">Member since</span>
+                    {{ player.creationDate | date: "mediumDate" }}
+                </p>
+            </nb-card-header>
+            <nb-card-body>
+                @if (player.presentationIrl) {
+                    <section class="player-sheet__block">
+                        <h2 i18n="@@wow.player.presentationIrl">IRL presentation</h2>
+                        <p>{{ player.presentationIrl }}</p>
+                    </section>
+                }
+                @if (player.presentationIg) {
+                    <section class="player-sheet__block">
+                        <h2 i18n="@@wow.player.presentationIg">In-game presentation</h2>
+                        <p>{{ player.presentationIg }}</p>
+                    </section>
+                }
+                <p class="player-sheet__stats">
+                    <span i18n="@@wow.player.characters">Characters</span>: {{ player.characterCount }}
+                    ·
+                    <span i18n="@@wow.player.mounts">Mounts</span>: {{ player.nbMount }}
+                </p>
+                <a
+                    [routerLink]="['/users', player.platformUserPublicId]"
+                    nbButton
+                    ghost
+                    status="basic"
+                    i18n="@@wow.player.platformProfile"
+                >
+                    Platform profile
+                </a>
+            </nb-card-body>
+        </nb-card>
+    }
+</section>

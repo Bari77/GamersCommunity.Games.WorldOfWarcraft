@@ -21,4 +21,6 @@ public partial class EventParticipant : IKeyTable
     public virtual Character IdCharactersNavigation { get; set; } = null!;
 
     public virtual Event IdEventNavigation { get; set; } = null!;
+
+    public virtual EventParticipantStatus? IdStatusNavigation { get; set; }
 }

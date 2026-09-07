@@ -9,6 +9,13 @@ export abstract class BaseService {
 
     public constructor(private baseUrlService: string) {}
 
+    protected getOne<Tdto, Tmodel>(
+        modelClass: DtoConvertibleClass<Tdto, Tmodel>,
+        url: string | null = null,
+    ): Observable<Tmodel> {
+        return this.http.get<Tdto>(this.getURL(url)).pipe(map((dto) => modelClass.fromDto(dto)));
+    }
+
     protected getAll<Tdto, Tmodel>(
         modelClass: DtoConvertibleClass<Tdto, Tmodel>,
         url: string | null = null,
@@ -16,7 +23,23 @@ export abstract class BaseService {
         return this.http.get<Tdto[]>(this.getURL(url)).pipe(map((dtos) => dtos.map((dto) => modelClass.fromDto(dto))));
     }
 
-    private getURL(url: string | null = null): string {
+    protected post<Tdto, Tmodel>(
+        modelClass: DtoConvertibleClass<Tdto, Tmodel>,
+        url: string | null = null,
+        body: unknown = {},
+    ): Observable<Tmodel> {
+        return this.http.post<Tdto>(this.getURL(url), body).pipe(map((dto) => modelClass.fromDto(dto)));
+    }
+
+    protected put<Tdto, Tmodel>(
+        modelClass: DtoConvertibleClass<Tdto, Tmodel>,
+        url: string | null = null,
+        body: unknown = {},
+    ): Observable<Tmodel> {
+        return this.http.put<Tdto>(this.getURL(url), body).pipe(map((dto) => modelClass.fromDto(dto)));
+    }
+
+    protected getURL(url: string | null = null): string {
         const base = new URL(environment.apiUrl);
         const parts = [this.baseUrlService, url].filter(Boolean);
 

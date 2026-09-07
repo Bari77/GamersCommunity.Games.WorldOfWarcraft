@@ -50,6 +50,8 @@ public partial class Character : IKeyTable
 
     public virtual ICollection<Guild> Guilds { get; set; } = new List<Guild>();
 
+    public virtual ICollection<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
+
     public virtual Alignment? IdAlignmentNavigation { get; set; }
 
     public virtual Direction IdDirectionNavigation { get; set; } = null!;

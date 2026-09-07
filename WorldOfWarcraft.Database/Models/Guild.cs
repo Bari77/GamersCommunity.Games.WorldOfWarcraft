@@ -14,6 +14,11 @@ public partial class Guild : IKeyTable
 
     public string Entitled { get; set; } = null!;
 
+    /// <summary>
+    /// Four-digit suffix making the guild handle unique, displayed as <c>Entitled#Discriminator</c>.
+    /// </summary>
+    public string Discriminator { get; set; } = null!;
+
     public int Level { get; set; }
 
     public string? Sentence { get; set; }
@@ -28,15 +33,19 @@ public partial class Guild : IKeyTable
 
     public virtual ICollection<Character> Characters { get; set; } = new List<Character>();
 
-    public virtual ICollection<GuildAnnouncement> GuildAnnouncements { get; set; } = new List<GuildAnnouncement>();
-
     public virtual ICollection<GuildLink> GuildLinks { get; set; } = new List<GuildLink>();
+
+    public virtual ICollection<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
 
     public virtual ICollection<GuildMessage> GuildMessages { get; set; } = new List<GuildMessage>();
 
     public virtual ICollection<GuildRequest> GuildRequests { get; set; } = new List<GuildRequest>();
 
     public virtual ICollection<GuildVip> GuildVips { get; set; } = new List<GuildVip>();
+
+    public virtual ICollection<LfgAd> LfgAds { get; set; } = new List<LfgAd>();
+
+    public virtual ICollection<GamePost> GamePosts { get; set; } = new List<GamePost>();
 
     public virtual Character IdLeaderNavigation { get; set; } = null!;
 

@@ -5,7 +5,10 @@
     "types": ["@angular/localize"]
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "node_modules/@bari77/gc-sdk/src/**/*.ts",
+    "node_modules/@bari77/gc-msw/src/**/*.ts",
+    "node_modules/@bari77/gc-playground/src/**/*.ts"
   ],
   "exclude": [
     "src/**/*.spec.ts"

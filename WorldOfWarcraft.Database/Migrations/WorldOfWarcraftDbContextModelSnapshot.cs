@@ -363,10 +363,127 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.HasIndex("IdEvent");
 
+                    b.HasIndex("IdStatus");
+
                     b.HasIndex("PublicId")
                         .IsUnique();
 
                     b.ToTable("EventParticipants");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.EventParticipantStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Entitled")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("EventParticipantStatus", (string)null);
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GamePost", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("nvarchar(4000)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int?>("IdGuild")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdPlayer")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdStatus")
+                        .HasColumnType("int");
+
+                    b.Property<string>("MediaKind")
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<string>("MediaUrl")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdGuild");
+
+                    b.HasIndex("IdPlayer");
+
+                    b.HasIndex("IdStatus");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("GamePost", (string)null);
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GamePostStatus", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Entitled")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GamePostStatus", (string)null);
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Guild", b =>
@@ -381,6 +498,11 @@ namespace WorldOfWarcraft.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(4)
+                        .HasColumnType("nvarchar(4)");
 
                     b.Property<string>("Entitled")
                         .IsRequired()
@@ -428,48 +550,10 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.HasIndex("PublicId")
                         .IsUnique();
 
-                    b.ToTable("Guilds");
-                });
-
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildAnnouncement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int>("IdGuild")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<Guid>("PublicId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.HasKey("Id")
-                        .HasName("PK_GuildAnnouncement");
-
-                    b.HasIndex("IdGuild");
-
-                    b.HasIndex("PublicId")
+                    b.HasIndex(new[] { "Entitled", "Discriminator" }, "UQ_Guild_Handle")
                         .IsUnique();
 
-                    b.ToTable("GuildAnnouncements");
+                    b.ToTable("Guilds");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildLink", b =>
@@ -515,6 +599,54 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.ToTable("GuildLinks");
                 });
 
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildMember", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<int>("IdCharacter")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdGuild")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdGuildRank")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.HasKey("Id")
+                        .HasName("PK_GuildMember");
+
+                    b.HasIndex("IdCharacter");
+
+                    b.HasIndex("IdGuildRank");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.HasIndex(new[] { "IdGuild", "IdCharacter" }, "UQ_GuildMember_Character")
+                        .IsUnique();
+
+                    b.ToTable("GuildMember", (string)null);
+                });
+
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildMessage", b =>
                 {
                     b.Property<int>("Id")
@@ -558,6 +690,34 @@ namespace WorldOfWarcraft.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("GuildMessages");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildRank", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<string>("Entitled")
+                        .IsRequired()
+                        .HasMaxLength(150)
+                        .HasColumnType("nvarchar(150)");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("GuildRank", (string)null);
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildRequest", b =>
@@ -679,6 +839,106 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.ToTable("Jobs");
                 });
 
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.LfgAd", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Body")
+                        .IsRequired()
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<DateTime>("CreationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<DateTime>("ExpiresAt")
+                        .HasColumnType("datetime");
+
+                    b.Property<int?>("IdDirection")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdGuild")
+                        .HasColumnType("int");
+
+                    b.Property<int>("IdPlayer")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("IdServer")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Kind")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("nvarchar(32)");
+
+                    b.Property<DateTime>("ModificationDate")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("datetime")
+                        .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid>("PublicId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uniqueidentifier")
+                        .HasDefaultValueSql("NEWSEQUENTIALID()");
+
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("nvarchar(255)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdDirection");
+
+                    b.HasIndex("IdGuild");
+
+                    b.HasIndex("IdPlayer");
+
+                    b.HasIndex("IdServer");
+
+                    b.HasIndex("PublicId")
+                        .IsUnique();
+
+                    b.ToTable("LfgAd", (string)null);
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.PlatformUserSnapshot", b =>
+                {
+                    b.Property<Guid>("PlatformUserPublicId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<string>("AvatarUrl")
+                        .IsRequired()
+                        .HasMaxLength(512)
+                        .HasColumnType("nvarchar(512)");
+
+                    b.Property<string>("Discriminator")
+                        .IsRequired()
+                        .HasMaxLength(8)
+                        .HasColumnType("nvarchar(8)");
+
+                    b.Property<string>("Nickname")
+                        .IsRequired()
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime");
+
+                    b.HasKey("PlatformUserPublicId");
+
+                    b.ToTable("PlatformUserSnapshot", (string)null);
+                });
+
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Player", b =>
                 {
                     b.Property<int>("Id")
@@ -691,6 +951,9 @@ namespace WorldOfWarcraft.Database.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
+
+                    b.Property<Guid?>("IdKeycloak")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<int?>("IdRank")
                         .HasColumnType("int");
@@ -707,6 +970,9 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.Property<int>("NbMount")
                         .HasColumnType("int");
+
+                    b.Property<Guid?>("PlatformUserPublicId")
+                        .HasColumnType("uniqueidentifier");
 
                     b.Property<string>("PresentationIg")
                         .HasColumnType("text");
@@ -726,50 +992,18 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("IdKeycloak")
+                        .IsUnique()
+                        .HasFilter("[IdKeycloak] IS NOT NULL");
+
+                    b.HasIndex("PlatformUserPublicId")
+                        .IsUnique()
+                        .HasFilter("[PlatformUserPublicId] IS NOT NULL");
+
                     b.HasIndex("PublicId")
                         .IsUnique();
 
                     b.ToTable("Players");
-                });
-
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.PlayerAnnouncement", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<int>("IdPlayer")
-                        .HasColumnType("int");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<Guid>("PublicId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier")
-                        .HasDefaultValueSql("NEWSEQUENTIALID()");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("IdPlayer");
-
-                    b.HasIndex("PublicId")
-                        .IsUnique();
-
-                    b.ToTable("PlayerAnnouncements");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.PlayerLink", b =>
@@ -1406,9 +1640,42 @@ namespace WorldOfWarcraft.Database.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_tb_wow_ge_event_participant_tb_wow_ge_event");
 
+                    b.HasOne("WorldOfWarcraft.Database.Models.EventParticipantStatus", "IdStatusNavigation")
+                        .WithMany("EventParticipants")
+                        .HasForeignKey("IdStatus")
+                        .HasConstraintName("FK_EventParticipant_Status");
+
                     b.Navigation("IdCharactersNavigation");
 
                     b.Navigation("IdEventNavigation");
+
+                    b.Navigation("IdStatusNavigation");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GamePost", b =>
+                {
+                    b.HasOne("WorldOfWarcraft.Database.Models.Guild", "IdGuildNavigation")
+                        .WithMany("GamePosts")
+                        .HasForeignKey("IdGuild")
+                        .HasConstraintName("FK_GamePost_Guild");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.Player", "IdPlayerNavigation")
+                        .WithMany("GamePosts")
+                        .HasForeignKey("IdPlayer")
+                        .IsRequired()
+                        .HasConstraintName("FK_GamePost_Player");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.GamePostStatus", "IdStatusNavigation")
+                        .WithMany("GamePosts")
+                        .HasForeignKey("IdStatus")
+                        .IsRequired()
+                        .HasConstraintName("FK_GamePost_Status");
+
+                    b.Navigation("IdGuildNavigation");
+
+                    b.Navigation("IdPlayerNavigation");
+
+                    b.Navigation("IdStatusNavigation");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Guild", b =>
@@ -1430,17 +1697,6 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Navigation("IdMainDirectionNavigation");
                 });
 
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildAnnouncement", b =>
-                {
-                    b.HasOne("WorldOfWarcraft.Database.Models.Guild", "IdGuildNavigation")
-                        .WithMany("GuildAnnouncements")
-                        .HasForeignKey("IdGuild")
-                        .IsRequired()
-                        .HasConstraintName("FK_GuildAnnouncement_Guild");
-
-                    b.Navigation("IdGuildNavigation");
-                });
-
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildLink", b =>
                 {
                     b.HasOne("WorldOfWarcraft.Database.Models.Guild", "IdGuildNavigation")
@@ -1450,6 +1706,33 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasConstraintName("FK_GuildLinks_Guild");
 
                     b.Navigation("IdGuildNavigation");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildMember", b =>
+                {
+                    b.HasOne("WorldOfWarcraft.Database.Models.Character", "IdCharacterNavigation")
+                        .WithMany("GuildMembers")
+                        .HasForeignKey("IdCharacter")
+                        .IsRequired()
+                        .HasConstraintName("FK_GuildMember_Character");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.Guild", "IdGuildNavigation")
+                        .WithMany("GuildMembers")
+                        .HasForeignKey("IdGuild")
+                        .IsRequired()
+                        .HasConstraintName("FK_GuildMember_Guild");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.GuildRank", "IdGuildRankNavigation")
+                        .WithMany("GuildMembers")
+                        .HasForeignKey("IdGuildRank")
+                        .IsRequired()
+                        .HasConstraintName("FK_GuildMember_GuildRank");
+
+                    b.Navigation("IdCharacterNavigation");
+
+                    b.Navigation("IdGuildNavigation");
+
+                    b.Navigation("IdGuildRankNavigation");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildMessage", b =>
@@ -1493,15 +1776,36 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Navigation("IdGuildNavigation");
                 });
 
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.PlayerAnnouncement", b =>
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.LfgAd", b =>
                 {
+                    b.HasOne("WorldOfWarcraft.Database.Models.Direction", "IdDirectionNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdDirection")
+                        .HasConstraintName("FK_LfgAd_Direction");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.Guild", "IdGuildNavigation")
+                        .WithMany("LfgAds")
+                        .HasForeignKey("IdGuild")
+                        .HasConstraintName("FK_LfgAd_Guild");
+
                     b.HasOne("WorldOfWarcraft.Database.Models.Player", "IdPlayerNavigation")
-                        .WithMany("PlayerAnnouncements")
+                        .WithMany("LfgAds")
                         .HasForeignKey("IdPlayer")
                         .IsRequired()
-                        .HasConstraintName("FK_PlayerAnnoucements_Player");
+                        .HasConstraintName("FK_LfgAd_Player");
+
+                    b.HasOne("WorldOfWarcraft.Database.Models.Server", "IdServerNavigation")
+                        .WithMany()
+                        .HasForeignKey("IdServer")
+                        .HasConstraintName("FK_LfgAd_Server");
+
+                    b.Navigation("IdDirectionNavigation");
+
+                    b.Navigation("IdGuildNavigation");
 
                     b.Navigation("IdPlayerNavigation");
+
+                    b.Navigation("IdServerNavigation");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.PlayerLink", b =>
@@ -1669,6 +1973,8 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.Navigation("Events");
 
+                    b.Navigation("GuildMembers");
+
                     b.Navigation("GuildMessages");
 
                     b.Navigation("Guilds");
@@ -1697,13 +2003,25 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Navigation("EventParticipants");
                 });
 
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.EventParticipantStatus", b =>
+                {
+                    b.Navigation("EventParticipants");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GamePostStatus", b =>
+                {
+                    b.Navigation("GamePosts");
+                });
+
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Guild", b =>
                 {
                     b.Navigation("Characters");
 
-                    b.Navigation("GuildAnnouncements");
+                    b.Navigation("GamePosts");
 
                     b.Navigation("GuildLinks");
+
+                    b.Navigation("GuildMembers");
 
                     b.Navigation("GuildMessages");
 
@@ -1711,7 +2029,14 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.Navigation("GuildVips");
 
+                    b.Navigation("LfgAds");
+
                     b.Navigation("Rosters");
+                });
+
+            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildRank", b =>
+                {
+                    b.Navigation("GuildMembers");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.Job", b =>
@@ -1723,7 +2048,9 @@ namespace WorldOfWarcraft.Database.Migrations
                 {
                     b.Navigation("Characters");
 
-                    b.Navigation("PlayerAnnouncements");
+                    b.Navigation("GamePosts");
+
+                    b.Navigation("LfgAds");
 
                     b.Navigation("PlayerLinks");
 

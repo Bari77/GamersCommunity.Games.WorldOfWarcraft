@@ -1,0 +1,12 @@
+.my-sheet {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 2rem 1rem;
+}
+
+.my-sheet__loading {
+    min-height: 8rem;
+    width: 100%;
+}

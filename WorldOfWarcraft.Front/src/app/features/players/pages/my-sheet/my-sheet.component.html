@@ -1,0 +1,8 @@
+<section class="my-sheet">
+    @if (loading()) {
+        <div class="my-sheet__loading" [nbSpinner]="true" nbSpinnerStatus="primary" nbSpinnerSize="large"></div>
+    } @else if (needsLogin()) {
+        <p i18n="@@wow.sheet.loginRequired">Log in on GamersCommunity to open your WoW player sheet.</p>
+        <a href="/users/login" nbButton status="primary" i18n="@@wow.sheet.login">Log in</a>
+    }
+</section>

@@ -1,0 +1,28 @@
+.player-sheet {
+    max-width: 48rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+}
+
+.player-sheet__loading {
+    min-height: 12rem;
+}
+
+.player-sheet__meta {
+    margin: 0.25rem 0 0;
+    opacity: 0.8;
+    font-size: 0.9rem;
+}
+
+.player-sheet__block {
+    margin-bottom: 1.25rem;
+}
+
+.player-sheet__block h2 {
+    margin: 0 0 0.35rem;
+    font-size: 1rem;
+}
+
+.player-sheet__stats {
+    margin: 1rem 0;
+}

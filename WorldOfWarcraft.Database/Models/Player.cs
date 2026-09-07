@@ -22,11 +22,13 @@ public partial class Player : IKeyTable
 
     public int IdUser { get; set; }
 
+    public Guid? IdKeycloak { get; set; }
+
+    public Guid? PlatformUserPublicId { get; set; }
+
     public int? IdRank { get; set; }
 
     public virtual ICollection<Character> Characters { get; set; } = new List<Character>();
-
-    public virtual ICollection<PlayerAnnouncement> PlayerAnnouncements { get; set; } = new List<PlayerAnnouncement>();
 
     public virtual ICollection<PlayerLink> PlayerLinks { get; set; } = new List<PlayerLink>();
 
@@ -39,4 +41,8 @@ public partial class Player : IKeyTable
     public virtual ICollection<PlayerVideo> PlayerVideos { get; set; } = new List<PlayerVideo>();
 
     public virtual ICollection<PlayerVip> PlayerVips { get; set; } = new List<PlayerVip>();
+
+    public virtual ICollection<LfgAd> LfgAds { get; set; } = new List<LfgAd>();
+
+    public virtual ICollection<GamePost> GamePosts { get; set; } = new List<GamePost>();
 }

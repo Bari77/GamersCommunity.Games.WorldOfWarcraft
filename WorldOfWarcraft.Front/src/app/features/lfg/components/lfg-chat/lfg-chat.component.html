@@ -1,0 +1,128 @@
+<section class="lfg-chat">
+    <header class="lfg-chat__header">
+        @if (isRecruitment()) {
+            <h2 class="lfg-chat__title gc-display" i18n="@@wow.home.recruit">Guild recruitment</h2>
+        } @else {
+            <h2 class="lfg-chat__title gc-display" i18n="@@wow.home.lfg">Looking for group</h2>
+        }
+        @if (realtime.isLive()) {
+            <span class="lfg-chat__live" i18n="@@wow.home.lfg.live">Live</span>
+        }
+    </header>
+
+    @if (!realtime.isLive() && realtime.offlineMessage()) {
+        <p
+            class="lfg-chat__offline"
+            [class.is-connecting]="realtime.status() === 'connecting'"
+            role="status"
+        >
+            {{ realtime.offlineMessage() }}
+        </p>
+    }
+
+    <div class="lfg-chat__thread" [nbSpinner]="store.loading()">
+        @if (store.loading()) {
+            <div class="lfg-chat__loading"></div>
+        } @else {
+            @if (store.loadingOlder()) {
+                <p class="lfg-chat__hint lfg-chat__hint--compact">{{ loadingOlderLabel }}</p>
+            }
+
+            <div #viewport class="lfg-chat__messages" (scroll)="onViewportScroll()">
+                @if (store.messages().length === 0) {
+                    <p class="lfg-chat__empty" i18n="@@wow.home.lfg.empty">No messages yet. Say hello!</p>
+                }
+                @for (message of store.messages(); track message.publicId) {
+                    <article
+                        class="lfg-chat__bubble"
+                        [class.is-mine]="message.isMine(store.session()?.publicId, store.playerPublicId())"
+                    >
+                        @if (messageAvatar(message); as avatarUrl) {
+                            <img class="lfg-chat__bubble-avatar" [src]="avatarUrl" alt="" />
+                        } @else {
+                            <span class="lfg-chat__bubble-avatar lfg-chat__bubble-avatar--fallback" aria-hidden="true">
+                                {{ message.initial() }}
+                            </span>
+                        }
+                        <div class="lfg-chat__bubble-body">
+                            @if (message.isGuildAd()) {
+                                <a
+                                    class="lfg-chat__bubble-sender"
+                                    [routerLink]="['/world-of-warcraft/guilds', message.guildPublicId]"
+                                >
+                                    {{ message.handleLabel() }}
+                                </a>
+                            } @else if (message.playerPublicId) {
+                                <a
+                                    class="lfg-chat__bubble-sender"
+                                    [routerLink]="['/world-of-warcraft/players', message.playerPublicId]"
+                                >
+                                    {{ message.handleLabel() }}
+                                </a>
+                            } @else {
+                                <span class="lfg-chat__bubble-sender lfg-chat__bubble-sender--static">
+                                    {{ message.handleLabel() }}
+                                </span>
+                            }
+                            <p class="lfg-chat__bubble-text">{{ message.body }}</p>
+                            <time class="lfg-chat__bubble-date">{{ message.creationDate | date: "short" }}</time>
+                        </div>
+                    </article>
+                }
+            </div>
+
+            @if (pendingBelowCount() > 0) {
+                <button type="button" class="lfg-chat__jump" (click)="jumpToLatest()">
+                    {{ newMessagesLabel }}
+                    <span class="lfg-chat__jump-count">{{ pendingBelowCount() }}</span>
+                </button>
+            }
+
+            @if (isRecruitment() && store.canPost() && store.postableGuilds().length > 1) {
+                <nb-select
+                    class="lfg-chat__guild-picker"
+                    [placeholder]="guildPickerPlaceholder"
+                    [selected]="store.postingAs()"
+                    (selectedChange)="store.selectGuild($event)"
+                >
+                    @for (guild of store.postableGuilds(); track guild.publicId) {
+                        <nb-option [value]="guild.publicId">{{ guild.handleLabel() }}</nb-option>
+                    }
+                </nb-select>
+            }
+
+            @if (store.isMuted()) {
+                <p class="lfg-chat__muted" i18n="@@wow.home.lfg.muted">
+                    You are muted and cannot post recruitment messages.
+                </p>
+            } @else if (store.hasNoPostableGuild()) {
+                <p class="lfg-chat__hint" i18n="@@wow.home.recruit.noGuild">
+                    Only guild officers can post here.
+                </p>
+            } @else if (store.canPost() && store.cooldownSeconds() > 0) {
+                <p class="lfg-chat__cooldown" role="status">
+                    <span i18n="@@wow.home.lfg.cooldown">Please wait</span>
+                    {{ store.cooldownSeconds() }}s
+                    <span i18n="@@wow.home.lfg.cooldownHint"> before posting again.</span>
+                </p>
+            } @else if (store.canSend()) {
+                <nb-chat class="lfg-chat__composer" status="basic">
+                    <nb-chat-form
+                        [dropFiles]="false"
+                        [messagePlaceholder]="composePlaceholder"
+                        (send)="onChatSend($event)"
+                    ></nb-chat-form>
+                </nb-chat>
+            } @else if (store.canPost() && isRecruitment()) {
+                <p class="lfg-chat__hint" i18n="@@wow.home.recruit.pickGuild">
+                    Pick the guild you are posting for to enable the composer.
+                </p>
+            } @else if (!store.canPost()) {
+                <p class="lfg-chat__login-hint">
+                    <a href="/users/login" i18n="@@wow.home.lfg.login">Log in</a>
+                    <span i18n="@@wow.home.lfg.loginHint"> to join the global LFG chat.</span>
+                </p>
+            }
+        }
+    </div>
+</section>

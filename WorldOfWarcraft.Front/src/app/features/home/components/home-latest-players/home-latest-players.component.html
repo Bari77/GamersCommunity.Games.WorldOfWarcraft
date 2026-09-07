@@ -1,0 +1,35 @@
+<ul class="player-sheets">
+    @for (player of players(); track player.publicId) {
+        <li>
+            <a class="player-sheet-card" [routerLink]="['/world-of-warcraft/players', player.publicId]">
+                <div class="player-sheet-card__avatar-wrap" aria-hidden="true">
+                    @if (player.avatarUrl) {
+                        <img class="player-sheet-card__avatar" [src]="player.avatarUrl" alt="" />
+                    } @else {
+                        <span class="player-sheet-card__avatar player-sheet-card__avatar--fallback">
+                            {{ player.initials() }}
+                        </span>
+                    }
+                </div>
+
+                <div class="player-sheet-card__main">
+                    <div class="player-sheet-card__head">
+                        <span class="player-sheet-card__handle gc-display">{{ player.handleLabel() }}</span>
+                        <time class="player-sheet-card__date">{{ player.creationDate | date: "mediumDate" }}</time>
+                    </div>
+                    @if (player.presentationIrl) {
+                        <p class="player-sheet-card__bio">{{ player.presentationIrl }}</p>
+                    } @else {
+                        <p class="player-sheet-card__bio player-sheet-card__bio--placeholder" i18n="@@wow.home.players.cta">
+                            Discover their WoW sheet
+                        </p>
+                    }
+                </div>
+
+                <span class="player-sheet-card__arrow" aria-hidden="true">→</span>
+            </a>
+        </li>
+    } @empty {
+        <li class="player-sheets__empty" i18n="@@wow.home.players.empty">No player sheets yet.</li>
+    }
+</ul>

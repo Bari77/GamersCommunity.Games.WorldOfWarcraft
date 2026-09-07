@@ -26,11 +26,19 @@ public partial class WorldOfWarcraftDbContext : DbContext
 
     public virtual DbSet<EventParticipant> EventParticipants { get; set; }
 
+    public virtual DbSet<EventParticipantStatus> EventParticipantStatuses { get; set; }
+
+    public virtual DbSet<GamePost> GamePosts { get; set; }
+
+    public virtual DbSet<GamePostStatus> GamePostStatuses { get; set; }
+
     public virtual DbSet<Guild> Guilds { get; set; }
 
-    public virtual DbSet<GuildAnnouncement> GuildAnnouncements { get; set; }
-
     public virtual DbSet<GuildLink> GuildLinks { get; set; }
+
+    public virtual DbSet<GuildMember> GuildMembers { get; set; }
+
+    public virtual DbSet<GuildRank> GuildRanks { get; set; }
 
     public virtual DbSet<GuildMessage> GuildMessages { get; set; }
 
@@ -40,9 +48,11 @@ public partial class WorldOfWarcraftDbContext : DbContext
 
     public virtual DbSet<Job> Jobs { get; set; }
 
-    public virtual DbSet<Player> Players { get; set; }
+    public virtual DbSet<LfgAd> LfgAds { get; set; }
 
-    public virtual DbSet<PlayerAnnouncement> PlayerAnnouncements { get; set; }
+    public virtual DbSet<PlatformUserSnapshot> PlatformUserSnapshots { get; set; }
+
+    public virtual DbSet<Player> Players { get; set; }
 
     public virtual DbSet<PlayerLink> PlayerLinks { get; set; }
 
@@ -232,6 +242,98 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasForeignKey(d => d.IdEvent)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_tb_wow_ge_event_participant_tb_wow_ge_event");
+
+            entity.HasOne(d => d.IdStatusNavigation).WithMany(p => p.EventParticipants)
+                .HasForeignKey(d => d.IdStatus)
+                .HasConstraintName("FK_EventParticipant_Status");
+        });
+
+        modelBuilder.Entity<EventParticipantStatus>(entity =>
+        {
+            entity.ToTable("EventParticipantStatus");
+
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Entitled).HasMaxLength(150);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<GamePost>(entity =>
+        {
+            entity.ToTable("GamePost");
+
+            entity.Property(e => e.Body).HasMaxLength(4000);
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.MediaKind).HasMaxLength(32);
+            entity.Property(e => e.MediaUrl).HasMaxLength(500);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+
+            entity.HasOne(d => d.IdPlayerNavigation).WithMany(p => p.GamePosts)
+                .HasForeignKey(d => d.IdPlayer)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GamePost_Player");
+
+            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GamePosts)
+                .HasForeignKey(d => d.IdGuild)
+                .HasConstraintName("FK_GamePost_Guild");
+
+            entity.HasOne(d => d.IdStatusNavigation).WithMany(p => p.GamePosts)
+                .HasForeignKey(d => d.IdStatus)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GamePost_Status");
+        });
+
+        modelBuilder.Entity<GamePostStatus>(entity =>
+        {
+            entity.ToTable("GamePostStatus");
+
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Entitled).HasMaxLength(150);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<LfgAd>(entity =>
+        {
+            entity.ToTable("LfgAd");
+
+            entity.Property(e => e.Body).HasMaxLength(2000);
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.ExpiresAt).HasColumnType("datetime");
+            entity.Property(e => e.Kind).HasMaxLength(32);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Title).HasMaxLength(255);
+
+            entity.HasOne(d => d.IdPlayerNavigation).WithMany(p => p.LfgAds)
+                .HasForeignKey(d => d.IdPlayer)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_LfgAd_Player");
+
+            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.LfgAds)
+                .HasForeignKey(d => d.IdGuild)
+                .HasConstraintName("FK_LfgAd_Guild");
+
+            entity.HasOne(d => d.IdServerNavigation).WithMany()
+                .HasForeignKey(d => d.IdServer)
+                .HasConstraintName("FK_LfgAd_Server");
+
+            entity.HasOne(d => d.IdDirectionNavigation).WithMany()
+                .HasForeignKey(d => d.IdDirection)
+                .HasConstraintName("FK_LfgAd_Direction");
         });
 
         modelBuilder.Entity<Guild>(entity =>
@@ -240,6 +342,8 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Entitled).HasMaxLength(50);
+            entity.Property(e => e.Discriminator).HasMaxLength(4);
+            entity.HasIndex(e => new { e.Entitled, e.Discriminator }, "UQ_Guild_Handle").IsUnique();
             entity.Property(e => e.LinkDiscord)
                 .HasMaxLength(255)
                 .IsUnicode(false);
@@ -262,22 +366,48 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasConstraintName("FK_Guilds_Directions");
         });
 
-        modelBuilder.Entity<GuildAnnouncement>(entity =>
+        modelBuilder.Entity<GuildRank>(entity =>
         {
-            entity.HasKey(e => e.Id).HasName("PK_GuildAnnouncement");
+            entity.ToTable("GuildRank");
 
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Message).HasColumnType("text");
+            entity.Property(e => e.Entitled).HasMaxLength(150);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+        });
+
+        modelBuilder.Entity<GuildMember>(entity =>
+        {
+            entity.ToTable("GuildMember");
+
+            entity.HasKey(e => e.Id).HasName("PK_GuildMember");
+
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
 
-            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GuildAnnouncements)
+            entity.HasIndex(e => new { e.IdGuild, e.IdCharacter }, "UQ_GuildMember_Character").IsUnique();
+
+            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GuildMembers)
                 .HasForeignKey(d => d.IdGuild)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_GuildAnnouncement_Guild");
+                .HasConstraintName("FK_GuildMember_Guild");
+
+            entity.HasOne(d => d.IdCharacterNavigation).WithMany(p => p.GuildMembers)
+                .HasForeignKey(d => d.IdCharacter)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GuildMember_Character");
+
+            entity.HasOne(d => d.IdGuildRankNavigation).WithMany(p => p.GuildMembers)
+                .HasForeignKey(d => d.IdGuildRank)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GuildMember_GuildRank");
         });
 
         modelBuilder.Entity<GuildLink>(entity =>
@@ -369,6 +499,19 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasColumnType("datetime");
         });
 
+        modelBuilder.Entity<PlatformUserSnapshot>(entity =>
+        {
+            entity.ToTable("PlatformUserSnapshot");
+
+            entity.HasKey(e => e.PlatformUserPublicId);
+
+            entity.Property(e => e.PlatformUserPublicId).ValueGeneratedNever();
+            entity.Property(e => e.Nickname).HasMaxLength(50);
+            entity.Property(e => e.Discriminator).HasMaxLength(8);
+            entity.Property(e => e.AvatarUrl).HasMaxLength(512);
+            entity.Property(e => e.UpdatedAt).HasColumnType("datetime");
+        });
+
         modelBuilder.Entity<Player>(entity =>
         {
             entity.Property(e => e.CreationDate)
@@ -381,22 +524,13 @@ public partial class WorldOfWarcraftDbContext : DbContext
             entity.Property(e => e.PresentationIg).HasColumnType("text");
             entity.Property(e => e.PresentationIrl).HasColumnType("text");
             entity.Property(e => e.SuccessPoints).HasDefaultValue(0);
-        });
 
-        modelBuilder.Entity<PlayerAnnouncement>(entity =>
-        {
-            entity.Property(e => e.CreationDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-            entity.Property(e => e.Message).HasColumnType("text");
-            entity.Property(e => e.ModificationDate)
-                .HasDefaultValueSql("(getdate())")
-                .HasColumnType("datetime");
-
-            entity.HasOne(d => d.IdPlayerNavigation).WithMany(p => p.PlayerAnnouncements)
-                .HasForeignKey(d => d.IdPlayer)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_PlayerAnnoucements_Player");
+            entity.HasIndex(e => e.IdKeycloak)
+                .IsUnique()
+                .HasFilter("[IdKeycloak] IS NOT NULL");
+            entity.HasIndex(e => e.PlatformUserPublicId)
+                .IsUnique()
+                .HasFilter("[PlatformUserPublicId] IS NOT NULL");
         });
 
         modelBuilder.Entity<PlayerLink>(entity =>
