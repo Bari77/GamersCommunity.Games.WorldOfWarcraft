@@ -11,9 +11,9 @@ import { environment } from "../environments/environment";
       <nb-layout>
         <nb-layout-header fixed>
           @if (showBanner) {
-            <span class="playground-banner">{{ banner }}</span>
+            <span class="playground-banner gc-display">{{ banner }}</span>
           } @else {
-            <span class="playground-banner" i18n="@@wow.playground.banner">WoW Playground</span>
+            <span class="playground-banner gc-display" i18n="@@wow.playground.banner">WoW Playground</span>
           }
         </nb-layout-header>
         <nb-layout-column>
@@ -23,8 +23,9 @@ import { environment } from "../environments/environment";
     `,
     styles: `
       .playground-banner {
-        font: 600 0.8rem/1.2 system-ui, sans-serif;
-        letter-spacing: 0.02em;
+        font-size: 0.8rem;
+        font-weight: 600;
+        line-height: 1.2;
       }
     `,
 })

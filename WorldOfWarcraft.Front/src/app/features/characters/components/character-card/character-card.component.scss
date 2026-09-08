@@ -1,0 +1,141 @@
+.character-card {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+    padding: 1rem 1rem 1rem 1.4rem;
+    border-radius: 0.75rem;
+    background: var(--gc-surface-2, rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
+}
+
+.character-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--class-color);
+}
+
+.character-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--class-color) 45%, transparent);
+}
+
+.character-card__head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.character-card__identity {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+    min-width: 0;
+}
+
+.character-card__name {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--class-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.character-card__badge {
+    flex: none;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: color-mix(in srgb, var(--class-color) 22%, transparent);
+    color: var(--class-color);
+}
+
+.character-card__level {
+    flex: none;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1;
+    opacity: 0.55;
+}
+
+.character-card__spec {
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.character-card__spec--empty {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.character-card__facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.character-card__facts li {
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.character-card__stats {
+    display: flex;
+    gap: 1.25rem;
+    margin: 0;
+}
+
+.character-card__stats dt {
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    opacity: 0.55;
+}
+
+.character-card__stats dd {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.character-card__guild {
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: var(--gc-accent, var(--game-accent, #36f));
+}
+
+.character-card__guild:hover {
+    text-decoration: underline;
+}
+
+.character-card__sentence {
+    margin: 0;
+    font-size: 0.85rem;
+    font-style: italic;
+    opacity: 0.7;
+}
+
+.character-card__actions {
+    display: flex;
+    gap: 0.25rem;
+    margin-top: 0.15rem;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}

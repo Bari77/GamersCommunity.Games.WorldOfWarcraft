@@ -523,6 +523,7 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.PresentationIg).HasColumnType("text");
             entity.Property(e => e.PresentationIrl).HasColumnType("text");
+            entity.Property(e => e.LayoutJson).HasColumnType("nvarchar(max)");
             entity.Property(e => e.SuccessPoints).HasDefaultValue(0);
 
             entity.HasIndex(e => e.IdKeycloak)

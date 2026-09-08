@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorldOfWarcraft.Database.Context;
 
@@ -11,9 +12,11 @@ using WorldOfWarcraft.Database.Context;
 namespace WorldOfWarcraft.Database.Migrations
 {
     [DbContext(typeof(WorldOfWarcraftDbContext))]
-    partial class WorldOfWarcraftDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908072257_AddPlayerLayoutJson")]
+    partial class AddPlayerLayoutJson
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

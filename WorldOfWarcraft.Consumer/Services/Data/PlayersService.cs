@@ -3,6 +3,7 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
 using WorldOfWarcraft.Database.Context;
@@ -13,6 +14,8 @@ namespace WorldOfWarcraft.Consumer.Services.Data;
 public class PlayersService(WorldOfWarcraftDbContext context)
     : GenericDataService<WorldOfWarcraftDbContext, Player>(context, "Players")
 {
+    private const int MaxLayoutLength = 8000;
+
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
         switch (message.Action)
@@ -112,11 +115,39 @@ public class PlayersService(WorldOfWarcraftDbContext context)
             target.PresentationIrl = request.PresentationIrl;
         if (request.PresentationIg is not null)
             target.PresentationIg = request.PresentationIg;
+        if (request.LayoutJson is not null)
+            target.LayoutJson = NormalizeLayout(request.LayoutJson);
 
         target.ModificationDate = DateTime.UtcNow;
         await Context.SaveChangesAsync(ct);
 
         return await ToSheetDtoAsync(target.Id, ct);
+    }
+
+    /// <summary>
+    /// The widget catalog lives in the front, so the layout is stored opaquely.
+    /// Only the shape (a JSON array) and a size ceiling are enforced here.
+    /// </summary>
+    private static string? NormalizeLayout(string layoutJson)
+    {
+        if (string.IsNullOrWhiteSpace(layoutJson))
+            return null;
+
+        if (layoutJson.Length > MaxLayoutLength)
+            throw new BadRequestException("LAYOUT_TOO_LARGE", "Layout payload is too large");
+
+        try
+        {
+            using var document = JsonDocument.Parse(layoutJson);
+            if (document.RootElement.ValueKind != JsonValueKind.Array)
+                throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON array");
+        }
+        catch (JsonException)
+        {
+            throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON array");
+        }
+
+        return layoutJson;
     }
 
     private async Task<Player> ResolvePlayerAsync(BusMessage message, CancellationToken ct)
@@ -147,6 +178,7 @@ public class PlayersService(WorldOfWarcraftDbContext context)
                 p.NbMount,
                 p.SuccessPoints,
                 p.CreationDate,
+                p.LayoutJson,
                 CharacterCount = p.Characters.Count,
             })
             .FirstAsync(ct);
@@ -161,6 +193,7 @@ public class PlayersService(WorldOfWarcraftDbContext context)
             SuccessPoints = player.SuccessPoints,
             CreationDate = player.CreationDate,
             CharacterCount = player.CharacterCount,
+            LayoutJson = player.LayoutJson,
         };
     }
 }

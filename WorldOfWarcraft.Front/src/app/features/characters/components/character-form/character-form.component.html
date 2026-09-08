@@ -1,0 +1,169 @@
+@let opts = options();
+
+<form class="character-form" (ngSubmit)="submit()">
+    <h3 class="character-form__title">
+        @if (character()) {
+            <span i18n="@@wow.character.form.editTitle">Edit character</span>
+        } @else {
+            <span i18n="@@wow.character.form.createTitle">New character</span>
+        }
+    </h3>
+
+    <div class="character-form__grid">
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.pseudo">Name</span>
+            <input nbInput fullWidth type="text" maxlength="50" [(ngModel)]="pseudo" name="pseudo" />
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.server">Server</span>
+            <nb-select fullWidth [(ngModel)]="idServer" name="idServer" placeholder="—">
+                @for (server of opts.servers; track server.id) {
+                    <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.race">Race</span>
+            <nb-select
+                fullWidth
+                [ngModel]="idRace()"
+                (ngModelChange)="onRaceChange($event)"
+                name="idRace"
+                placeholder="—"
+            >
+                @for (race of opts.races; track race.id) {
+                    <nb-option [value]="race.id">{{ race.entitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.class">Class</span>
+            <nb-select
+                fullWidth
+                [ngModel]="idClass()"
+                (ngModelChange)="onClassChange($event)"
+                name="idClass"
+                placeholder="—"
+                [disabled]="idRace() === null"
+            >
+                @for (klass of availableClasses(); track klass.id) {
+                    <nb-option [value]="klass.id">{{ klass.entitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.mainSpec">Main specialization</span>
+            <nb-select
+                fullWidth
+                [ngModel]="idMainSpec()"
+                (ngModelChange)="onMainSpecChange($event)"
+                name="idMainSpec"
+                placeholder="—"
+                [disabled]="idClass() === null"
+            >
+                @for (spec of availableSpecs(); track spec.id) {
+                    <nb-option [value]="spec.id">{{ spec.specializationEntitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.secondarySpec">Secondary specialization</span>
+            <nb-select
+                fullWidth
+                [(ngModel)]="idSecondarySpec"
+                name="idSecondarySpec"
+                placeholder="—"
+                [disabled]="idMainSpec() === null"
+            >
+                @for (spec of secondarySpecs(); track spec.id) {
+                    <nb-option [value]="spec.id">{{ spec.specializationEntitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.role">Role</span>
+            <nb-select fullWidth [(ngModel)]="idDirection" name="idDirection" placeholder="—">
+                @for (direction of opts.directions; track direction.id) {
+                    <nb-option [value]="direction.id">{{ direction.entitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.faction">Faction</span>
+            <nb-select fullWidth [(ngModel)]="idAlignment" name="idAlignment" placeholder="—">
+                @for (alignment of opts.alignments; track alignment.id) {
+                    <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                }
+            </nb-select>
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.level">Level</span>
+            <input nbInput fullWidth type="number" min="1" [max]="opts.maxLevel" [(ngModel)]="level" name="level" />
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.ilvl">Item level</span>
+            <input nbInput fullWidth type="number" min="0" [(ngModel)]="ilvl" name="ilvl" />
+        </label>
+
+        <label class="character-form__field">
+            <span i18n="@@wow.character.form.achievements">Achievement points</span>
+            <input nbInput fullWidth type="number" min="0" [(ngModel)]="achievement" name="achievement" />
+        </label>
+    </div>
+
+    <label class="character-form__field character-form__field--wide">
+        <span i18n="@@wow.character.form.sentence">Catchphrase</span>
+        <textarea nbInput fullWidth rows="2" [(ngModel)]="sentence" name="sentence"></textarea>
+    </label>
+
+    <nb-checkbox [(ngModel)]="main" name="main">
+        <span i18n="@@wow.character.form.main">Set as main character</span>
+    </nb-checkbox>
+
+    @if (errorCode(); as code) {
+        <p class="character-form__error" role="alert">
+            @switch (code) {
+                @case ("PSEUDO_TAKEN") {
+                    <span i18n="@@wow.character.error.pseudoTaken">
+                        You already own a character with that name on this server.
+                    </span>
+                }
+                @case ("INVALID_RACE_CLASS") {
+                    <span i18n="@@wow.character.error.raceClass">This class is not available to that race.</span>
+                }
+                @case ("INVALID_LEVEL") {
+                    <span i18n="@@wow.character.error.level">The level is out of range.</span>
+                }
+                @case ("SPECIALIZATION_CLASS_MISMATCH") {
+                    <span i18n="@@wow.character.error.specMismatch">
+                        Both specializations must belong to the same class.
+                    </span>
+                }
+                @case ("TOO_MANY_CHARACTERS") {
+                    <span i18n="@@wow.character.error.tooMany">You reached the maximum number of characters.</span>
+                }
+                @default {
+                    <span i18n="@@wow.character.error.unknown">The character could not be saved.</span>
+                }
+            }
+        </p>
+    }
+
+    <footer class="character-form__actions">
+        <button nbButton ghost status="basic" type="button" (click)="cancel.emit()">
+            <span i18n="@@wow.character.form.cancel">Cancel</span>
+        </button>
+        <button nbButton status="primary" type="submit" [disabled]="!canSave()">
+            <span i18n="@@wow.character.form.save">Save</span>
+        </button>
+    </footer>
+</form>

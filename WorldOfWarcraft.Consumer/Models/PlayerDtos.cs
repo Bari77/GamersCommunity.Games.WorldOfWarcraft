@@ -16,6 +16,7 @@ public sealed class PlayerSheetDto
     public int? SuccessPoints { get; init; }
     public DateTime CreationDate { get; init; }
     public int CharacterCount { get; init; }
+    public string? LayoutJson { get; init; }
 }
 
 public sealed class PlayerResolveRequest
@@ -33,6 +34,7 @@ public sealed class PlayerUpdateRequest
 {
     public string? PresentationIrl { get; init; }
     public string? PresentationIg { get; init; }
+    public string? LayoutJson { get; init; }
 }
 
 public sealed class PlayerSummaryDto

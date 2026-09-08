@@ -1,0 +1,67 @@
+@let item = character();
+
+<article class="character-card" [style.--class-color]="item.color">
+    <header class="character-card__head">
+        <div class="character-card__identity">
+            <h3 class="character-card__name">{{ item.pseudo }}</h3>
+            @if (item.main) {
+                <span class="character-card__badge" i18n="@@wow.character.main">Main</span>
+            }
+        </div>
+        <span class="character-card__level">
+            <span class="sr-only" i18n="@@wow.character.level">Level</span>
+            {{ item.level }}
+        </span>
+    </header>
+
+    <p class="character-card__spec">
+        @if (item.className) {
+            {{ item.mainSpecializationName | gameTerm }} {{ item.className | gameTerm }}
+        } @else {
+            <span class="character-card__spec--empty" i18n="@@wow.character.noSpec">No specialization</span>
+        }
+    </p>
+
+    <ul class="character-card__facts">
+        <li>{{ item.raceName | gameTerm }}</li>
+        <li>{{ item.directionName | gameTerm }}</li>
+        <li>{{ item.serverName | gameTerm }}</li>
+        @if (item.alignmentName) {
+            <li>{{ item.alignmentName | gameTerm }}</li>
+        }
+    </ul>
+
+    <dl class="character-card__stats">
+        <div>
+            <dt i18n="@@wow.character.ilvl">Item level</dt>
+            <dd>{{ item.ilvl }}</dd>
+        </div>
+        <div>
+            <dt i18n="@@wow.character.achievements">Achievements</dt>
+            <dd>{{ item.achievement }}</dd>
+        </div>
+    </dl>
+
+    @if (item.guildPublicId) {
+        <a class="character-card__guild" [routerLink]="['/world-of-warcraft/guilds', item.guildPublicId]">
+            {{ item.guildHandle }}
+        </a>
+    }
+
+    @if (item.sentence) {
+        <p class="character-card__sentence">{{ item.sentence }}</p>
+    }
+
+    @if (editable()) {
+        <footer class="character-card__actions">
+            <button nbButton ghost size="small" status="basic" (click)="edit.emit(item)">
+                <nb-icon icon="edit-2-outline"></nb-icon>
+                <span i18n="@@wow.character.edit">Edit</span>
+            </button>
+            <button nbButton ghost size="small" status="danger" (click)="remove.emit(item)">
+                <nb-icon icon="trash-2-outline"></nb-icon>
+                <span i18n="@@wow.character.delete">Delete</span>
+            </button>
+        </footer>
+    }
+</article>

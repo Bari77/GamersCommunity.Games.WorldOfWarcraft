@@ -26,6 +26,8 @@ public partial class Player : IKeyTable
 
     public Guid? PlatformUserPublicId { get; set; }
 
+    public string? LayoutJson { get; set; }
+
     public int? IdRank { get; set; }
 
     public virtual ICollection<Character> Characters { get; set; } = new List<Character>();

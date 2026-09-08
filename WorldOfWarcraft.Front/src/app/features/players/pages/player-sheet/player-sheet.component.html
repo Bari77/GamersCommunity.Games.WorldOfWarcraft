@@ -4,15 +4,63 @@
     } @else if (sheet.error()) {
         <p i18n="@@wow.player.notFound">WoW player sheet not found.</p>
     } @else if (sheet.value(); as player) {
-        <nb-card>
-            <nb-card-header>
-                <h1 class="gc-display" i18n="@@wow.player.title">WoW player sheet</h1>
+        <header class="player-sheet__head">
+            <h1 class="gc-display" i18n="@@wow.player.title">WoW player sheet</h1>
+            @if (isOwner()) {
+                <gc-widget-edit-bar
+                    [(editing)]="editing"
+                    [saving]="saving()"
+                    editLabel="Edit"
+                    i18n-editLabel="@@wow.player.layout.edit"
+                    cancelLabel="Cancel"
+                    i18n-cancelLabel="@@wow.player.layout.cancel"
+                    saveLabel="Save"
+                    i18n-saveLabel="@@wow.player.layout.save"
+                    (cancel)="onCancel()"
+                    (save)="onSave()"
+                />
+            }
+        </header>
+
+        @if (editing()) {
+            <p class="player-sheet__hint" i18n="@@wow.player.layout.hint">
+                Drag a widget by its header to move it, or grab its bottom-right corner to resize it.
+            </p>
+        }
+        @if (saveFailed()) {
+            <p class="player-sheet__error" role="alert" i18n="@@wow.player.layout.saveFailed">
+                Your layout could not be saved. Please try again.
+            </p>
+        }
+
+        <gc-widget-grid
+            [layout]="layout()"
+            [editing]="editing()"
+            [columns]="columns"
+            [rowHeight]="rowHeight"
+            (layoutChange)="onLayoutChange($event)"
+        >
+            <ng-template
+                gcWidget="identity"
+                gcWidgetLabel="Identity"
+                i18n-gcWidgetLabel="@@wow.player.widget.identity"
+            >
                 <p class="player-sheet__meta">
                     <span i18n="@@wow.player.since">Member since</span>
                     {{ player.creationDate | date: "mediumDate" }}
                 </p>
-            </nb-card-header>
-            <nb-card-body>
+                <a
+                    [routerLink]="['/users', player.platformUserPublicId]"
+                    nbButton
+                    ghost
+                    status="basic"
+                    i18n="@@wow.player.platformProfile"
+                >
+                    Platform profile
+                </a>
+            </ng-template>
+
+            <ng-template gcWidget="bio" gcWidgetLabel="Presentation" i18n-gcWidgetLabel="@@wow.player.widget.bio">
                 @if (player.presentationIrl) {
                     <section class="player-sheet__block">
                         <h2 i18n="@@wow.player.presentationIrl">IRL presentation</h2>
@@ -25,21 +73,43 @@
                         <p>{{ player.presentationIg }}</p>
                     </section>
                 }
-                <p class="player-sheet__stats">
-                    <span i18n="@@wow.player.characters">Characters</span>: {{ player.characterCount }}
-                    ·
-                    <span i18n="@@wow.player.mounts">Mounts</span>: {{ player.nbMount }}
-                </p>
-                <a
-                    [routerLink]="['/users', player.platformUserPublicId]"
-                    nbButton
-                    ghost
-                    status="basic"
-                    i18n="@@wow.player.platformProfile"
-                >
-                    Platform profile
-                </a>
-            </nb-card-body>
-        </nb-card>
+                @if (!player.presentationIrl && !player.presentationIg) {
+                    <p class="player-sheet__empty" i18n="@@wow.player.noPresentation">
+                        This player has not written a presentation yet.
+                    </p>
+                }
+            </ng-template>
+
+            <ng-template gcWidget="stats" gcWidgetLabel="Stats" i18n-gcWidgetLabel="@@wow.player.widget.stats">
+                <ul class="player-sheet__stats">
+                    <li>
+                        <span i18n="@@wow.player.characters">Characters</span>
+                        <strong>{{ player.characterCount }}</strong>
+                    </li>
+                    <li>
+                        <span i18n="@@wow.player.mounts">Mounts</span>
+                        <strong>{{ player.nbMount }}</strong>
+                    </li>
+                    @if (player.successPoints !== null) {
+                        <li>
+                            <span i18n="@@wow.player.successPoints">Achievement points</span>
+                            <strong>{{ player.successPoints }}</strong>
+                        </li>
+                    }
+                </ul>
+            </ng-template>
+
+            <ng-template
+                gcWidget="characters"
+                gcWidgetLabel="Characters"
+                i18n-gcWidgetLabel="@@wow.player.widget.characters"
+            >
+                <wow-character-list
+                    [playerPublicId]="player.publicId"
+                    [editable]="isOwner() && !editing()"
+                    (changed)="onCharactersChanged()"
+                />
+            </ng-template>
+        </gc-widget-grid>
     }
 </section>

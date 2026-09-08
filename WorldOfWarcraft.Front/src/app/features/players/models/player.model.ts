@@ -10,6 +10,7 @@ export class PlayerSheet {
         public successPoints: number | null,
         public creationDate: Date,
         public characterCount: number,
+        public layoutJson: string | null,
     ) {}
 
     public static fromDto(dto: PlayerSheetDto): PlayerSheet {
@@ -22,6 +23,7 @@ export class PlayerSheet {
             dto.successPoints,
             new Date(dto.creationDate),
             dto.characterCount,
+            dto.layoutJson,
         );
     }
 }

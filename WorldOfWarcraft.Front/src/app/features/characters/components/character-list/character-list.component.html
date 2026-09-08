@@ -1,0 +1,65 @@
+<section class="character-list">
+    <header class="character-list__head">
+        <h2 class="gc-display" i18n="@@wow.character.listTitle">Characters</h2>
+        @if (editable() && !formOpen()) {
+            <button nbButton size="small" status="primary" (click)="openCreate()">
+                <nb-icon icon="plus-outline"></nb-icon>
+                <span i18n="@@wow.character.new">New character</span>
+            </button>
+        }
+    </header>
+
+    @if (formOpen()) {
+        @if (store.options.value(); as options) {
+            <wow-character-form
+                [options]="options"
+                [character]="editing()"
+                [saving]="store.saving()"
+                [errorCode]="store.errorCode()"
+                (save)="onSave($event)"
+                (cancel)="closeForm()"
+            />
+        } @else {
+            <div class="character-list__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
+        }
+    }
+
+    @if (pendingDelete(); as target) {
+        <div class="character-list__confirm" role="alertdialog">
+            <p>
+                <span i18n="@@wow.character.confirmDelete">Permanently delete this character?</span>
+                <strong>{{ target.pseudo }}</strong>
+            </p>
+            @if (store.errorCode() === "CHARACTER_IS_GUILD_LEADER") {
+                <p class="character-list__confirm-error" i18n="@@wow.character.error.guildLeader">
+                    Transfer guild leadership before deleting this character.
+                </p>
+            }
+            <div class="character-list__confirm-actions">
+                <button nbButton ghost size="small" status="basic" (click)="cancelDelete()">
+                    <span i18n="@@wow.character.confirmCancel">Cancel</span>
+                </button>
+                <button nbButton size="small" status="danger" [disabled]="store.saving()" (click)="confirmDelete()">
+                    <span i18n="@@wow.character.confirmDeleteAction">Delete</span>
+                </button>
+            </div>
+        </div>
+    }
+
+    @if (store.loading()) {
+        <div class="character-list__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
+    } @else if (store.characters.value().length === 0) {
+        <p class="character-list__empty" i18n="@@wow.character.empty">No character registered yet.</p>
+    } @else {
+        <div class="character-list__grid">
+            @for (character of store.characters.value(); track character.publicId) {
+                <wow-character-card
+                    [character]="character"
+                    [editable]="editable()"
+                    (edit)="openEdit($event)"
+                    (remove)="askDelete($event)"
+                />
+            }
+        </div>
+    }
+</section>

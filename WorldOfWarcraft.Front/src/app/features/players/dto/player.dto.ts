@@ -7,6 +7,7 @@ export interface PlayerSheetDto {
     successPoints: number | null;
     creationDate: string;
     characterCount: number;
+    layoutJson: string | null;
 }
 
 export interface PlayerResolveResultDto {
@@ -22,4 +23,5 @@ export interface PlayerLoadRequestDto {
 export interface PlayerUpdateRequestDto {
     presentationIrl?: string | null;
     presentationIg?: string | null;
+    layoutJson?: string | null;
 }
