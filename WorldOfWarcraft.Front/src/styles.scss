@@ -1,4 +1,7 @@
 /* WoW-specific global overrides (shared skin: @bari77/gc-theme) */
+gc-widget-grid gridster-item {
+    background: transparent;
+}
 .sr-only {
     position: absolute;
     width: 1px;

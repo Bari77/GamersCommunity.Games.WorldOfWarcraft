@@ -67,7 +67,9 @@ export class PlayerSheetComponent {
     public readonly saveFailed = signal(false);
 
     public readonly layout = computed(
-        () => this.savedLayout() ?? parseLayout(this.sheet.value()?.layoutJson, PLAYER_DASHBOARD_LAYOUT),
+        () =>
+            this.savedLayout() ??
+            parseLayout(this.sheet.value()?.layoutJson, PLAYER_DASHBOARD_LAYOUT, PLAYER_DASHBOARD_COLUMNS),
     );
 
     private readonly savedLayout = signal<WidgetLayout | null>(null);

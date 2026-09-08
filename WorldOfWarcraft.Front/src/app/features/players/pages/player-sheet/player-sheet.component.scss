@@ -4,7 +4,7 @@
     padding: 1.5rem 1rem 3rem;
 
     --gc-widget-border: rgba(255, 255, 255, 0.1);
-    --gc-widget-background: rgba(255, 255, 255, 0.035);
+    --gc-widget-background: var(--gc-surface-2);
     --gc-widget-editing-border: rgba(120, 170, 255, 0.55);
     --gc-widget-accent: #3366ff;
 }
