@@ -67,6 +67,20 @@
     min-height: 16rem;
 }
 
+.lfg-chat__messages--skeleton {
+    pointer-events: none;
+}
+
+.lfg-chat__bubble--skeleton {
+    pointer-events: none;
+}
+
+.lfg-chat__bubble--skeleton .lfg-chat__bubble-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
 .lfg-chat__messages {
     flex: 1;
     min-height: 0;

@@ -1,14 +1,39 @@
 import { Component, computed, effect, input, output, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { CharacterCreateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
 import { Character, CharacterOptions } from "@features/characters/models/character.model";
 import { NbButtonModule, NbCheckboxModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
+import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
+
+/**
+ * An update carries only what the owner touched. Leaving a field out keeps the stored
+ * value, which is what lets a field sent as null read as "erase this" rather than
+ * "untouched" — the only way to empty an optional column.
+ */
+function changedFields<T extends object>(filled: T, stored: T): Partial<T> {
+    const changed: Partial<T> = {};
+    for (const key of Object.keys(filled) as (keyof T)[]) {
+        if (filled[key] !== stored[key]) {
+            changed[key] = filled[key];
+        }
+    }
+
+    return changed;
+}
 
 @Component({
     standalone: true,
     selector: "wow-character-form",
-    imports: [FormsModule, GameTermPipe, NbButtonModule, NbCheckboxModule, NbInputModule, NbSelectModule],
+    imports: [
+        FormsModule,
+        GameTermPipe,
+        NbButtonModule,
+        NbCheckboxModule,
+        NbInputModule,
+        NbSelectModule,
+        WowIconComponent,
+    ],
     templateUrl: "./character-form.component.html",
     styleUrl: "./character-form.component.scss",
 })
@@ -18,7 +43,8 @@ export class CharacterFormComponent {
     public readonly saving = input(false);
     public readonly errorCode = input<string | null>(null);
 
-    public readonly save = output<CharacterCreateRequestDto>();
+    public readonly create = output<CharacterCreateRequestDto>();
+    public readonly update = output<CharacterUpdateRequestDto>();
     public readonly cancel = output<void>();
 
     public readonly pseudo = signal("");
@@ -29,9 +55,9 @@ export class CharacterFormComponent {
     public readonly idSecondarySpec = signal<number | null>(null);
     public readonly idDirection = signal<number | null>(null);
     public readonly idAlignment = signal<number | null>(null);
-    public readonly level = signal(1);
-    public readonly ilvl = signal(0);
-    public readonly achievement = signal(0);
+    public readonly level = signal<number | null>(1);
+    public readonly ilvl = signal<number | null>(0);
+    public readonly achievement = signal<number | null>(0);
     public readonly sentence = signal("");
     public readonly main = signal(false);
 
@@ -39,16 +65,23 @@ export class CharacterFormComponent {
     public readonly availableSpecs = computed(() => this.options().specializationsForClass(this.idClass()));
     public readonly secondarySpecs = computed(() => this.availableSpecs().filter((spec) => spec.id !== this.idMainSpec()));
 
-    public readonly canSave = computed(
-        () =>
+    /** The backend ceiling is authoritative, but a missing value must not lock the form. */
+    public readonly maxLevel = computed(() => this.options().maxLevel || 120);
+    public readonly maxIlvl = computed(() => this.options().maxIlvl || 1000);
+
+    public readonly canSave = computed(() => {
+        const level = this.level();
+        return (
             !this.saving() &&
             this.pseudo().trim().length > 0 &&
             this.idServer() !== null &&
             this.idRace() !== null &&
             this.idDirection() !== null &&
-            this.level() >= 1 &&
-            this.level() <= this.options().maxLevel,
-    );
+            level !== null &&
+            level >= 1 &&
+            level <= this.maxLevel()
+        );
+    });
 
     public constructor() {
         effect(() => {
@@ -85,11 +118,21 @@ export class CharacterFormComponent {
             return;
         }
 
-        this.save.emit({
+        const filled = this.filled();
+        const current = this.character();
+        if (current) {
+            this.update.emit(changedFields(filled, this.asRequest(current)));
+        } else {
+            this.create.emit(filled);
+        }
+    }
+
+    private filled(): CharacterCreateRequestDto {
+        return {
             pseudo: this.pseudo().trim(),
-            level: this.level(),
-            ilvl: this.ilvl(),
-            achievement: this.achievement(),
+            level: this.level() ?? 1,
+            ilvl: this.ilvl() ?? 0,
+            achievement: this.achievement() ?? 0,
             sentence: this.sentence().trim() || null,
             main: this.main(),
             idRace: this.idRace()!,
@@ -98,7 +141,24 @@ export class CharacterFormComponent {
             idAlignment: this.idAlignment(),
             idMainSpecializationClass: this.idMainSpec(),
             idSecondarySpecializationClass: this.idSecondarySpec(),
-        });
+        };
+    }
+
+    private asRequest(character: Character): CharacterCreateRequestDto {
+        return {
+            pseudo: character.pseudo,
+            level: character.level,
+            ilvl: character.ilvl,
+            achievement: character.achievement,
+            sentence: character.sentence,
+            main: character.main,
+            idRace: character.idRace,
+            idServer: character.idServer,
+            idDirection: character.idDirection,
+            idAlignment: character.idAlignment,
+            idMainSpecializationClass: character.idMainSpecializationClass,
+            idSecondarySpecializationClass: character.idSecondarySpecializationClass,
+        };
     }
 
     private reset(current: Character | null): void {

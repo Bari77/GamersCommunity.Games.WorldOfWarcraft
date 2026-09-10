@@ -1,14 +1,14 @@
 import { Component, inject, signal } from "@angular/core";
 import { Router } from "@angular/router";
-import { PlatformSessionService } from "@core/services/platform-session.service";
-import { PlayersService } from "@features/players/services/players.service";
-import { NbButtonModule, NbSpinnerModule } from "@nebular/theme";
-import { firstValueFrom } from "rxjs";
+import { SkeletonComponent } from "@bari77/gc-ui";
+import { WOW_GAME_URL } from "@core/constants/game.constants";
+import { GameMembershipStore } from "@core/stores/game-membership.store";
+import { NbButtonModule } from "@nebular/theme";
 
 @Component({
     standalone: true,
     selector: "wow-my-sheet",
-    imports: [NbButtonModule, NbSpinnerModule],
+    imports: [NbButtonModule, SkeletonComponent],
     templateUrl: "./my-sheet.component.html",
     styleUrl: "./my-sheet.component.scss",
 })
@@ -16,24 +16,29 @@ export class MySheetComponent {
     public readonly loading = signal(true);
     public readonly needsLogin = signal(false);
 
-    private readonly platformSession = inject(PlatformSessionService);
-    private readonly players = inject(PlayersService);
+    private readonly membership = inject(GameMembershipStore);
     private readonly router = inject(Router);
 
     public constructor() {
         void this.bootstrap();
     }
 
+    /**
+     * A sheet-less visitor lands on the game home, where creating one is offered explicitly. This
+     * route never creates it on his behalf.
+     */
     private async bootstrap(): Promise<void> {
         try {
-            const session = await firstValueFrom(this.platformSession.touch());
-            const sheet = await firstValueFrom(
-                this.players.load({
-                    platformUserId: session.id,
-                    platformUserPublicId: session.publicId,
-                }),
+            await this.membership.whenResolved();
+            if (!this.membership.isAuthenticated()) {
+                this.needsLogin.set(true);
+                return;
+            }
+
+            const playerPublicId = this.membership.playerPublicId();
+            await this.router.navigate(
+                playerPublicId ? [`${WOW_GAME_URL}/players`, playerPublicId] : [WOW_GAME_URL],
             );
-            await this.router.navigate(["/world-of-warcraft/players", sheet.publicId]);
         } catch {
             this.needsLogin.set(true);
         } finally {

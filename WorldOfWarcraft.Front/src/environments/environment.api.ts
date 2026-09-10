@@ -5,4 +5,6 @@ export const environment: Environment = {
     apiUrl: "http://localhost:8081/api",
     hubUrl: "http://localhost:8081/hubs/wow-lfg",
     useMocks: false,
+    assetsUrl: "http://localhost:4201",
+    assetsBaseUrl: "https://host.bariserv.net/GamersCommunity",
 };

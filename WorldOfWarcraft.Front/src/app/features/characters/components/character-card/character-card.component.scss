@@ -28,21 +28,42 @@
 
 .character-card__head {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     justify-content: space-between;
     gap: 0.75rem;
 }
 
 .character-card__identity {
     display: flex;
-    align-items: baseline;
+    align-items: center;
     gap: 0.5rem;
     min-width: 0;
 }
 
+.character-card__who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* The row is kept even without a badge so every card lines its facts and stats up. */
+.character-card__tags {
+    display: flex;
+    gap: 0.3rem;
+    min-height: 1.05rem;
+    margin: 0;
+}
+
+.character-card__emblem {
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--class-color) 55%, transparent);
+    border-radius: 0.3rem;
+}
+
+/* Shares its line box with the level so both stay on the same optical line. */
 .character-card__name {
     margin: 0;
     font-size: 1.1rem;
+    line-height: 1.5rem;
     font-weight: 600;
     color: var(--class-color);
     white-space: nowrap;
@@ -51,7 +72,7 @@
 }
 
 .character-card__badge {
-    flex: none;
+    align-self: flex-start;
     padding: 0.1rem 0.45rem;
     border-radius: 999px;
     font-size: 0.65rem;
@@ -65,11 +86,14 @@
     flex: none;
     font-size: 1.35rem;
     font-weight: 700;
-    line-height: 1;
+    line-height: 1.5rem;
     opacity: 0.55;
 }
 
 .character-card__spec {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
     margin: 0;
     font-size: 0.9rem;
     opacity: 0.85;
@@ -90,6 +114,9 @@
 }
 
 .character-card__facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
     padding: 0.1rem 0.5rem;
     border-radius: 999px;
     font-size: 0.72rem;

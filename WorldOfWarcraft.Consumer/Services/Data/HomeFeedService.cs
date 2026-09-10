@@ -65,11 +65,21 @@ public class HomeFeedService(WorldOfWarcraftDbContext context) : IBusService
                 PublicId = c.PublicId,
                 Pseudo = c.Pseudo,
                 Level = c.Level,
+                Ilvl = c.Ilvl,
                 Main = c.Main,
                 CreationDate = c.CreationDate,
                 PlayerPublicId = c.IdPlayerNavigation.PublicId,
                 ServerName = c.IdServerNavigation.Entitled,
                 RaceName = c.IdRaceNavigation.Entitled,
+                ClassName = c.IdMainSpecializationClassNavigation == null
+                    ? null
+                    : c.IdMainSpecializationClassNavigation.IdClassNavigation.Entitled,
+                MainSpecializationName = c.IdMainSpecializationClassNavigation == null
+                    ? null
+                    : c.IdMainSpecializationClassNavigation.IdSpecializationNavigation.Entitled,
+                GuildPublicId = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.PublicId,
+                GuildName = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Entitled,
+                GuildDiscriminator = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Discriminator,
             })
             .ToListAsync(ct);
 

@@ -16,11 +16,22 @@
                 [character]="editing()"
                 [saving]="store.saving()"
                 [errorCode]="store.errorCode()"
-                (save)="onSave($event)"
+                (create)="onCreate($event)"
+                (update)="onUpdate($event)"
                 (cancel)="closeForm()"
             />
-        } @else {
-            <div class="character-list__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
+        } @else if (store.optionsLoading()) {
+            <div class="character-form character-form--skeleton" aria-busy="true">
+                <gc-skeleton width="10rem" height="1.05rem" />
+                <div class="character-form__grid">
+                    @for (field of formFieldPlaceholders; track field) {
+                        <div class="character-form__field">
+                            <gc-skeleton width="4.5rem" height="0.72rem" />
+                            <gc-skeleton width="100%" height="2.5rem" radius="0.25rem" />
+                        </div>
+                    }
+                </div>
+            </div>
         }
     }
 
@@ -47,7 +58,32 @@
     }
 
     @if (store.loading()) {
-        <div class="character-list__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
+        <div class="character-list__grid" aria-busy="true">
+            @for (placeholder of cardPlaceholders; track placeholder) {
+                <article class="character-card character-card--skeleton">
+                    <header class="character-card__head">
+                        <div class="character-card__identity">
+                            <gc-skeleton width="2.125rem" height="2.125rem" radius="0.5rem" />
+                            <div class="character-card__who">
+                                <gc-skeleton width="7rem" height="1rem" />
+                                <gc-skeleton width="3rem" height="0.7rem" />
+                            </div>
+                        </div>
+                        <gc-skeleton width="1.75rem" height="1.2rem" />
+                    </header>
+                    <gc-skeleton width="75%" height="0.9rem" />
+                    <div class="character-card__facts">
+                        <gc-skeleton width="4.5rem" height="0.8rem" />
+                        <gc-skeleton width="5rem" height="0.8rem" />
+                        <gc-skeleton width="4rem" height="0.8rem" />
+                    </div>
+                    <div class="character-card__stats">
+                        <gc-skeleton width="45%" height="1.5rem" />
+                        <gc-skeleton width="45%" height="1.5rem" />
+                    </div>
+                </article>
+            }
+        </div>
     } @else if (store.characters.value().length === 0) {
         <p class="character-list__empty" i18n="@@wow.character.empty">No character registered yet.</p>
     } @else {

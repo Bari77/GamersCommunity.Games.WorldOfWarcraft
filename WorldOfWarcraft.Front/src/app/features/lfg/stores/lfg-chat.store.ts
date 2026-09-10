@@ -1,11 +1,10 @@
 import { computed, Injectable, inject, signal } from "@angular/core";
-import { PlatformSession, PlatformSessionService } from "@core/services/platform-session.service";
 import { CreateLfgMessageRequestDto } from "@features/lfg/dto/lfg-message.dto";
 import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage, PostableGuild } from "@features/lfg/models/lfg-message.model";
+import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
 import { GuildsService, LfgChatService } from "@features/lfg/services/lfg-chat.service";
 import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
-import { PlayersService } from "@features/players/services/players.service";
 import { firstValueFrom } from "rxjs";
 
 const PAGE_SIZE = 50;
@@ -18,12 +17,18 @@ export class LfgChatStore {
     public readonly loadingOlder = signal(false);
     public readonly hasMore = signal(true);
     public readonly posting = signal(false);
-    public readonly canPost = signal(false);
-    public readonly isMuted = signal(false);
-    public readonly session = signal<PlatformSession | null>(null);
-    public readonly playerPublicId = signal<string | null>(null);
     public readonly cooldownUntil = signal(0);
     public readonly cooldownSeconds = signal(0);
+
+    public readonly session = computed(() => this.membership.session());
+    public readonly playerPublicId = computed(() => this.membership.playerPublicId());
+    public readonly isMuted = computed(() => this.session()?.activeMute != null);
+
+    /** Posting an ad ties it to a player sheet, so a visitor without one may only read. */
+    public readonly canPost = computed(() => this.membership.isAuthenticated() && this.membership.hasSheet());
+
+    /** Logged in but sheet-less: the composer is replaced by an invitation to create it. */
+    public readonly needsSheet = computed(() => this.membership.needsSheet());
 
     /** Guilds the player may post for. Only loaded on the recruitment thread. */
     public readonly postableGuilds = signal<PostableGuild[]>([]);
@@ -50,8 +55,7 @@ export class LfgChatStore {
 
     private readonly chat = inject(LfgChatService);
     private readonly guilds = inject(GuildsService);
-    private readonly platformSession = inject(PlatformSessionService);
-    private readonly players = inject(PlayersService);
+    private readonly membership = inject(GameMembershipStore);
     private readonly avatars = inject(PlatformAvatarStore);
     private readonly realtime = inject(LfgRealtimeService);
     private cooldownTimer: ReturnType<typeof setInterval> | null = null;
@@ -144,33 +148,30 @@ export class LfgChatStore {
         void this.realtime.disconnect();
     }
 
+    /** Reading the chat must never create anything, so the sheet is only looked up, never loaded. */
     private async loadSession(): Promise<void> {
+        await this.membership.whenResolved();
+        const session = this.session();
+        if (!session) {
+            this.postableGuilds.set([]);
+            this.postingAs.set(null);
+            return;
+        }
+
+        if (session.avatarUrl && session.publicId) {
+            this.avatars.avatars.update((current) => ({
+                ...current,
+                [session.publicId]: session.avatarUrl,
+            }));
+        }
+
+        if (this.kind !== LFG_KIND_RECRUITMENT || !this.canPost()) {
+            return;
+        }
+
         try {
-            const session = await firstValueFrom(this.platformSession.touch());
-            this.session.set(session);
-            this.canPost.set(true);
-            this.isMuted.set(session.activeMute !== null);
-            if (session.avatarUrl && session.publicId) {
-                this.avatars.avatars.update((current) => ({
-                    ...current,
-                    [session.publicId]: session.avatarUrl,
-                }));
-            }
-            const sheet = await firstValueFrom(
-                this.players.load({
-                    platformUserId: session.id,
-                    platformUserPublicId: session.publicId,
-                }),
-            );
-            this.playerPublicId.set(sheet.publicId);
-            if (this.kind === LFG_KIND_RECRUITMENT) {
-                await this.loadPostableGuilds();
-            }
+            await this.loadPostableGuilds();
         } catch {
-            this.session.set(null);
-            this.playerPublicId.set(null);
-            this.canPost.set(false);
-            this.isMuted.set(false);
             this.postableGuilds.set([]);
             this.postingAs.set(null);
         }

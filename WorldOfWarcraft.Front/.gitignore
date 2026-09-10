@@ -40,6 +40,9 @@ testem.log
 /typings
 __screenshots__/
 
+# Blizzard artwork fetched by `npm run icons`
+/public/wow-icons
+
 # System files
 .DS_Store
 Thumbs.db

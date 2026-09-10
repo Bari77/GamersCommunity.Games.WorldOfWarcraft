@@ -3,10 +3,21 @@
 <article class="character-card" [style.--class-color]="item.color">
     <header class="character-card__head">
         <div class="character-card__identity">
-            <h3 class="character-card__name">{{ item.pseudo }}</h3>
-            @if (item.main) {
-                <span class="character-card__badge" i18n="@@wow.character.main">Main</span>
-            }
+            <wow-icon
+                class="character-card__emblem"
+                [kind]="emblem().kind"
+                [slug]="emblem().slug"
+                [label]="item.className | gameTerm"
+                [size]="34"
+            />
+            <div class="character-card__who">
+                <h3 class="character-card__name">{{ item.pseudo }}</h3>
+                <p class="character-card__tags">
+                    @if (item.main) {
+                        <span class="character-card__badge" i18n="@@wow.character.main">Main</span>
+                    }
+                </p>
+            </div>
         </div>
         <span class="character-card__level">
             <span class="sr-only" i18n="@@wow.character.level">Level</span>
@@ -16,6 +27,7 @@
 
     <p class="character-card__spec">
         @if (item.className) {
+            <wow-icon kind="role" [slug]="role()" [label]="roleName()" [size]="18" />
             {{ item.mainSpecializationName | gameTerm }} {{ item.className | gameTerm }}
         } @else {
             <span class="character-card__spec--empty" i18n="@@wow.character.noSpec">No specialization</span>
@@ -23,7 +35,10 @@
     </p>
 
     <ul class="character-card__facts">
-        <li>{{ item.raceName | gameTerm }}</li>
+        <li>
+            <wow-icon kind="race" [slug]="item.raceName" [label]="item.raceName | gameTerm" [size]="16" />
+            {{ item.raceName | gameTerm }}
+        </li>
         <li>{{ item.directionName | gameTerm }}</li>
         <li>{{ item.serverName | gameTerm }}</li>
         @if (item.alignmentName) {

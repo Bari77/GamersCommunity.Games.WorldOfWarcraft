@@ -1,50 +1,59 @@
 <section class="player-sheet gc-enter">
-    @if (sheet.isLoading()) {
-        <div class="player-sheet__loading" [nbSpinner]="true" nbSpinnerStatus="primary" nbSpinnerSize="large"></div>
-    } @else if (sheet.error()) {
-        <p i18n="@@wow.player.notFound">WoW player sheet not found.</p>
-    } @else if (sheet.value(); as player) {
-        <header class="player-sheet__head">
-            <h1 class="gc-display" i18n="@@wow.player.title">WoW player sheet</h1>
-            @if (isOwner()) {
-                <gc-widget-edit-bar
-                    [(editing)]="editing"
-                    [saving]="saving()"
-                    editLabel="Edit"
-                    i18n-editLabel="@@wow.player.layout.edit"
-                    cancelLabel="Cancel"
-                    i18n-cancelLabel="@@wow.player.layout.cancel"
-                    saveLabel="Save"
-                    i18n-saveLabel="@@wow.player.layout.save"
-                    (cancel)="onCancel()"
-                    (save)="onSave()"
-                />
-            }
-        </header>
+    <!-- Value first: a refresh keeps the sheet mounted, so the workspace holds its active page. -->
+    @if (sheet.value(); as player) {
+        <wow-player-hero [player]="player" />
 
-        @if (editing()) {
-            <p class="player-sheet__hint" i18n="@@wow.player.layout.hint">
-                Drag a widget by its header to move it, or grab its bottom-right corner to resize it.
-            </p>
-        }
         @if (saveFailed()) {
             <p class="player-sheet__error" role="alert" i18n="@@wow.player.layout.saveFailed">
                 Your layout could not be saved. Please try again.
             </p>
         }
 
-        <gc-widget-grid
-            [layout]="layout()"
-            [editing]="editing()"
+        <gc-widget-workspace
+            [workspace]="workspace()"
+            [catalog]="catalog"
+            [canEdit]="isOwner()"
+            [saving]="saving()"
             [columns]="columns"
             [rowHeight]="rowHeight"
-            (layoutChange)="onLayoutChange($event)"
+            [(editing)]="editing"
+            navLabel="Profile pages"
+            i18n-navLabel="@@wow.player.nav"
+            addPageLabel="New page"
+            i18n-addPageLabel="@@wow.player.page.add"
+            removePageLabel="Delete page"
+            i18n-removePageLabel="@@wow.player.page.remove"
+            moveUpLabel="Move up"
+            i18n-moveUpLabel="@@wow.player.page.moveUp"
+            moveDownLabel="Move down"
+            i18n-moveDownLabel="@@wow.player.page.moveDown"
+            addWidgetLabel="Add a widget"
+            i18n-addWidgetLabel="@@wow.player.widget.add"
+            editLabel="Edit"
+            i18n-editLabel="@@wow.player.layout.edit"
+            cancelLabel="Cancel"
+            i18n-cancelLabel="@@wow.player.layout.cancel"
+            saveLabel="Save"
+            i18n-saveLabel="@@wow.player.layout.save"
+            emptyPageLabel="This page has no widget yet."
+            i18n-emptyPageLabel="@@wow.player.page.empty"
+            hintLabel="Drag a widget by its header to move it, or grab its bottom-right corner to resize it."
+            i18n-hintLabel="@@wow.player.layout.hint"
+            newPageTitle="New page"
+            i18n-newPageTitle="@@wow.player.page.add"
+            settingsLabel="Configure this widget"
+            i18n-settingsLabel="@@wow.player.widget.settings"
+            removeWidgetLabel="Remove widget"
+            i18n-removeWidgetLabel="@@wow.player.widget.remove"
+            widgetTitleLabel="Widget title"
+            i18n-widgetTitleLabel="@@wow.player.widget.title"
+            widgetTitleHint="Leave empty to drop the header."
+            i18n-widgetTitleHint="@@wow.player.widget.title.hint"
+            doneLabel="Done"
+            i18n-doneLabel="@@wow.player.widget.done"
+            (save)="onSave($event)"
         >
-            <ng-template
-                gcWidget="identity"
-                gcWidgetLabel="Identity"
-                i18n-gcWidgetLabel="@@wow.player.widget.identity"
-            >
+            <ng-template gcWidget="identity">
                 <p class="player-sheet__meta">
                     <span i18n="@@wow.player.since">Member since</span>
                     {{ player.creationDate | date: "mediumDate" }}
@@ -60,27 +69,27 @@
                 </a>
             </ng-template>
 
-            <ng-template gcWidget="bio" gcWidgetLabel="Presentation" i18n-gcWidgetLabel="@@wow.player.widget.bio">
+            <ng-template gcWidget="presentation-irl">
                 @if (player.presentationIrl) {
-                    <section class="player-sheet__block">
-                        <h2 i18n="@@wow.player.presentationIrl">IRL presentation</h2>
-                        <p>{{ player.presentationIrl }}</p>
-                    </section>
-                }
-                @if (player.presentationIg) {
-                    <section class="player-sheet__block">
-                        <h2 i18n="@@wow.player.presentationIg">In-game presentation</h2>
-                        <p>{{ player.presentationIg }}</p>
-                    </section>
-                }
-                @if (!player.presentationIrl && !player.presentationIg) {
+                    <p>{{ player.presentationIrl }}</p>
+                } @else {
                     <p class="player-sheet__empty" i18n="@@wow.player.noPresentation">
                         This player has not written a presentation yet.
                     </p>
                 }
             </ng-template>
 
-            <ng-template gcWidget="stats" gcWidgetLabel="Stats" i18n-gcWidgetLabel="@@wow.player.widget.stats">
+            <ng-template gcWidget="presentation-ig">
+                @if (player.presentationIg) {
+                    <p>{{ player.presentationIg }}</p>
+                } @else {
+                    <p class="player-sheet__empty" i18n="@@wow.player.noPresentation">
+                        This player has not written a presentation yet.
+                    </p>
+                }
+            </ng-template>
+
+            <ng-template gcWidget="stats">
                 <ul class="player-sheet__stats">
                     <li>
                         <span i18n="@@wow.player.characters">Characters</span>
@@ -99,17 +108,69 @@
                 </ul>
             </ng-template>
 
-            <ng-template
-                gcWidget="characters"
-                gcWidgetLabel="Characters"
-                i18n-gcWidgetLabel="@@wow.player.widget.characters"
-            >
+            <ng-template gcWidget="characters">
                 <wow-character-list
                     [playerPublicId]="player.publicId"
                     [editable]="isOwner() && !editing()"
                     (changed)="onCharactersChanged()"
                 />
             </ng-template>
-        </gc-widget-grid>
+
+            <ng-template gcWidget="photos">
+                <wow-media-manager [playerPublicId]="player.publicId" kind="photo" />
+            </ng-template>
+
+            <ng-template gcWidget="videos">
+                <wow-media-manager [playerPublicId]="player.publicId" kind="video" />
+            </ng-template>
+
+            <ng-template gcWidget="streams">
+                <wow-media-manager [playerPublicId]="player.publicId" kind="stream" />
+            </ng-template>
+
+            <ng-template [gcWidget]="linksWidget">
+                <wow-link-board [playerPublicId]="player.publicId" />
+            </ng-template>
+
+            <ng-template [gcWidgetSettings]="linksWidget">
+                <wow-link-admin [playerPublicId]="player.publicId" />
+            </ng-template>
+
+            <ng-template gcWidgetSettings="photos">
+                <wow-media-admin [playerPublicId]="player.publicId" kind="photo" />
+            </ng-template>
+
+            <ng-template gcWidgetSettings="videos">
+                <wow-media-admin [playerPublicId]="player.publicId" kind="video" />
+            </ng-template>
+
+            <ng-template gcWidgetSettings="streams">
+                <wow-media-admin [playerPublicId]="player.publicId" kind="stream" />
+            </ng-template>
+        </gc-widget-workspace>
+    } @else if (sheet.error()) {
+        <p i18n="@@wow.player.notFound">WoW player sheet not found.</p>
+    } @else {
+        <header class="player-hero player-hero--skeleton" aria-busy="true">
+            <div class="player-hero__game">
+                <gc-skeleton width="3rem" height="3rem" radius="0.6rem" />
+                <div class="player-hero__game-text">
+                    <gc-skeleton width="5rem" height="0.65rem" />
+                    <gc-skeleton width="9rem" height="1rem" />
+                </div>
+            </div>
+            <div class="player-hero__identity">
+                <gc-skeleton width="3.5rem" height="3.5rem" shape="circle" />
+                <div class="player-hero__who">
+                    <gc-skeleton width="11rem" height="1.5rem" />
+                    <gc-skeleton width="8rem" height="0.85rem" />
+                </div>
+            </div>
+        </header>
+
+        <div class="player-sheet__workspace-skeleton" aria-busy="true">
+            <gc-skeleton width="12rem" height="2rem" radius="0.25rem" />
+            <gc-skeleton width="100%" height="18rem" radius="0.75rem" />
+        </div>
     }
 </section>

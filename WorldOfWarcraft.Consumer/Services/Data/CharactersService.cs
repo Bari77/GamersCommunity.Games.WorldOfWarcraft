@@ -4,6 +4,8 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Options;
+using WorldOfWarcraft.Consumer.Configuration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
 using WorldOfWarcraft.Database.Context;
@@ -11,12 +13,13 @@ using WorldOfWarcraft.Database.Models;
 
 namespace WorldOfWarcraft.Consumer.Services.Data;
 
-public class CharactersService(WorldOfWarcraftDbContext context)
+public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSettings> settings)
     : GenericDataService<WorldOfWarcraftDbContext, Character>(context, "Characters")
 {
-    private const int MaxLevel = 80;
-    private const int MaxIlvl = 1000;
     private const int MaxCharactersPerPlayer = 50;
+
+    private int MaxLevel => settings.Value.MaxCharacterLevel;
+    private int MaxIlvl => settings.Value.MaxItemLevel;
 
     private static readonly Expression<Func<Character, CharacterDto>> Projection = c => new CharacterDto
     {
@@ -145,6 +148,7 @@ public class CharactersService(WorldOfWarcraftDbContext context)
                 .Select(rc => new RaceClassOptionDto { IdRace = rc.IdRace, IdClass = rc.IdClass })
                 .ToListAsync(ct),
             MaxLevel = MaxLevel,
+            MaxIlvl = MaxIlvl,
         };
     }
 
@@ -197,6 +201,7 @@ public class CharactersService(WorldOfWarcraftDbContext context)
             throw new BadRequestException("DATA_MANDATORY", "Data mandatory");
 
         var request = ConsumerParamParser.ToObject<CharacterUpdateRequest>(message.Data);
+        var sent = RequestPayload.SentFields(message.Data);
         var character = await RequireOwnedCharacterAsync(message, ct);
 
         if (request.Pseudo is not null)
@@ -207,20 +212,23 @@ public class CharactersService(WorldOfWarcraftDbContext context)
             character.Ilvl = ilvl;
         if (request.Achievement is int achievement)
             character.Achievement = achievement;
-        if (request.Sentence is not null)
-            character.Sentence = Normalize(request.Sentence);
         if (request.IdRace is int idRace)
             character.IdRace = idRace;
         if (request.IdServer is int idServer)
             character.IdServer = idServer;
         if (request.IdDirection is int idDirection)
             character.IdDirection = idDirection;
-        if (request.IdAlignment is int idAlignment)
-            character.IdAlignment = idAlignment;
-        if (request.IdMainSpecializationClass is int idMainSpec)
-            character.IdMainSpecializationClass = idMainSpec;
-        if (request.IdSecondarySpecializationClass is int idSecondarySpec)
-            character.IdSecondarySpecializationClass = idSecondarySpec;
+
+        // Optional columns the owner may want emptied: only their presence in the payload
+        // tells "erase this" apart from "the client did not send it".
+        if (sent.Contains(nameof(CharacterUpdateRequest.Sentence)))
+            character.Sentence = Normalize(request.Sentence);
+        if (sent.Contains(nameof(CharacterUpdateRequest.IdAlignment)))
+            character.IdAlignment = request.IdAlignment;
+        if (sent.Contains(nameof(CharacterUpdateRequest.IdMainSpecializationClass)))
+            character.IdMainSpecializationClass = request.IdMainSpecializationClass;
+        if (sent.Contains(nameof(CharacterUpdateRequest.IdSecondarySpecializationClass)))
+            character.IdSecondarySpecializationClass = request.IdSecondarySpecializationClass;
 
         await ValidateAsync(character, ct);
 

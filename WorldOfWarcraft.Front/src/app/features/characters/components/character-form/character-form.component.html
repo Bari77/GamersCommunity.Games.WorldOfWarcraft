@@ -10,122 +10,199 @@
     </h3>
 
     <div class="character-form__grid">
-        <label class="character-form__field">
-            <span i18n="@@wow.character.form.pseudo">Name</span>
-            <input nbInput fullWidth type="text" maxlength="50" [(ngModel)]="pseudo" name="pseudo" />
-        </label>
+        <div class="character-form__field">
+            <label for="character-pseudo" i18n="@@wow.character.form.pseudo">Name</label>
+            <input
+                id="character-pseudo"
+                nbInput
+                fullWidth
+                type="text"
+                maxlength="50"
+                [ngModel]="pseudo()"
+                (ngModelChange)="pseudo.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.server">Server</span>
-            <nb-select fullWidth [(ngModel)]="idServer" name="idServer" placeholder="—">
+            <nb-select
+                fullWidth
+                placeholder="—"
+                [ngModel]="idServer()"
+                (ngModelChange)="idServer.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            >
                 @for (server of opts.servers; track server.id) {
                     <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.race">Race</span>
             <nb-select
                 fullWidth
+                placeholder="—"
                 [ngModel]="idRace()"
                 (ngModelChange)="onRaceChange($event)"
-                name="idRace"
-                placeholder="—"
+                [ngModelOptions]="{ standalone: true }"
             >
                 @for (race of opts.races; track race.id) {
-                    <nb-option [value]="race.id">{{ race.entitled | gameTerm }}</nb-option>
+                    <nb-option [value]="race.id">
+                        <wow-icon kind="race" [slug]="race.entitled" [size]="18" />
+                        {{ race.entitled | gameTerm }}
+                    </nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.class">Class</span>
             <nb-select
                 fullWidth
-                [ngModel]="idClass()"
-                (ngModelChange)="onClassChange($event)"
-                name="idClass"
                 placeholder="—"
                 [disabled]="idRace() === null"
+                [ngModel]="idClass()"
+                (ngModelChange)="onClassChange($event)"
+                [ngModelOptions]="{ standalone: true }"
             >
                 @for (klass of availableClasses(); track klass.id) {
-                    <nb-option [value]="klass.id">{{ klass.entitled | gameTerm }}</nb-option>
+                    <nb-option [value]="klass.id">
+                        <wow-icon kind="class" [slug]="klass.entitled" [size]="18" />
+                        {{ klass.entitled | gameTerm }}
+                    </nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.mainSpec">Main specialization</span>
             <nb-select
                 fullWidth
-                [ngModel]="idMainSpec()"
-                (ngModelChange)="onMainSpecChange($event)"
-                name="idMainSpec"
                 placeholder="—"
                 [disabled]="idClass() === null"
+                [ngModel]="idMainSpec()"
+                (ngModelChange)="onMainSpecChange($event)"
+                [ngModelOptions]="{ standalone: true }"
             >
                 @for (spec of availableSpecs(); track spec.id) {
-                    <nb-option [value]="spec.id">{{ spec.specializationEntitled | gameTerm }}</nb-option>
+                    <nb-option [value]="spec.id">
+                        <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
+                        {{ spec.specializationEntitled | gameTerm }}
+                    </nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.secondarySpec">Secondary specialization</span>
             <nb-select
                 fullWidth
-                [(ngModel)]="idSecondarySpec"
-                name="idSecondarySpec"
                 placeholder="—"
                 [disabled]="idMainSpec() === null"
+                [ngModel]="idSecondarySpec()"
+                (ngModelChange)="idSecondarySpec.set($event)"
+                [ngModelOptions]="{ standalone: true }"
             >
                 @for (spec of secondarySpecs(); track spec.id) {
-                    <nb-option [value]="spec.id">{{ spec.specializationEntitled | gameTerm }}</nb-option>
+                    <nb-option [value]="spec.id">
+                        <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
+                        {{ spec.specializationEntitled | gameTerm }}
+                    </nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.role">Role</span>
-            <nb-select fullWidth [(ngModel)]="idDirection" name="idDirection" placeholder="—">
+            <nb-select
+                fullWidth
+                placeholder="—"
+                [ngModel]="idDirection()"
+                (ngModelChange)="idDirection.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            >
                 @for (direction of opts.directions; track direction.id) {
                     <nb-option [value]="direction.id">{{ direction.entitled | gameTerm }}</nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
+        <div class="character-form__field">
             <span i18n="@@wow.character.form.faction">Faction</span>
-            <nb-select fullWidth [(ngModel)]="idAlignment" name="idAlignment" placeholder="—">
+            <nb-select
+                fullWidth
+                placeholder="—"
+                [ngModel]="idAlignment()"
+                (ngModelChange)="idAlignment.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            >
                 @for (alignment of opts.alignments; track alignment.id) {
                     <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
                 }
             </nb-select>
-        </label>
+        </div>
 
-        <label class="character-form__field">
-            <span i18n="@@wow.character.form.level">Level</span>
-            <input nbInput fullWidth type="number" min="1" [max]="opts.maxLevel" [(ngModel)]="level" name="level" />
-        </label>
+        <div class="character-form__field">
+            <label for="character-level" i18n="@@wow.character.form.level">Level</label>
+            <input
+                id="character-level"
+                nbInput
+                fullWidth
+                type="number"
+                min="1"
+                [max]="maxLevel()"
+                [ngModel]="level()"
+                (ngModelChange)="level.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
 
-        <label class="character-form__field">
-            <span i18n="@@wow.character.form.ilvl">Item level</span>
-            <input nbInput fullWidth type="number" min="0" [(ngModel)]="ilvl" name="ilvl" />
-        </label>
+        <div class="character-form__field">
+            <label for="character-ilvl" i18n="@@wow.character.form.ilvl">Item level</label>
+            <input
+                id="character-ilvl"
+                nbInput
+                fullWidth
+                type="number"
+                min="0"
+                [max]="maxIlvl()"
+                [ngModel]="ilvl()"
+                (ngModelChange)="ilvl.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
 
-        <label class="character-form__field">
-            <span i18n="@@wow.character.form.achievements">Achievement points</span>
-            <input nbInput fullWidth type="number" min="0" [(ngModel)]="achievement" name="achievement" />
-        </label>
+        <div class="character-form__field">
+            <label for="character-achievement" i18n="@@wow.character.form.achievements">Achievement points</label>
+            <input
+                id="character-achievement"
+                nbInput
+                fullWidth
+                type="number"
+                min="0"
+                [ngModel]="achievement()"
+                (ngModelChange)="achievement.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
     </div>
 
-    <label class="character-form__field character-form__field--wide">
-        <span i18n="@@wow.character.form.sentence">Catchphrase</span>
-        <textarea nbInput fullWidth rows="2" [(ngModel)]="sentence" name="sentence"></textarea>
-    </label>
+    <div class="character-form__field character-form__field--wide">
+        <label for="character-sentence" i18n="@@wow.character.form.sentence">Catchphrase</label>
+        <textarea
+            id="character-sentence"
+            nbInput
+            fullWidth
+            rows="2"
+            [ngModel]="sentence()"
+            (ngModelChange)="sentence.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+        ></textarea>
+    </div>
 
-    <nb-checkbox [(ngModel)]="main" name="main">
+    <nb-checkbox [checked]="main()" (checkedChange)="main.set($event)">
         <span i18n="@@wow.character.form.main">Set as main character</span>
     </nb-checkbox>
 

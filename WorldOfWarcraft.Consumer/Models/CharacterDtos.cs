@@ -111,4 +111,5 @@ public sealed class CharacterOptionsDto
     public IReadOnlyList<SpecializationClassOptionDto> SpecializationClasses { get; init; } = [];
     public IReadOnlyList<RaceClassOptionDto> RaceClasses { get; init; } = [];
     public int MaxLevel { get; init; }
+    public int MaxIlvl { get; init; }
 }

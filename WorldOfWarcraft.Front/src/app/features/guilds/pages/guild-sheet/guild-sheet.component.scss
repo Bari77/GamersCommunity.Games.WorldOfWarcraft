@@ -2,6 +2,22 @@
     min-height: 12rem;
 }
 
+.guild-sheet__card--skeleton nb-card-header {
+    display: flex;
+    flex-direction: column;
+    gap: 0.45rem;
+}
+
+.guild-member--skeleton {
+    pointer-events: none;
+}
+
+.guild-member--skeleton .guild-member__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
 .guild-sheet__handle {
     margin: 0;
 }

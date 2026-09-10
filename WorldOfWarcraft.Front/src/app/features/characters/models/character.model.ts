@@ -87,6 +87,7 @@ export class CharacterOptions {
         public readonly specializationClasses: SpecializationClassOptionDto[],
         public readonly raceClasses: RaceClassOptionDto[],
         public readonly maxLevel: number,
+        public readonly maxIlvl: number,
     ) {}
 
     public static fromDto(dto: CharacterOptionsDto): CharacterOptions {
@@ -99,6 +100,7 @@ export class CharacterOptions {
             dto.specializationClasses,
             dto.raceClasses,
             dto.maxLevel,
+            dto.maxIlvl,
         );
     }
 

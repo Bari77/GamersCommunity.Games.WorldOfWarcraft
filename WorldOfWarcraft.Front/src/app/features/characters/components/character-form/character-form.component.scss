@@ -25,7 +25,8 @@
     gap: 0.3rem;
 }
 
-.character-form__field > span {
+.character-form__field > span,
+.character-form__field > label {
     font-size: 0.72rem;
     text-transform: uppercase;
     letter-spacing: 0.05em;

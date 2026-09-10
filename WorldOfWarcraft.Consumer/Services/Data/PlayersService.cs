@@ -14,7 +14,7 @@ namespace WorldOfWarcraft.Consumer.Services.Data;
 public class PlayersService(WorldOfWarcraftDbContext context)
     : GenericDataService<WorldOfWarcraftDbContext, Player>(context, "Players")
 {
-    private const int MaxLayoutLength = 8000;
+    private const int MaxLayoutLength = 32000;
 
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
@@ -126,7 +126,8 @@ public class PlayersService(WorldOfWarcraftDbContext context)
 
     /// <summary>
     /// The widget catalog lives in the front, so the layout is stored opaquely.
-    /// Only the shape (a JSON array) and a size ceiling are enforced here.
+    /// Only the shape (a JSON object for the paged workspace, or the legacy flat
+    /// array) and a size ceiling are enforced here.
     /// </summary>
     private static string? NormalizeLayout(string layoutJson)
     {
@@ -139,12 +140,12 @@ public class PlayersService(WorldOfWarcraftDbContext context)
         try
         {
             using var document = JsonDocument.Parse(layoutJson);
-            if (document.RootElement.ValueKind != JsonValueKind.Array)
-                throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON array");
+            if (document.RootElement.ValueKind is not (JsonValueKind.Object or JsonValueKind.Array))
+                throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON object or array");
         }
         catch (JsonException)
         {
-            throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON array");
+            throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON object or array");
         }
 
         return layoutJson;
@@ -180,6 +181,10 @@ public class PlayersService(WorldOfWarcraftDbContext context)
                 p.CreationDate,
                 p.LayoutJson,
                 CharacterCount = p.Characters.Count,
+                Snapshot = Context.PlatformUserSnapshots
+                    .Where(s => s.PlatformUserPublicId == p.PlatformUserPublicId)
+                    .Select(s => new { s.Nickname, s.Discriminator, s.AvatarUrl })
+                    .FirstOrDefault(),
             })
             .FirstAsync(ct);
 
@@ -187,6 +192,9 @@ public class PlayersService(WorldOfWarcraftDbContext context)
         {
             PublicId = player.PublicId,
             PlatformUserPublicId = player.PlatformUserPublicId ?? Guid.Empty,
+            Nickname = player.Snapshot?.Nickname ?? "",
+            Discriminator = player.Snapshot?.Discriminator ?? "",
+            AvatarUrl = player.Snapshot?.AvatarUrl ?? "",
             PresentationIrl = player.PresentationIrl,
             PresentationIg = player.PresentationIg,
             NbMount = player.NbMount,

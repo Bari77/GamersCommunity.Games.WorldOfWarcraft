@@ -1,15 +1,16 @@
 import { Component, effect, inject, input, output, signal } from "@angular/core";
+import { SkeletonComponent } from "@bari77/gc-ui";
 import { CharacterCardComponent } from "@features/characters/components/character-card/character-card.component";
 import { CharacterFormComponent } from "@features/characters/components/character-form/character-form.component";
-import { CharacterCreateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
 import { Character } from "@features/characters/models/character.model";
 import { CharactersStore } from "@features/characters/stores/characters.store";
-import { NbButtonModule, NbIconModule, NbSpinnerModule } from "@nebular/theme";
+import { NbButtonModule, NbIconModule } from "@nebular/theme";
 
 @Component({
     standalone: true,
     selector: "wow-character-list",
-    imports: [CharacterCardComponent, CharacterFormComponent, NbButtonModule, NbIconModule, NbSpinnerModule],
+    imports: [CharacterCardComponent, CharacterFormComponent, NbButtonModule, NbIconModule, SkeletonComponent],
     providers: [CharactersStore],
     templateUrl: "./character-list.component.html",
     styleUrl: "./character-list.component.scss",
@@ -24,6 +25,9 @@ export class CharacterListComponent {
     public readonly formOpen = signal(false);
     public readonly editing = signal<Character | null>(null);
     public readonly pendingDelete = signal<Character | null>(null);
+
+    protected readonly cardPlaceholders = [0, 1, 2];
+    protected readonly formFieldPlaceholders = [0, 1, 2, 3, 4, 5];
 
     public constructor() {
         effect(() => this.store.setPlayer(this.playerPublicId()));
@@ -45,12 +49,14 @@ export class CharacterListComponent {
         this.store.clearError();
     }
 
-    public async onSave(data: CharacterCreateRequestDto): Promise<void> {
+    public async onCreate(data: CharacterCreateRequestDto): Promise<void> {
+        this.afterSave(await this.store.create(data));
+    }
+
+    public async onUpdate(data: CharacterUpdateRequestDto): Promise<void> {
         const target = this.editing();
-        const saved = target ? await this.store.update(target.publicId, data) : await this.store.create(data);
-        if (saved) {
-            this.closeForm();
-            this.changed.emit();
+        if (target) {
+            this.afterSave(await this.store.update(target.publicId, data));
         }
     }
 
@@ -71,6 +77,13 @@ export class CharacterListComponent {
 
         if (await this.store.remove(target.publicId)) {
             this.pendingDelete.set(null);
+            this.changed.emit();
+        }
+    }
+
+    private afterSave(saved: boolean): void {
+        if (saved) {
+            this.closeForm();
             this.changed.emit();
         }
     }

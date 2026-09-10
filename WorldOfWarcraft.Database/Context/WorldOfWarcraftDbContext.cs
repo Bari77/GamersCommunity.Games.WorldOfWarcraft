@@ -543,6 +543,9 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Url).HasColumnType("text");
+            entity.Property(e => e.Label).HasMaxLength(50).HasDefaultValue("");
+            entity.Property(e => e.Icon).HasMaxLength(30);
+            entity.Property(e => e.Position).HasDefaultValue(0);
 
             entity.HasOne(d => d.IdPlayerNavigation).WithMany(p => p.PlayerLinks)
                 .HasForeignKey(d => d.IdPlayer)

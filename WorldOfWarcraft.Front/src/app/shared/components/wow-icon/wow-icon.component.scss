@@ -1,0 +1,31 @@
+:host {
+    display: inline-flex;
+    flex: 0 0 auto;
+}
+
+.wow-icon {
+    border-radius: 0.25rem;
+    border: 1px solid rgba(0, 0, 0, 0.55);
+    object-fit: cover;
+}
+
+.wow-role__plate {
+    fill: #14161c;
+    stroke: rgba(0, 0, 0, 0.55);
+}
+
+.wow-role__glyph {
+    fill: currentColor;
+}
+
+.wow-role[data-role="tank"] {
+    color: #4a90d9;
+}
+
+.wow-role[data-role="healer"] {
+    color: #3fbf5f;
+}
+
+.wow-role[data-role="dps"] {
+    color: #d94a4a;
+}

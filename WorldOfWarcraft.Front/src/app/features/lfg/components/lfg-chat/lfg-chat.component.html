@@ -20,9 +20,20 @@
         </p>
     }
 
-    <div class="lfg-chat__thread" [nbSpinner]="store.loading()">
+    <div class="lfg-chat__thread" [attr.aria-busy]="store.loading() ? 'true' : null">
         @if (store.loading()) {
-            <div class="lfg-chat__loading"></div>
+            <div class="lfg-chat__messages lfg-chat__messages--skeleton">
+                @for (row of messagePlaceholders; track row) {
+                    <article class="lfg-chat__bubble lfg-chat__bubble--skeleton">
+                        <gc-skeleton class="lfg-chat__bubble-avatar" width="1.7rem" height="1.7rem" shape="circle" />
+                        <div class="lfg-chat__bubble-body">
+                            <gc-skeleton width="4rem" height="0.72rem" />
+                            <gc-skeleton width="9.5rem" height="0.88rem" />
+                            <gc-skeleton width="3rem" height="0.68rem" />
+                        </div>
+                    </article>
+                }
+            </div>
         } @else {
             @if (store.loadingOlder()) {
                 <p class="lfg-chat__hint lfg-chat__hint--compact">{{ loadingOlderLabel }}</p>
@@ -117,6 +128,8 @@
                 <p class="lfg-chat__hint" i18n="@@wow.home.recruit.pickGuild">
                     Pick the guild you are posting for to enable the composer.
                 </p>
+            } @else if (store.needsSheet()) {
+                <wow-create-sheet-wall variant="inline" [message]="sheetWallMessage" />
             } @else if (!store.canPost()) {
                 <p class="lfg-chat__login-hint">
                     <a href="/users/login" i18n="@@wow.home.lfg.login">Log in</a>

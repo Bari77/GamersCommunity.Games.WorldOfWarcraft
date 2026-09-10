@@ -2,6 +2,7 @@ import { computed, inject, Injectable, resource, signal } from "@angular/core";
 import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
 import { CharacterOptions } from "@features/characters/models/character.model";
 import { CharactersService } from "@features/characters/services/characters.service";
+import { ResourceUtils } from "@shared/utils/resource.utils";
 import { firstValueFrom } from "rxjs";
 
 @Injectable()
@@ -18,7 +19,9 @@ export class CharactersStore {
         defaultValue: undefined as CharacterOptions | undefined,
     });
 
-    public readonly loading = computed(() => this.characters.isLoading());
+    public readonly loading = computed(() => ResourceUtils.isPending(this.characters));
+
+    public readonly optionsLoading = computed(() => ResourceUtils.isPending(this.options));
     public readonly saving = signal(false);
     public readonly errorCode = signal<string | null>(null);
 

@@ -12,6 +12,9 @@ const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
 export const mockPlayerSheet: PlayerSheetDto = {
     publicId: PLAYER_PUBLIC_ID,
     platformUserPublicId: PLATFORM_USER_PUBLIC_ID,
+    nickname: "Aelindra",
+    discriminator: "0042",
+    avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aelindra",
     presentationIrl: "Raid leader by night, backend developer by day.",
     presentationIg: "Pushing keys since Legion.",
     nbMount: 412,
@@ -22,7 +25,8 @@ export const mockPlayerSheet: PlayerSheetDto = {
 };
 
 export const mockCharacterOptions: CharacterOptionsDto = {
-    maxLevel: 80,
+    maxLevel: 120,
+    maxIlvl: 1000,
     races: [
         { id: 1, entitled: "human" },
         { id: 2, entitled: "orc" },

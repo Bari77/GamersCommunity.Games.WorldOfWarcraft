@@ -16,7 +16,9 @@ import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage } from "@features/lfg/models/
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
 import { LfgChatStore } from "@features/lfg/stores/lfg-chat.store";
 import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
-import { NbChatModule, NbSelectModule, NbSpinnerModule } from "@nebular/theme";
+import { NbChatModule, NbSelectModule } from "@nebular/theme";
+import { SkeletonComponent } from "@bari77/gc-ui";
+import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 
 const NEAR_BOTTOM_PX = 48;
 const NEAR_TOP_PX = 48;
@@ -24,7 +26,15 @@ const NEAR_TOP_PX = 48;
 @Component({
     standalone: true,
     selector: "wow-lfg-chat",
-    imports: [DatePipe, FormsModule, RouterLink, NbChatModule, NbSelectModule, NbSpinnerModule],
+    imports: [
+        DatePipe,
+        FormsModule,
+        RouterLink,
+        NbChatModule,
+        NbSelectModule,
+        SkeletonComponent,
+        CreateSheetWallComponent,
+    ],
     providers: [LfgChatStore],
     templateUrl: "./lfg-chat.component.html",
     styleUrl: "./lfg-chat.component.scss",
@@ -39,6 +49,9 @@ export class LfgChatComponent implements OnInit, OnDestroy {
     public readonly newMessagesLabel = $localize`:@@wow.home.lfg.newMessages:New messages`;
     public readonly loadingOlderLabel = $localize`:@@wow.home.lfg.loadingOlder:Loading older messages…`;
     public readonly guildPickerPlaceholder = $localize`:@@wow.home.recruit.guildPicker:Post as…`;
+    public readonly sheetWallMessage = $localize`:@@wow.sheet.wall.lfgMessage:Create your player profile to post in this chat.`;
+
+    protected readonly messagePlaceholders = [0, 1, 2, 3];
 
     public readonly stickToBottom = signal(true);
     public readonly pendingBelowCount = signal(0);

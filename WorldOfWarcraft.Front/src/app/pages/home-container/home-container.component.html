@@ -1,39 +1,42 @@
 <section class="wow-home gc-enter">
+    @if (membership.needsSheet()) {
+        <wow-create-sheet-wall variant="inline" [message]="wallHomeMessage" />
+    }
+
     <div class="wow-home__chats">
         <wow-lfg-chat kind="lfg" />
         <wow-lfg-chat kind="recruit" />
     </div>
 
-    @if (store.loading()) {
-        <div class="wow-home__loading" [nbSpinner]="true" nbSpinnerStatus="primary"></div>
-    } @else if (store.feed.value(); as feed) {
-        <div class="wow-home__grid">
-            <nb-card class="wow-home__rail">
-                <nb-card-header i18n="@@wow.home.players">Latest player</nb-card-header>
-                <nb-card-body>
+    <div class="wow-home__grid" [attr.aria-busy]="feedLoading() ? 'true' : null">
+        <nb-card class="wow-home__rail">
+            <nb-card-header i18n="@@wow.home.players">Latest player</nb-card-header>
+            <nb-card-body>
+                @if (feedLoading()) {
+                    <gc-skeleton-text [lines]="2" lineHeight="1.1rem" />
+                } @else if (store.feed.value(); as feed) {
                     <wow-home-latest-players [players]="feed.latestPlayers" />
-                </nb-card-body>
-            </nb-card>
+                }
+            </nb-card-body>
+        </nb-card>
 
-            <nb-card class="wow-home__rail">
-                <nb-card-header i18n="@@wow.home.characters">Latest characters</nb-card-header>
-                <nb-card-body>
-                    <ul class="wow-home__list">
-                        @for (character of feed.latestCharacters; track character.publicId) {
-                            <li>
-                                <strong>{{ character.pseudo }}</strong>
-                                <span> — {{ character.raceName }}, {{ character.serverName }} ({{ character.level }})</span>
-                            </li>
-                        } @empty {
-                            <li i18n="@@wow.home.characters.empty">No characters yet.</li>
-                        }
-                    </ul>
-                </nb-card-body>
-            </nb-card>
+        <nb-card class="wow-home__rail">
+            <nb-card-header i18n="@@wow.home.characters">Latest characters</nb-card-header>
+            <nb-card-body>
+                @if (feedLoading()) {
+                    <gc-skeleton-text [lines]="4" />
+                } @else if (store.feed.value(); as feed) {
+                    <wow-home-latest-characters [characters]="feed.latestCharacters" />
+                }
+            </nb-card-body>
+        </nb-card>
 
-            <nb-card class="wow-home__rail">
-                <nb-card-header i18n="@@wow.home.guilds">Latest guilds</nb-card-header>
-                <nb-card-body>
+        <nb-card class="wow-home__rail">
+            <nb-card-header i18n="@@wow.home.guilds">Latest guilds</nb-card-header>
+            <nb-card-body>
+                @if (feedLoading()) {
+                    <gc-skeleton-text [lines]="4" />
+                } @else if (store.feed.value(); as feed) {
                     <ul class="wow-home__list">
                         @for (guild of feed.latestGuilds; track guild.publicId) {
                             <li>
@@ -47,8 +50,22 @@
                             <li i18n="@@wow.home.guilds.empty">No guilds yet.</li>
                         }
                     </ul>
-                </nb-card-body>
-            </nb-card>
-        </div>
-    }
+                }
+            </nb-card-body>
+        </nb-card>
+    </div>
 </section>
+
+<gc-decision-prompt
+    [open]="promptOpen()"
+    [heading]="promptHeading"
+    [message]="promptMessage"
+    [primaryLabel]="promptCreateLabel"
+    [secondaryLabel]="promptBrowseLabel"
+    [optOutLabel]="promptOptOutLabel"
+    [busyLabel]="promptBusyLabel"
+    [busy]="membership.creating()"
+    [(optOut)]="optOut"
+    (primary)="onPromptCreate()"
+    (secondary)="onPromptDismiss()"
+/>

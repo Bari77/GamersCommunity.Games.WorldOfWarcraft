@@ -1,6 +1,33 @@
 <section class="guild-sheet gc-enter">
-    @if (sheet.isLoading()) {
-        <div class="guild-sheet__loading" [nbSpinner]="true" nbSpinnerStatus="primary" nbSpinnerSize="large"></div>
+    @if (loading()) {
+        <nb-card class="guild-sheet__card--skeleton" aria-busy="true">
+            <nb-card-header>
+                <gc-skeleton width="14rem" height="1.8rem" />
+                <gc-skeleton width="20rem" height="0.85rem" />
+            </nb-card-header>
+            <nb-card-body>
+                <gc-skeleton-text [lines]="2" />
+            </nb-card-body>
+        </nb-card>
+
+        <nb-card class="guild-sheet__card--skeleton" aria-busy="true">
+            <nb-card-header>
+                <gc-skeleton width="6rem" height="1rem" />
+            </nb-card-header>
+            <nb-card-body>
+                <ul class="guild-members">
+                    @for (member of memberPlaceholders; track member) {
+                        <li class="guild-member guild-member--skeleton">
+                            <gc-skeleton width="2.5rem" height="2.5rem" shape="circle" />
+                            <div class="guild-member__main">
+                                <gc-skeleton width="8rem" height="0.95rem" />
+                                <gc-skeleton width="12rem" height="0.8rem" />
+                            </div>
+                        </li>
+                    }
+                </ul>
+            </nb-card-body>
+        </nb-card>
     } @else if (sheet.error()) {
         <p i18n="@@wow.guild.notFound">Guild not found.</p>
     } @else if (sheet.value(); as guild) {

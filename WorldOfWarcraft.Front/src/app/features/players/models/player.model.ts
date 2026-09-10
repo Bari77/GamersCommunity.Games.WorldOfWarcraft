@@ -4,6 +4,9 @@ export class PlayerSheet {
     public constructor(
         public publicId: string,
         public platformUserPublicId: string,
+        public nickname: string,
+        public discriminator: string,
+        public avatarUrl: string,
         public presentationIrl: string | null,
         public presentationIg: string | null,
         public nbMount: number,
@@ -13,10 +16,17 @@ export class PlayerSheet {
         public layoutJson: string | null,
     ) {}
 
+    public get handle(): string {
+        return this.discriminator ? `${this.nickname}#${this.discriminator}` : this.nickname;
+    }
+
     public static fromDto(dto: PlayerSheetDto): PlayerSheet {
         return new PlayerSheet(
             dto.publicId,
             dto.platformUserPublicId,
+            dto.nickname,
+            dto.discriminator,
+            dto.avatarUrl,
             dto.presentationIrl,
             dto.presentationIg,
             dto.nbMount,

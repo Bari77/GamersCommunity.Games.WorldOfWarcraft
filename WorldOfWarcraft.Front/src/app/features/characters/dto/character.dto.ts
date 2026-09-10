@@ -74,4 +74,5 @@ export interface CharacterOptionsDto {
     specializationClasses: SpecializationClassOptionDto[];
     raceClasses: RaceClassOptionDto[];
     maxLevel: number;
+    maxIlvl: number;
 }

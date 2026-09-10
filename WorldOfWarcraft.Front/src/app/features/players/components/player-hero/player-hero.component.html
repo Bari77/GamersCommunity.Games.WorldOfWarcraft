@@ -1,0 +1,49 @@
+@let sheet = player();
+
+<header class="player-hero">
+    <div class="player-hero__game">
+        @if (currentGame(); as game) {
+            <img class="player-hero__crest" [src]="game.iconUrl" alt="" />
+        }
+        <div class="player-hero__game-text">
+            <p class="player-hero__kicker" i18n="@@wow.player.hero.kicker">Player sheet</p>
+            <p class="player-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</p>
+        </div>
+    </div>
+
+    <div class="player-hero__identity">
+        @if (sheet.avatarUrl) {
+            <img class="player-hero__avatar" [src]="sheet.avatarUrl" alt="" />
+        }
+        <div class="player-hero__who">
+            <a
+                class="player-hero__handle gc-display"
+                [routerLink]="['/users', sheet.platformUserPublicId]"
+                title="Open the community profile"
+                i18n-title="@@wow.player.hero.profileHint"
+            >
+                {{ handle() }}
+            </a>
+            <p class="player-hero__since">
+                <span i18n="@@wow.player.since">Member since</span>
+                {{ sheet.creationDate | date: "mediumDate" }}
+            </p>
+        </div>
+    </div>
+
+    @if (otherGames().length > 0) {
+        <nav class="player-hero__switch" [attr.aria-label]="switchLabel">
+            <span class="player-hero__switch-label" i18n="@@wow.player.hero.otherGames">Other games</span>
+            <ul class="player-hero__switch-list">
+                @for (game of otherGames(); track game.id) {
+                    <li>
+                        <a class="player-hero__switch-item" [routerLink]="game.url" [title]="game.title">
+                            <img [src]="game.iconUrl" alt="" />
+                            <span>{{ game.title }}</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        </nav>
+    }
+</header>

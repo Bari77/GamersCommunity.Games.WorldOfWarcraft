@@ -1,0 +1,74 @@
+<ul class="latest-characters">
+    @for (character of characters(); track character.publicId) {
+        <li>
+            <a
+                class="character-row"
+                [style.--class-color]="character.color"
+                [routerLink]="['/world-of-warcraft/players', character.playerPublicId]"
+            >
+                <wow-icon
+                    class="character-row__emblem"
+                    [kind]="character.emblem().kind"
+                    [slug]="character.emblem().slug"
+                    [label]="character.className | gameTerm"
+                    [size]="34"
+                />
+
+                <div class="character-row__main">
+                    <div class="character-row__head">
+                        <span class="character-row__name gc-display">{{ character.pseudo }}</span>
+                        @if (character.main) {
+                            <span class="character-row__badge" i18n="@@wow.character.main">Main</span>
+                        }
+                        <span class="character-row__level">
+                            <span class="sr-only" i18n="@@wow.character.level">Level</span>
+                            {{ character.level }}
+                        </span>
+                    </div>
+
+                    <p class="character-row__spec">
+                        @if (character.className) {
+                            <wow-icon kind="role" [slug]="character.role()" [label]="character.roleName()" [size]="14" />
+                            <wow-icon
+                                class="character-row__class-icon"
+                                kind="class"
+                                [slug]="character.className"
+                                [label]="character.className | gameTerm"
+                                [size]="16"
+                            />
+                            <span>
+                                {{ character.className | gameTerm }} {{ character.mainSpecializationName | gameTerm }}
+                            </span>
+                        } @else {
+                            <span class="character-row__spec--empty" i18n="@@wow.character.noSpec">
+                                No specialization
+                            </span>
+                        }
+                    </p>
+
+                    <ul class="character-row__facts">
+                        <li>
+                            <wow-icon
+                                kind="race"
+                                [slug]="character.raceName"
+                                [label]="character.raceName | gameTerm"
+                                [size]="14"
+                            />
+                            {{ character.raceName | gameTerm }}
+                        </li>
+                        <li>{{ character.serverName | gameTerm }}</li>
+                        <li class="character-row__ilvl">
+                            <span i18n="@@wow.character.ilvlShort">iLvl</span>
+                            {{ character.ilvl }}
+                        </li>
+                        @if (character.guildHandle) {
+                            <li class="character-row__guild">{{ character.guildHandle }}</li>
+                        }
+                    </ul>
+                </div>
+            </a>
+        </li>
+    } @empty {
+        <li class="latest-characters__empty" i18n="@@wow.home.characters.empty">No characters yet.</li>
+    }
+</ul>
