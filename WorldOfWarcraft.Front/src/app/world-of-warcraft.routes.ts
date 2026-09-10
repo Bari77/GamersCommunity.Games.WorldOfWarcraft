@@ -19,11 +19,13 @@ export const worldOfWarcraftRoutes: Routes = [
     },
     {
         path: "players/:publicId",
+        data: { breadcrumb: $localize`:@@wow.breadcrumb.player:Player` },
         loadComponent: () =>
             import("@features/players/pages/player-sheet/player-sheet.component").then((m) => m.PlayerSheetComponent),
     },
     {
         path: "guilds/:publicId",
+        data: { breadcrumb: $localize`:@@wow.breadcrumb.guild:Guild` },
         loadComponent: () =>
             import("@features/guilds/pages/guild-sheet/guild-sheet.component").then((m) => m.GuildSheetComponent),
     },

@@ -3,6 +3,8 @@
   "translations": {
     "wow.playground.banner": "WoW Playground",
     "wow.home.title": "World of Warcraft",
+    "wow.breadcrumb.player": "Joueur",
+    "wow.breadcrumb.guild": "Guilde",
     "wow.home.introVideo": "Vidéo d'introduction World of Warcraft",
     "wow.character.listTitle": "Personnages",
     "wow.character.new": "Nouveau personnage",
