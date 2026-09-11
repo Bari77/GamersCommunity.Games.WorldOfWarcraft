@@ -9,6 +9,9 @@
 
 # Node
 /node_modules
+
+# Sources staged by `gc-workspace edit`
+/.gc-workspace
 npm-debug.log
 yarn-error.log
 

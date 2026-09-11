@@ -1,5 +1,4 @@
 <section class="player-sheet gc-enter">
-    <!-- Value first: a refresh keeps the sheet mounted, so the workspace holds its active page. -->
     @if (sheet.value(); as player) {
         <wow-player-hero [player]="player" />
 
@@ -53,100 +52,13 @@
             i18n-doneLabel="@@wow.player.widget.done"
             (save)="onSave($event)"
         >
-            <ng-template gcWidget="identity">
-                <p class="player-sheet__meta">
-                    <span i18n="@@wow.player.since">Member since</span>
-                    {{ player.creationDate | date: "mediumDate" }}
-                </p>
-                <a
-                    [routerLink]="['/users', player.platformUserPublicId]"
-                    nbButton
-                    ghost
-                    status="basic"
-                    i18n="@@wow.player.platformProfile"
-                >
-                    Platform profile
-                </a>
-            </ng-template>
-
-            <ng-template gcWidget="presentation-irl">
-                @if (player.presentationIrl) {
-                    <p>{{ player.presentationIrl }}</p>
-                } @else {
-                    <p class="player-sheet__empty" i18n="@@wow.player.noPresentation">
-                        This player has not written a presentation yet.
-                    </p>
-                }
-            </ng-template>
-
-            <ng-template gcWidget="presentation-ig">
-                @if (player.presentationIg) {
-                    <p>{{ player.presentationIg }}</p>
-                } @else {
-                    <p class="player-sheet__empty" i18n="@@wow.player.noPresentation">
-                        This player has not written a presentation yet.
-                    </p>
-                }
-            </ng-template>
-
-            <ng-template gcWidget="stats">
-                <ul class="player-sheet__stats">
-                    <li>
-                        <span i18n="@@wow.player.characters">Characters</span>
-                        <strong>{{ player.characterCount }}</strong>
-                    </li>
-                    <li>
-                        <span i18n="@@wow.player.mounts">Mounts</span>
-                        <strong>{{ player.nbMount }}</strong>
-                    </li>
-                    @if (player.successPoints !== null) {
-                        <li>
-                            <span i18n="@@wow.player.successPoints">Achievement points</span>
-                            <strong>{{ player.successPoints }}</strong>
-                        </li>
-                    }
-                </ul>
-            </ng-template>
-
-            <ng-template gcWidget="characters">
-                <wow-character-list
-                    [playerPublicId]="player.publicId"
-                    [editable]="isOwner() && !editing()"
-                    (changed)="onCharactersChanged()"
-                />
-            </ng-template>
-
-            <ng-template gcWidget="photos">
-                <wow-media-manager [playerPublicId]="player.publicId" kind="photo" />
-            </ng-template>
-
-            <ng-template gcWidget="videos">
-                <wow-media-manager [playerPublicId]="player.publicId" kind="video" />
-            </ng-template>
-
-            <ng-template gcWidget="streams">
-                <wow-media-manager [playerPublicId]="player.publicId" kind="stream" />
-            </ng-template>
-
-            <ng-template [gcWidget]="linksWidget">
-                <wow-link-board [playerPublicId]="player.publicId" />
-            </ng-template>
-
-            <ng-template [gcWidgetSettings]="linksWidget">
-                <wow-link-admin [playerPublicId]="player.publicId" />
-            </ng-template>
-
-            <ng-template gcWidgetSettings="photos">
-                <wow-media-admin [playerPublicId]="player.publicId" kind="photo" />
-            </ng-template>
-
-            <ng-template gcWidgetSettings="videos">
-                <wow-media-admin [playerPublicId]="player.publicId" kind="video" />
-            </ng-template>
-
-            <ng-template gcWidgetSettings="streams">
-                <wow-media-admin [playerPublicId]="player.publicId" kind="stream" />
-            </ng-template>
+            <wow-widget-template-host
+                [player]="player"
+                [isOwner]="isOwner()"
+                [editing]="editing()"
+                [linksWidget]="linksWidget"
+                (charactersChanged)="onCharactersChanged()"
+            />
         </gc-widget-workspace>
     } @else if (sheet.error()) {
         <p i18n="@@wow.player.notFound">WoW player sheet not found.</p>

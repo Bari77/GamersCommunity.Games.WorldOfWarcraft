@@ -1,0 +1,53 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "id": "home",
+      "title": "Home",
+      "locked": true,
+      "widgets": [
+        { "id": "w-stats", "type": "stats", "x": 0, "y": 0, "cols": 4, "rows": 6, "settings": {} },
+        {
+          "id": "w-irl",
+          "type": "presentation-irl",
+          "x": 4,
+          "y": 0,
+          "cols": 8,
+          "rows": 3,
+          "settings": { "title": "IRL presentation" }
+        },
+        {
+          "id": "w-ig",
+          "type": "presentation-ig",
+          "x": 4,
+          "y": 3,
+          "cols": 8,
+          "rows": 3,
+          "settings": { "title": "In-game presentation" }
+        }
+      ]
+    },
+    {
+      "id": "characters",
+      "title": "Characters",
+      "widgets": [
+        { "id": "w-characters", "type": "characters", "x": 0, "y": 0, "cols": 12, "rows": 7, "settings": {} }
+      ]
+    },
+    {
+      "id": "videos",
+      "title": "Videos",
+      "widgets": [{ "id": "w-videos", "type": "videos", "x": 0, "y": 0, "cols": 12, "rows": 6, "settings": {} }]
+    },
+    {
+      "id": "photos",
+      "title": "Photos",
+      "widgets": [{ "id": "w-photos", "type": "photos", "x": 0, "y": 0, "cols": 12, "rows": 6, "settings": {} }]
+    },
+    {
+      "id": "links",
+      "title": "Links",
+      "widgets": [{ "id": "w-links", "type": "gc-links", "x": 0, "y": 0, "cols": 6, "rows": 3, "settings": {} }]
+    }
+  ]
+}

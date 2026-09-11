@@ -1,0 +1,22 @@
+.widget-host__meta {
+    margin: 0 0 0.75rem;
+}
+
+.widget-host__empty {
+    margin: 0;
+    opacity: 0.65;
+}
+
+.widget-host__stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+    }
+}

@@ -1,0 +1,124 @@
+<ng-template gcWidget="identity">
+    <p class="widget-host__meta">
+        <span i18n="@@wow.player.since">Member since</span>
+        {{ view().creationDate | date: 'mediumDate' }}
+    </p>
+    @if (!preview()) {
+        <a
+            [routerLink]="['/users', view().platformUserPublicId]"
+            nbButton
+            ghost
+            status="basic"
+            i18n="@@wow.player.platformProfile"
+        >
+            Platform profile
+        </a>
+    }
+</ng-template>
+
+<ng-template gcWidget="presentation-irl">
+    @if (view().presentationIrl) {
+        <p>{{ view().presentationIrl }}</p>
+    } @else {
+        <p class="widget-host__empty" i18n="@@wow.player.noPresentation">
+            This player has not written a presentation yet.
+        </p>
+    }
+</ng-template>
+
+<ng-template gcWidget="presentation-ig">
+    @if (view().presentationIg) {
+        <p>{{ view().presentationIg }}</p>
+    } @else {
+        <p class="widget-host__empty" i18n="@@wow.player.noPresentation">
+            This player has not written a presentation yet.
+        </p>
+    }
+</ng-template>
+
+<ng-template gcWidget="stats">
+    <ul class="widget-host__stats">
+        <li>
+            <span i18n="@@wow.player.characters">Characters</span>
+            <strong>{{ view().characterCount }}</strong>
+        </li>
+        <li>
+            <span i18n="@@wow.player.mounts">Mounts</span>
+            <strong>{{ view().nbMount }}</strong>
+        </li>
+        @if (view().successPoints !== null) {
+            <li>
+                <span i18n="@@wow.player.successPoints">Achievement points</span>
+                <strong>{{ view().successPoints }}</strong>
+            </li>
+        }
+    </ul>
+</ng-template>
+
+<ng-template gcWidget="characters">
+    @if (preview()) {
+        <p class="widget-host__empty">Character list preview</p>
+    } @else {
+        <wow-character-list
+            [playerPublicId]="view().publicId"
+            [editable]="isOwner() && !editing()"
+            (changed)="charactersChanged.emit()"
+        />
+    }
+</ng-template>
+
+<ng-template gcWidget="photos">
+    @if (preview()) {
+        <p class="widget-host__empty">Photo gallery preview</p>
+    } @else {
+        <wow-media-manager [playerPublicId]="view().publicId" kind="photo" />
+    }
+</ng-template>
+
+<ng-template gcWidget="videos">
+    @if (preview()) {
+        <p class="widget-host__empty">Video gallery preview</p>
+    } @else {
+        <wow-media-manager [playerPublicId]="view().publicId" kind="video" />
+    }
+</ng-template>
+
+<ng-template gcWidget="streams">
+    @if (preview()) {
+        <p class="widget-host__empty">Streams preview</p>
+    } @else {
+        <wow-media-manager [playerPublicId]="view().publicId" kind="stream" />
+    }
+</ng-template>
+
+<ng-template [gcWidget]="linksWidget()">
+    @if (preview()) {
+        <p class="widget-host__empty">Links preview</p>
+    } @else {
+        <wow-link-board [playerPublicId]="view().publicId" />
+    }
+</ng-template>
+
+<ng-template [gcWidgetSettings]="linksWidget()">
+    @if (!preview()) {
+        <wow-link-admin [playerPublicId]="view().publicId" />
+    }
+</ng-template>
+
+<ng-template gcWidgetSettings="photos">
+    @if (!preview()) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="photo" />
+    }
+</ng-template>
+
+<ng-template gcWidgetSettings="videos">
+    @if (!preview()) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="video" />
+    }
+</ng-template>
+
+<ng-template gcWidgetSettings="streams">
+    @if (!preview()) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="stream" />
+    }
+</ng-template>
