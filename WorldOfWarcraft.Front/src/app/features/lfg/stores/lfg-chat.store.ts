@@ -3,7 +3,7 @@ import { CreateLfgMessageRequestDto } from "@features/lfg/dto/lfg-message.dto";
 import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage, PostableGuild } from "@features/lfg/models/lfg-message.model";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
-import { GuildsService, LfgChatService } from "@features/lfg/services/lfg-chat.service";
+import { LfgChatService, PostableGuildsService } from "@features/lfg/services/lfg-chat.service";
 import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
 import { firstValueFrom } from "rxjs";
 
@@ -54,7 +54,7 @@ export class LfgChatStore {
     private kind: LfgKind = "lfg";
 
     private readonly chat = inject(LfgChatService);
-    private readonly guilds = inject(GuildsService);
+    private readonly guilds = inject(PostableGuildsService);
     private readonly membership = inject(GameMembershipStore);
     private readonly avatars = inject(PlatformAvatarStore);
     private readonly realtime = inject(LfgRealtimeService);

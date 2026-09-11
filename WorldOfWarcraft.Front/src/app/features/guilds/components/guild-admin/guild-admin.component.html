@@ -1,0 +1,132 @@
+<nb-card>
+    <nb-card-header i18n="@@wow.guild.admin.title">Guild settings</nb-card-header>
+    <nb-card-body>
+        <form class="guild-admin" (ngSubmit)="submit()">
+            <div class="guild-admin__field">
+                <label for="guild-admin-sentence" i18n="@@wow.guild.form.sentence">Catchphrase</label>
+                <textarea
+                    id="guild-admin-sentence"
+                    nbInput
+                    fullWidth
+                    rows="2"
+                    maxlength="255"
+                    [ngModel]="sentence()"
+                    (ngModelChange)="sentence.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                ></textarea>
+            </div>
+
+            <div class="guild-admin__grid">
+                <div class="guild-admin__field">
+                    <label for="guild-admin-discord" i18n="@@wow.guild.form.discord">Discord link</label>
+                    <input
+                        id="guild-admin-discord"
+                        nbInput
+                        fullWidth
+                        type="url"
+                        placeholder="https://discord.gg/…"
+                        [ngModel]="linkDiscord()"
+                        (ngModelChange)="linkDiscord.set($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                </div>
+
+                <div class="guild-admin__field">
+                    <label for="guild-admin-forum" i18n="@@wow.guild.form.forum">Forum link</label>
+                    <input
+                        id="guild-admin-forum"
+                        nbInput
+                        fullWidth
+                        type="url"
+                        placeholder="https://…"
+                        [ngModel]="linkForum()"
+                        (ngModelChange)="linkForum.set($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                </div>
+            </div>
+
+            @if (errorCode(); as code) {
+                <p class="guild-admin__error" role="alert">
+                    @switch (code) {
+                        @case ("INVALID_LINK") {
+                            <span i18n="@@wow.guild.error.invalidLink">Links must start with http:// or https://.</span>
+                        }
+                        @case ("LINK_TOO_LONG") {
+                            <span i18n="@@wow.guild.error.linkTooLong">This link is too long.</span>
+                        }
+                        @case ("GUILD_RANK_REQUIRED") {
+                            <span i18n="@@wow.guild.error.rankRequired">
+                                Your rank does not allow this action anymore.
+                            </span>
+                        }
+                        @case ("CONFIRMATION_MISMATCH") {
+                            <span i18n="@@wow.guild.error.confirmation">
+                                The typed handle does not match the guild.
+                            </span>
+                        }
+                        @case ("LEADER_CANNOT_LEAVE") {
+                            <span i18n="@@wow.guild.error.leaderCannotLeave">
+                                Transfer the leadership before leaving the guild.
+                            </span>
+                        }
+                        @default {
+                            <span i18n="@@wow.guild.error.saveFailed">The change could not be saved.</span>
+                        }
+                    }
+                </p>
+            }
+
+            <footer class="guild-admin__actions">
+                <button nbButton status="primary" type="submit" [disabled]="saving()">
+                    <span i18n="@@wow.guild.admin.save">Save</span>
+                </button>
+            </footer>
+        </form>
+
+        @if (sheet().isLeader()) {
+            <section class="guild-admin__danger">
+                <h3 class="guild-admin__danger-title" i18n="@@wow.guild.admin.disbandTitle">Disband the guild</h3>
+                <p class="guild-admin__danger-text" i18n="@@wow.guild.admin.disbandText">
+                    The wall, applications, ads and roster are deleted for good.
+                </p>
+
+                @if (disbandOpen()) {
+                    <div class="guild-admin__field">
+                        <label for="guild-admin-confirm" i18n="@@wow.guild.admin.disbandConfirm">
+                            Type the guild handle to confirm
+                        </label>
+                        <input
+                            id="guild-admin-confirm"
+                            nbInput
+                            fullWidth
+                            type="text"
+                            [placeholder]="disbandPlaceholder()"
+                            [ngModel]="confirmation()"
+                            (ngModelChange)="confirmation.set($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                        />
+                    </div>
+
+                    <div class="guild-admin__actions">
+                        <button nbButton ghost status="basic" (click)="disbandOpen.set(false)">
+                            <span i18n="@@wow.guild.form.cancel">Cancel</span>
+                        </button>
+                        <button
+                            nbButton
+                            status="danger"
+                            [disabled]="!canDisband()"
+                            (click)="disband.emit(confirmation().trim())"
+                        >
+                            <span i18n="@@wow.guild.admin.disbandAction">Disband</span>
+                        </button>
+                    </div>
+                } @else {
+                    <button nbButton ghost status="danger" (click)="disbandOpen.set(true)">
+                        <span i18n="@@wow.guild.admin.disbandAction">Disband</span>
+                    </button>
+                }
+            </section>
+        }
+    </nb-card-body>
+</nb-card>

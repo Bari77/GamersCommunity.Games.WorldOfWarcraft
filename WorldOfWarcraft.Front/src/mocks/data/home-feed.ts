@@ -1,5 +1,4 @@
 import { LfgMessageDto, PostableGuildDto } from "@features/lfg/dto/lfg-message.dto";
-import { GuildSheetDto } from "@features/guilds/dto/guild.dto";
 import { HomeFeedDto } from "@features/home/dto/home-feed.dto";
 
 const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
@@ -15,6 +14,8 @@ export const mockLfgMessages: LfgMessageDto[] = [
         expiresAt: new Date(Date.now() + 86400000).toISOString(),
         playerPublicId: "22222222-2222-2222-2222-222222222222",
         platformUserPublicId: "33333333-3333-3333-3333-333333333333",
+        serverName: "hyjal",
+        directionName: "heal",
     },
 ];
 
@@ -32,6 +33,8 @@ export const mockRecruitmentMessages: LfgMessageDto[] = [
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
+        serverName: "hyjal",
+        directionName: "dps",
     },
 ];
 
@@ -43,34 +46,6 @@ export const mockPostableGuilds: PostableGuildDto[] = [
         rank: "officer",
     },
 ];
-
-export const mockGuildSheet: GuildSheetDto = {
-    publicId: GUILD_PUBLIC_ID,
-    entitled: "Guardians of Azeroth",
-    discriminator: "0001",
-    level: 25,
-    sentence: "Heroic progress guild, EU evenings.",
-    linkDiscord: "https://discord.gg/example",
-    linkForum: null,
-    serverName: "Hyjal",
-    directionName: "Alliance",
-    creationDate: new Date().toISOString(),
-    members: [
-        {
-            characterPublicId: "44444444-4444-4444-4444-444444444444",
-            pseudo: "Aelindra",
-            level: 80,
-            className: "Druid",
-            raceName: "Night Elf",
-            rank: "officer",
-            playerPublicId: "22222222-2222-2222-2222-222222222222",
-            platformUserPublicId: "33333333-3333-3333-3333-333333333333",
-            nickname: "Aelindra",
-            discriminator: "0042",
-            avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aelindra",
-        },
-    ],
-};
 
 export const mockHomeFeed: HomeFeedDto = {
     latestLfg: mockLfgMessages,

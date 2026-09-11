@@ -1,5 +1,8 @@
 import { createGatewayListHandler, gatewayUrl } from "@bari77/gc-msw";
 import { CharacterCreateRequestDto, CharacterDto } from "@features/characters/dto/character.dto";
+import { GamePostDto } from "@features/guilds/dto/game-post.dto";
+import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
+import { GuildSheetDto } from "@features/guilds/dto/guild.dto";
 import {
     PlayerLinkCreateRequestDto,
     PlayerLinkDto,
@@ -19,12 +22,13 @@ import {
 } from "./data/characters";
 import { mockClasses } from "./data/classes";
 import {
+    mockGuildApplications,
     mockGuildSheet,
-    mockHomeFeed,
-    mockLfgMessages,
-    mockPostableGuilds,
-    mockRecruitmentMessages,
-} from "./data/home-feed";
+    mockGuildSummaries,
+    mockGuildWallPosts,
+    mockPendingPosts,
+} from "./data/guilds";
+import { mockHomeFeed, mockLfgMessages, mockPostableGuilds, mockRecruitmentMessages } from "./data/home-feed";
 import { mockPlayerLinks } from "./data/links";
 import { mockPlayerPictures, mockPlayerStreams, mockPlayerVideos } from "./data/media";
 
@@ -77,6 +81,156 @@ const mediaHandlers = Object.keys(mediaStore).flatMap((resource) => {
     ];
 });
 
+const guildsUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "Guilds");
+const guildApplicationsUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "GuildApplications");
+const gamePostsUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "GamePosts");
+
+let guildSheet: GuildSheetDto = { ...mockGuildSheet };
+let guildApplications: GuildApplicationDto[] = [...mockGuildApplications];
+let wallPosts: GamePostDto[] = [...mockGuildWallPosts];
+let pendingPosts: GamePostDto[] = [...mockPendingPosts];
+
+const guildHandlers = [
+    http.post(`${guildsUrl}/actions/Search`, async ({ request }) => {
+        const { query } = (await request.json()) as { query?: string };
+        const needle = query?.trim().toLowerCase();
+        const items = needle
+            ? mockGuildSummaries.filter((guild) => guild.entitled.toLowerCase().includes(needle))
+            : mockGuildSummaries;
+        return HttpResponse.json({ items, hasMore: false });
+    }),
+    http.post(`${guildsUrl}/actions/ListPostable`, () => HttpResponse.json(mockPostableGuilds)),
+    http.get(`${guildsUrl}/${mockGuildSheet.publicId}`, () => HttpResponse.json(guildSheet)),
+    http.post(guildsUrl, async ({ request }) => {
+        const body = (await request.json()) as { entitled: string };
+        guildSheet = { ...guildSheet, entitled: body.entitled, viewerRank: "leader" };
+        return HttpResponse.json(guildSheet);
+    }),
+    http.put(`${guildsUrl}/:publicId`, async ({ request }) => {
+        const body = (await request.json()) as Partial<GuildSheetDto>;
+        guildSheet = { ...guildSheet, ...body };
+        return HttpResponse.json(guildSheet);
+    }),
+    http.post(`${guildsUrl}/actions/SetRank`, async ({ request }) => {
+        const { characterPublicId, rank } = (await request.json()) as { characterPublicId: string; rank: string };
+        guildSheet = {
+            ...guildSheet,
+            members: guildSheet.members.map((member) =>
+                member.characterPublicId === characterPublicId ? { ...member, rank } : member,
+            ),
+        };
+        return HttpResponse.json(guildSheet);
+    }),
+    http.post(`${guildsUrl}/actions/Kick`, async ({ request }) => {
+        const { characterPublicId } = (await request.json()) as { characterPublicId: string };
+        const members = guildSheet.members.filter((member) => member.characterPublicId !== characterPublicId);
+        guildSheet = { ...guildSheet, members, memberCount: members.length };
+        return HttpResponse.json(guildSheet);
+    }),
+    http.post(`${guildsUrl}/actions/TransferLeadership`, async ({ request }) => {
+        const { characterPublicId } = (await request.json()) as { characterPublicId: string };
+        guildSheet = {
+            ...guildSheet,
+            viewerRank: "officer",
+            members: guildSheet.members.map((member) => ({
+                ...member,
+                rank:
+                    member.characterPublicId === characterPublicId
+                        ? "leader"
+                        : member.rank === "leader"
+                          ? "officer"
+                          : member.rank,
+            })),
+        };
+        return HttpResponse.json(guildSheet);
+    }),
+    http.post(`${guildsUrl}/actions/Leave`, async ({ request }) => {
+        const body = (await request.json()) as { guildPublicId: string; characterPublicId: string };
+        const members = guildSheet.members.filter((member) => member.characterPublicId !== body.characterPublicId);
+        guildSheet = { ...guildSheet, members, memberCount: members.length, viewerRank: null };
+        return HttpResponse.json(body);
+    }),
+    http.post(`${guildsUrl}/actions/Disband`, async ({ request }) => {
+        const { guildPublicId } = (await request.json()) as { guildPublicId: string };
+        return HttpResponse.json({ publicId: guildPublicId, handle: guildSheet.entitled });
+    }),
+];
+
+const guildApplicationHandlers = [
+    http.post(`${guildApplicationsUrl}/actions/List`, () => HttpResponse.json(guildApplications)),
+    http.post(`${guildApplicationsUrl}/actions/ListMine`, () => HttpResponse.json([])),
+    http.post(`${guildApplicationsUrl}/actions/Create`, async ({ request }) => {
+        const body = (await request.json()) as { characterPublicId: string; message: string };
+        const created: GuildApplicationDto = {
+            ...mockGuildApplications[0],
+            publicId: crypto.randomUUID(),
+            characterPublicId: body.characterPublicId,
+            message: body.message,
+            creationDate: new Date().toISOString(),
+        };
+        guildSheet = {
+            ...guildSheet,
+            viewerApplicationStatus: "pending",
+            viewerApplicationPublicId: created.publicId,
+        };
+        return HttpResponse.json(created);
+    }),
+    http.post(`${guildApplicationsUrl}/actions/Review`, async ({ request }) => {
+        const { publicId, accept } = (await request.json()) as { publicId: string; accept: boolean };
+        const reviewed = guildApplications.find((item) => item.publicId === publicId) ?? mockGuildApplications[0];
+        guildApplications = guildApplications.filter((item) => item.publicId !== publicId);
+        return HttpResponse.json({
+            ...reviewed,
+            status: accept ? "accepted" : "rejected",
+            reviewedAt: new Date().toISOString(),
+        });
+    }),
+    http.post(`${guildApplicationsUrl}/actions/Withdraw`, async ({ request }) => {
+        const { publicId } = (await request.json()) as { publicId: string };
+        guildSheet = { ...guildSheet, viewerApplicationStatus: null, viewerApplicationPublicId: null };
+        return HttpResponse.json({ ...mockGuildApplications[0], publicId, status: "withdrawn" });
+    }),
+];
+
+const gamePostHandlers = [
+    http.post(`${gamePostsUrl}/actions/ListGuildWall`, () => HttpResponse.json({ items: wallPosts, hasMore: false })),
+    http.post(`${gamePostsUrl}/actions/ListPending`, () => HttpResponse.json({ items: pendingPosts, hasMore: false })),
+    http.post(`${gamePostsUrl}/actions/Create`, async ({ request }) => {
+        const body = (await request.json()) as { body: string; mediaUrl?: string | null };
+        // The mocked visitor is an officer, so posts are published without review.
+        const created: GamePostDto = {
+            ...mockGuildWallPosts[0],
+            publicId: crypto.randomUUID(),
+            body: body.body,
+            mediaUrl: body.mediaUrl ?? null,
+            status: "approved",
+            creationDate: new Date().toISOString(),
+        };
+        wallPosts = [created, ...wallPosts];
+        return HttpResponse.json(created);
+    }),
+    http.post(`${gamePostsUrl}/actions/Moderate`, async ({ request }) => {
+        const { publicId, approve } = (await request.json()) as { publicId: string; approve: boolean };
+        const target = pendingPosts.find((item) => item.publicId === publicId) ?? mockPendingPosts[0];
+        pendingPosts = pendingPosts.filter((item) => item.publicId !== publicId);
+        const moderated: GamePostDto = {
+            ...target,
+            status: approve ? "approved" : "rejected",
+            moderatedAt: new Date().toISOString(),
+        };
+        if (approve) {
+            wallPosts = [moderated, ...wallPosts];
+        }
+        return HttpResponse.json(moderated);
+    }),
+    http.post(`${gamePostsUrl}/actions/Delete`, async ({ request }) => {
+        const { publicId } = (await request.json()) as { publicId: string };
+        wallPosts = wallPosts.filter((item) => item.publicId !== publicId);
+        pendingPosts = pendingPosts.filter((item) => item.publicId !== publicId);
+        return HttpResponse.json({ publicId });
+    }),
+];
+
 let links: PlayerLinkDto[] = [...mockPlayerLinks];
 
 const linkHandlers = [
@@ -117,6 +271,9 @@ const linkHandlers = [
 export const handlers = [
     ...mediaHandlers,
     ...linkHandlers,
+    ...guildHandlers,
+    ...guildApplicationHandlers,
+    ...gamePostHandlers,
     createGatewayListHandler({
         apiUrl: environment.apiUrl,
         microservice: "worldofwarcraft",
@@ -130,6 +287,13 @@ export const handlers = [
         const { kind } = (await request.json()) as { kind?: string };
         return HttpResponse.json(kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages);
     }),
+    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "Search"), async ({ request }) => {
+        const { kind, query } = (await request.json()) as { kind?: string; query?: string };
+        const source = kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages;
+        const needle = query?.trim().toLowerCase();
+        const items = needle ? source.filter((ad) => ad.body.toLowerCase().includes(needle)) : source;
+        return HttpResponse.json({ items, hasMore: false });
+    }),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "Create"), async ({ request }) => {
         const body = (await request.json()) as { body: string; guildPublicId?: string };
         const template = body.guildPublicId ? mockRecruitmentMessages[0] : mockLfgMessages[0];
@@ -140,12 +304,6 @@ export const handlers = [
             creationDate: new Date().toISOString(),
         });
     }),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Guilds", "actions", "ListPostable"), () =>
-        HttpResponse.json(mockPostableGuilds),
-    ),
-    http.get(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Guilds", mockGuildSheet.publicId), () =>
-        HttpResponse.json(mockGuildSheet),
-    ),
     http.get(`${environment.apiUrl}/platform/games`, () =>
         HttpResponse.json([
             { id: 1, title: "World Of Warcraft", urlValue: "/world-of-warcraft", picture: "world-of-warcraft" },

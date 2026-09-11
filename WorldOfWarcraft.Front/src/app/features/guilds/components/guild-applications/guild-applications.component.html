@@ -1,0 +1,116 @@
+<nb-card>
+    <nb-card-header class="guild-applications__header">
+        <span i18n="@@wow.guild.applications.title">Applications</span>
+        @if (store.loading()) {
+            <gc-skeleton width="1.5rem" height="0.8rem" />
+        } @else {
+            <span class="guild-applications__badge">{{ store.applications().length }}</span>
+        }
+    </nb-card-header>
+
+    <nb-card-body>
+        <ul class="guild-applications">
+            @if (store.loading()) {
+                @for (placeholder of applicationPlaceholders; track placeholder) {
+                    <li class="guild-application guild-application--skeleton" aria-busy="true">
+                        <gc-skeleton width="2.5rem" height="2.5rem" shape="circle" />
+                        <div class="guild-application__main">
+                            <gc-skeleton width="9rem" height="0.95rem" />
+                            <gc-skeleton-text [lines]="2" />
+                        </div>
+                    </li>
+                }
+            } @else {
+                @for (application of store.applications(); track application.publicId) {
+                    <li class="guild-application">
+                        <div class="guild-application__avatar-wrap" aria-hidden="true">
+                            @if (application.avatarUrl) {
+                                <img class="guild-application__avatar" [src]="application.avatarUrl" alt="" />
+                            } @else {
+                                <span class="guild-application__avatar guild-application__avatar--fallback">
+                                    {{ application.initials() }}
+                                </span>
+                            }
+                        </div>
+
+                        <div class="guild-application__main">
+                            <div class="guild-application__head">
+                                <strong>{{ application.characterPseudo }}</strong>
+                                <span class="guild-application__spec">
+                                    {{ application.characterRaceName | gameTerm }}
+                                    {{ application.characterClassName | gameTerm }} ·
+                                    {{ application.characterLevel }} ·
+                                    {{ application.characterServerName | gameTerm }}
+                                </span>
+                            </div>
+
+                            @if (application.isContactable()) {
+                                <a
+                                    class="guild-application__player"
+                                    [routerLink]="['/users', application.platformUserPublicId]"
+                                >
+                                    {{ application.playerHandleLabel() }}
+                                </a>
+                            } @else {
+                                <span class="guild-application__player">{{ application.playerHandleLabel() }}</span>
+                            }
+
+                            @if (application.message) {
+                                <p class="guild-application__message">{{ application.message }}</p>
+                            }
+
+                            <time class="guild-application__date">{{ application.creationDate | date: "short" }}</time>
+                        </div>
+
+                        <div class="guild-application__actions">
+                            <button
+                                nbButton
+                                ghost
+                                size="small"
+                                status="success"
+                                [disabled]="store.reviewing() !== null"
+                                (click)="review(application.publicId, true)"
+                            >
+                                <span i18n="@@wow.guild.applications.accept">Accept</span>
+                            </button>
+                            <button
+                                nbButton
+                                ghost
+                                size="small"
+                                status="danger"
+                                [disabled]="store.reviewing() !== null"
+                                (click)="review(application.publicId, false)"
+                            >
+                                <span i18n="@@wow.guild.applications.reject">Reject</span>
+                            </button>
+                        </div>
+                    </li>
+                } @empty {
+                    <li class="guild-applications__empty" i18n="@@wow.guild.applications.empty">
+                        No pending application.
+                    </li>
+                }
+            }
+        </ul>
+
+        @if (store.errorCode(); as code) {
+            <p class="guild-applications__error" role="alert">
+                @switch (code) {
+                    @case ("APPLICATION_CLOSED") {
+                        <span i18n="@@wow.guild.applications.error.closed">
+                            This application has already been handled.
+                        </span>
+                    }
+                    @case ("CHARACTER_ALREADY_IN_GUILD") {
+                        <span i18n="@@wow.guild.applications.error.alreadyInGuild">
+                            This character joined another guild in the meantime.
+                        </span>
+                    }
+                    @default {
+                        <span i18n="@@wow.guild.applications.error.unknown">The decision could not be saved.</span>
+                    }
+                }
+            </p>
+        }
+    </nb-card-body>
+</nb-card>

@@ -77,9 +77,9 @@ public class HomeFeedService(WorldOfWarcraftDbContext context) : IBusService
                 MainSpecializationName = c.IdMainSpecializationClassNavigation == null
                     ? null
                     : c.IdMainSpecializationClassNavigation.IdSpecializationNavigation.Entitled,
-                GuildPublicId = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.PublicId,
-                GuildName = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Entitled,
-                GuildDiscriminator = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Discriminator,
+                GuildPublicId = c.GuildMembers.Select(m => (Guid?)m.IdGuildNavigation.PublicId).FirstOrDefault(),
+                GuildName = c.GuildMembers.Select(m => m.IdGuildNavigation.Entitled).FirstOrDefault(),
+                GuildDiscriminator = c.GuildMembers.Select(m => m.IdGuildNavigation.Discriminator).FirstOrDefault(),
             })
             .ToListAsync(ct);
 

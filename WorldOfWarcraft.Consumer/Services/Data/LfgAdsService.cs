@@ -4,6 +4,7 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Realtime;
 using WorldOfWarcraft.Consumer.Security;
@@ -14,7 +15,8 @@ namespace WorldOfWarcraft.Consumer.Services.Data;
 
 public class LfgAdsService(
     WorldOfWarcraftDbContext context,
-    IRealtimeEventPublisher realtimePublisher) : IBusService
+    IRealtimeEventPublisher realtimePublisher,
+    IPlatformSanctionsClient sanctions) : IBusService
 {
     private const int RecentTake = 50;
     private static readonly TimeSpan PostCooldown = TimeSpan.FromMinutes(3);
@@ -32,6 +34,9 @@ public class LfgAdsService(
 
             case "ListBefore":
                 return JsonSafe.Serialize(await ListBeforeAsync(message, ct));
+
+            case "Search":
+                return JsonSafe.Serialize(await SearchAsync(message, ct));
 
             case "Create":
                 return JsonSafe.Serialize(await CreateAsync(message, ct));
@@ -129,7 +134,59 @@ public class LfgAdsService(
             GuildPublicId = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.PublicId : null,
             GuildName = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.Entitled : null,
             GuildDiscriminator = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.Discriminator : null,
+            ServerName = ad.IdServerNavigation != null ? ad.IdServerNavigation.Entitled : null,
+            DirectionName = ad.IdDirectionNavigation != null ? ad.IdDirectionNavigation.Entitled : null,
         });
+
+    /// <summary>
+    /// Board listing: same rows as the live rails, but filterable and paged oldest-page-last instead
+    /// of being replayed as a chat thread.
+    /// </summary>
+    private async Task<LfgAdPageDto> SearchAsync(BusMessage message, CancellationToken ct)
+    {
+        var request = string.IsNullOrWhiteSpace(message.Data)
+            ? new SearchLfgRequest()
+            : ConsumerParamParser.ToObject<SearchLfgRequest>(message.Data);
+
+        var kind = ResolveKind(request.Kind);
+        var take = request.Take is > 0 and <= RecentTake ? request.Take : 20;
+        var now = DateTime.UtcNow;
+
+        var query = _context.LfgAds.AsNoTracking()
+            .Where(ad => ad.IsActive && ad.ExpiresAt > now && ad.Kind == kind);
+
+        if (!string.IsNullOrWhiteSpace(request.Query))
+        {
+            var text = request.Query.Trim();
+            query = query.Where(ad => ad.Body.Contains(text));
+        }
+
+        if (request.IdServer is { } idServer)
+            query = query.Where(ad => ad.IdServer == idServer);
+
+        if (request.IdDirection is { } idDirection)
+            query = query.Where(ad => ad.IdDirection == idDirection);
+
+        if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
+        {
+            query = query.Where(ad =>
+                ad.CreationDate < beforeDate
+                || (ad.CreationDate == beforeDate && ad.PublicId.CompareTo(beforePublicId) < 0));
+        }
+
+        // One extra row tells the client whether another page exists, without a second count query.
+        var rows = await ToSummaries(query
+                .OrderByDescending(ad => ad.CreationDate)
+                .ThenByDescending(ad => ad.PublicId)
+                .Take(take + 1))
+            .ToListAsync(ct);
+
+        var hasMore = rows.Count > take;
+        if (hasMore)
+            rows.RemoveAt(rows.Count - 1);
+
+        return new LfgAdPageDto { Items = rows, HasMore = hasMore };
+    }
 
     private async Task<LfgAdSummaryDto> CreateAsync(BusMessage message, CancellationToken ct)
     {
@@ -140,6 +197,8 @@ public class LfgAdsService(
         if (string.IsNullOrWhiteSpace(request.Body))
             throw new BadRequestException("VALIDATION", "Message is required");
 
+        await sanctions.EnsureCanPublishAsync(message, ct);
+
         var player = await GetOrCreatePlayerAsync(message, request, ct);
         var guild = request.GuildPublicId is { } guildPublicId
             ? await RequirePostableGuildAsync(player.Id, guildPublicId, ct)
@@ -148,11 +207,15 @@ public class LfgAdsService(
         var postedAt = DateTime.UtcNow;
         await EnsureNotInCooldownAsync(player.Id, guild?.Id, postedAt, ct);
 
+        var (idServer, idDirection) = await ResolveScopeAsync(player.Id, guild, ct);
+
         var ad = new LfgAd
         {
             PublicId = Guid.NewGuid(),
             IdPlayer = player.Id,
             IdGuild = guild?.Id,
+            IdServer = idServer,
+            IdDirection = idDirection,
             Kind = guild is null ? LfgAdKinds.LookingForGroup : LfgAdKinds.Recruitment,
             Title = string.Empty,
             Body = request.Body.Trim(),
@@ -190,6 +253,37 @@ public class LfgAdsService(
             ct);
 
         return dto;
+    }
+
+    /// <summary>
+    /// Server and role stamped on the ad so the board can filter without walking back to the author:
+    /// taken from the guild leader for a recruitment ad, from the author's main character otherwise.
+    /// Both stay null when the author has no character yet, which only hides the ad from filtered
+    /// searches.
+    /// </summary>
+    private async Task<(int? IdServer, int? IdDirection)> ResolveScopeAsync(
+        int idPlayer,
+        Guild? guild,
+        CancellationToken ct)
+    {
+        if (guild is not null)
+        {
+            var leader = await _context.Characters.AsNoTracking()
+                .Where(c => c.Id == guild.IdLeader)
+                .Select(c => new { c.IdServer })
+                .FirstOrDefaultAsync(ct);
+
+            return (leader?.IdServer, guild.IdMainDirection);
+        }
+
+        var character = await _context.Characters.AsNoTracking()
+            .Where(c => c.IdPlayer == idPlayer)
+            .OrderByDescending(c => c.Main)
+            .ThenByDescending(c => c.Level)
+            .Select(c => new { c.IdServer, c.IdDirection })
+            .FirstOrDefaultAsync(ct);
+
+        return (character?.IdServer, character?.IdDirection);
     }
 
     private async Task<Player> GetOrCreatePlayerAsync(BusMessage message, CreateLfgAdRequest request, CancellationToken ct)

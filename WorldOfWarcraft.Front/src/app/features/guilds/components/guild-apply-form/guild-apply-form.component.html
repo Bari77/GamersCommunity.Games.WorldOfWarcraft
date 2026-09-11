@@ -1,0 +1,88 @@
+<nb-card>
+    <nb-card-header i18n="@@wow.guild.apply.title">Apply to this guild</nb-card-header>
+    <nb-card-body>
+        @if (pendingStatus() === statusPending) {
+            <div class="guild-apply__sent">
+                <p class="guild-apply__sent-text" i18n="@@wow.guild.apply.sent">
+                    Your application is waiting for an officer's decision.
+                </p>
+                <button nbButton ghost status="basic" [disabled]="saving()" (click)="withdraw.emit()">
+                    <span i18n="@@wow.guild.apply.withdraw">Withdraw</span>
+                </button>
+            </div>
+        } @else if (loading()) {
+            <p class="guild-apply__hint">…</p>
+        } @else if (candidates().length === 0) {
+            <p class="guild-apply__hint" i18n="@@wow.guild.apply.noCandidate">
+                All your characters already belong to a guild. A character may only join one.
+            </p>
+        } @else {
+            <form class="guild-apply" (ngSubmit)="submit()">
+                <div class="guild-apply__field">
+                    <span i18n="@@wow.guild.apply.character">Applying character</span>
+                    <nb-select
+                        fullWidth
+                        placeholder="—"
+                        [ngModel]="characterPublicId()"
+                        (ngModelChange)="characterPublicId.set($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    >
+                        @for (character of candidates(); track character.publicId) {
+                            <nb-option [value]="character.publicId">
+                                {{ character.pseudo }} · {{ character.serverName | gameTerm }}
+                            </nb-option>
+                        }
+                    </nb-select>
+                </div>
+
+                <div class="guild-apply__field">
+                    <label for="guild-apply-message" i18n="@@wow.guild.apply.message">Message</label>
+                    <textarea
+                        id="guild-apply-message"
+                        nbInput
+                        fullWidth
+                        rows="3"
+                        maxlength="1000"
+                        [ngModel]="message()"
+                        (ngModelChange)="message.set($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    ></textarea>
+                </div>
+
+                @if (errorCode(); as code) {
+                    <p class="guild-apply__error" role="alert">
+                        @switch (code) {
+                            @case ("CHARACTER_ALREADY_IN_GUILD") {
+                                <span i18n="@@wow.guild.error.characterInGuild">
+                                    This character already belongs to a guild. A character may only join one.
+                                </span>
+                            }
+                            @case ("APPLICATION_ALREADY_PENDING") {
+                                <span i18n="@@wow.guild.apply.error.alreadyPending">
+                                    This character already has a pending application to this guild.
+                                </span>
+                            }
+                            @case ("MUTED") {
+                                <span i18n="@@wow.guild.apply.error.muted">
+                                    You are muted and cannot apply for now.
+                                </span>
+                            }
+                            @case ("BANNED") {
+                                <span i18n="@@wow.guild.wall.error.banned">Your account is banned.</span>
+                            }
+                            @default {
+                                <span i18n="@@wow.guild.apply.error.unknown">The application could not be sent.</span>
+                            }
+                        }
+                    </p>
+                }
+
+                <footer class="guild-apply__actions">
+                    <button nbButton status="primary" type="submit" [disabled]="!canApply()">
+                        <span i18n="@@wow.guild.apply.submit">Send application</span>
+                    </button>
+                </footer>
+            </form>
+        }
+    </nb-card-body>
+</nb-card>

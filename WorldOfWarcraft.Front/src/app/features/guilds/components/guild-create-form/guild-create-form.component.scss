@@ -1,0 +1,39 @@
+.guild-create {
+    display: grid;
+    gap: 1rem;
+}
+
+.guild-create__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+    gap: 1rem;
+}
+
+.guild-create__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.guild-create__field label,
+.guild-create__field > span {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.guild-create__hint {
+    font-size: 0.72rem;
+    opacity: 0.6;
+}
+
+.guild-create__error {
+    margin: 0;
+    font-size: 0.85rem;
+    color: var(--color-danger-default, #ff3d71);
+}
+
+.guild-create__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.5rem;
+}

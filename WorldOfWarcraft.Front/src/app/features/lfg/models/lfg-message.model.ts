@@ -22,6 +22,8 @@ export class LfgMessage {
         public guildPublicId: string | null,
         public guildName: string | null,
         public guildDiscriminator: string | null,
+        public serverName: string | null,
+        public directionName: string | null,
     ) {}
 
     public static fromDto(dto: LfgMessageDto): LfgMessage {
@@ -39,6 +41,8 @@ export class LfgMessage {
             dto.guildPublicId ?? null,
             dto.guildName ?? null,
             dto.guildDiscriminator ?? null,
+            dto.serverName ?? null,
+            dto.directionName ?? null,
         );
     }
 

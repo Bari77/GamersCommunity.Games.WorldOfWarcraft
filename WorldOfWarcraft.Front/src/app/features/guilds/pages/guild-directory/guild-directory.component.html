@@ -1,0 +1,137 @@
+<section class="guild-directory gc-enter">
+    <nb-card>
+        <nb-card-header class="guild-directory__header">
+            <div>
+                <h1 class="guild-directory__title gc-display" i18n="@@wow.guild.directory.title">Guilds</h1>
+                <p class="guild-directory__subtitle" i18n="@@wow.guild.directory.subtitle">
+                    Browse guilds, then apply with one of your characters.
+                </p>
+            </div>
+
+            @if (membership.needsSheet()) {
+                <wow-create-sheet-wall variant="inline" [message]="sheetWallMessage" />
+            } @else if (membership.hasSheet() && !formOpen()) {
+                <button nbButton status="primary" [disabled]="noFreeCharacter()" (click)="formOpen.set(true)">
+                    <span i18n="@@wow.guild.directory.found">Found a guild</span>
+                </button>
+            }
+        </nb-card-header>
+
+        <nb-card-body>
+            <form class="guild-directory__filters" (ngSubmit)="onSearchSubmit()">
+                <input
+                    class="guild-directory__search"
+                    nbInput
+                    fullWidth
+                    type="search"
+                    [placeholder]="searchPlaceholder"
+                    [ngModel]="store.query()"
+                    (ngModelChange)="store.query.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                />
+
+                <nb-select
+                    class="guild-directory__filter"
+                    placeholder="—"
+                    [disabled]="loadingOptions()"
+                    [ngModel]="store.idServer()"
+                    (ngModelChange)="store.idServer.set($event); onFilterChange()"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <nb-option [value]="null" i18n="@@wow.guild.directory.allServers">All servers</nb-option>
+                    @for (server of options.value().servers; track server.id) {
+                        <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
+                    }
+                </nb-select>
+
+                <nb-select
+                    class="guild-directory__filter"
+                    placeholder="—"
+                    [disabled]="loadingOptions()"
+                    [ngModel]="store.idAlignment()"
+                    (ngModelChange)="store.idAlignment.set($event); onFilterChange()"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <nb-option [value]="null" i18n="@@wow.guild.directory.allFactions">All factions</nb-option>
+                    @for (alignment of options.value().alignments; track alignment.id) {
+                        <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                    }
+                </nb-select>
+
+                <button nbButton status="basic" type="submit">
+                    <span i18n="@@wow.guild.directory.search">Search</span>
+                </button>
+
+                @if (store.isFiltered()) {
+                    <button nbButton ghost status="basic" type="button" (click)="store.resetFilters()">
+                        <span i18n="@@wow.guild.directory.reset">Clear</span>
+                    </button>
+                }
+            </form>
+
+            @if (formOpen()) {
+                <div class="guild-directory__create">
+                    @if (loadingCandidates()) {
+                        <gc-skeleton-text [lines]="3" />
+                    } @else if (candidates().length === 0) {
+                        <p i18n="@@wow.guild.directory.noFreeCharacter">
+                            All your characters already belong to a guild. Create a new one to found a guild.
+                        </p>
+                    } @else {
+                        <wow-guild-create-form
+                            [candidates]="candidates()"
+                            [saving]="creating()"
+                            [errorCode]="createErrorCode()"
+                            (create)="onCreate($event)"
+                            (cancel)="formOpen.set(false)"
+                        />
+                    }
+                </div>
+            }
+        </nb-card-body>
+    </nb-card>
+
+    <ul class="guild-cards">
+        @if (store.loading()) {
+            @for (placeholder of guildPlaceholders; track placeholder) {
+                <li class="guild-card guild-card--skeleton" aria-busy="true">
+                    <gc-skeleton width="60%" height="1.15rem" />
+                    <gc-skeleton width="40%" height="0.8rem" />
+                    <gc-skeleton-text [lines]="2" />
+                </li>
+            }
+        } @else {
+            @for (guild of store.guilds(); track guild.publicId) {
+                <li class="guild-card">
+                    <a class="guild-card__handle" [routerLink]="guildLink(guild.publicId)">
+                        {{ guild.handleLabel() }}
+                    </a>
+                    <p class="guild-card__meta">
+                        {{ guild.serverName | gameTerm }}
+                        @if (guild.alignmentName) {
+                            · {{ guild.alignmentName | gameTerm }}
+                        }
+                        · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }}
+                    </p>
+                    @if (guild.sentence) {
+                        <p class="guild-card__sentence">{{ guild.sentence }}</p>
+                    }
+                    <p class="guild-card__members">
+                        {{ guild.memberCount }}
+                        <span i18n="@@wow.guild.directory.memberCount">members</span>
+                    </p>
+                </li>
+            } @empty {
+                <li class="guild-cards__empty" i18n="@@wow.guild.directory.empty">No guild matches these filters.</li>
+            }
+        }
+    </ul>
+
+    @if (store.hasMore() && !store.loading()) {
+        <div class="guild-directory__more">
+            <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
+                <span i18n="@@wow.guild.directory.loadMore">Load more</span>
+            </button>
+        </div>
+    }
+</section>

@@ -25,6 +25,7 @@ export interface CharacterDto {
     guildPublicId: string | null;
     guildName: string | null;
     guildDiscriminator: string | null;
+    guildRank: string | null;
 }
 
 export interface CharacterListRequestDto {

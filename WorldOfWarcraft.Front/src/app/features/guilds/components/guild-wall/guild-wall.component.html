@@ -1,0 +1,176 @@
+@if (canModerate()) {
+    <nb-card class="guild-wall__queue">
+        <nb-card-header class="guild-wall__queue-header">
+            <span i18n="@@wow.guild.wall.queue">Awaiting review</span>
+            @if (store.loadingPending()) {
+                <gc-skeleton width="1.5rem" height="0.8rem" />
+            } @else {
+                <span class="guild-wall__badge">{{ store.pendingCount() }}</span>
+            }
+        </nb-card-header>
+        <nb-card-body>
+            @if (store.loadingPending()) {
+                <gc-skeleton-text [lines]="2" />
+            } @else {
+                <ul class="guild-posts">
+                    @for (post of store.pending(); track post.publicId) {
+                        <li class="guild-post guild-post--pending">
+                            <header class="guild-post__head">
+                                @if (post.isContactable()) {
+                                    <a class="guild-post__author" [routerLink]="['/users', post.authorPlatformUserPublicId]">
+                                        {{ post.authorHandleLabel() }}
+                                    </a>
+                                } @else {
+                                    <span class="guild-post__author">{{ post.authorHandleLabel() }}</span>
+                                }
+                                <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
+                            </header>
+                            <p class="guild-post__body">{{ post.body }}</p>
+                            @if (post.mediaUrl) {
+                                <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
+                            }
+                            <footer class="guild-post__actions">
+                                <button nbButton ghost size="small" status="success" (click)="moderate(post, true)">
+                                    <span i18n="@@wow.guild.wall.approve">Approve</span>
+                                </button>
+                                <button nbButton ghost size="small" status="danger" (click)="moderate(post, false)">
+                                    <span i18n="@@wow.guild.wall.reject">Reject</span>
+                                </button>
+                            </footer>
+                        </li>
+                    } @empty {
+                        <li class="guild-posts__empty" i18n="@@wow.guild.wall.queueEmpty">
+                            Nothing waiting for a decision.
+                        </li>
+                    }
+                </ul>
+            }
+        </nb-card-body>
+    </nb-card>
+}
+
+<nb-card>
+    <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
+    <nb-card-body>
+        @if (canPublish()) {
+            <form class="guild-wall__composer" (ngSubmit)="publish()">
+                <textarea
+                    nbInput
+                    fullWidth
+                    rows="3"
+                    maxlength="2000"
+                    [placeholder]="bodyPlaceholder"
+                    [ngModel]="body()"
+                    (ngModelChange)="body.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                ></textarea>
+
+                <input
+                    nbInput
+                    fullWidth
+                    type="url"
+                    [placeholder]="mediaPlaceholder"
+                    [ngModel]="mediaUrl()"
+                    (ngModelChange)="mediaUrl.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                />
+
+                @if (!canModerate()) {
+                    <p class="guild-wall__hint" i18n="@@wow.guild.wall.moderationHint">
+                        Your posts are reviewed by an officer before they appear on the wall.
+                    </p>
+                }
+
+                @if (queuedNotice()) {
+                    <p class="guild-wall__notice" role="status" i18n="@@wow.guild.wall.queued">
+                        Sent. An officer will review it shortly.
+                    </p>
+                }
+
+                @if (store.errorCode(); as code) {
+                    <p class="guild-wall__error" role="alert">
+                        @switch (code) {
+                            @case ("MUTED") {
+                                <span i18n="@@wow.guild.wall.error.muted">
+                                    You are muted and cannot publish for now.
+                                </span>
+                            }
+                            @case ("BANNED") {
+                                <span i18n="@@wow.guild.wall.error.banned">Your account is banned.</span>
+                            }
+                            @case ("SANCTIONS_UNAVAILABLE") {
+                                <span i18n="@@wow.guild.wall.error.unavailable">
+                                    Publishing is unavailable right now. Please try again later.
+                                </span>
+                            }
+                            @case ("INVALID_MEDIA_URL") {
+                                <span i18n="@@wow.guild.wall.error.media">
+                                    The image link must start with http:// or https://.
+                                </span>
+                            }
+                            @default {
+                                <span i18n="@@wow.guild.wall.error.unknown">The post could not be sent.</span>
+                            }
+                        }
+                    </p>
+                }
+
+                <footer class="guild-wall__composer-actions">
+                    <button nbButton status="primary" type="submit" [disabled]="store.posting() || !body().trim()">
+                        <span i18n="@@wow.guild.wall.publish">Publish</span>
+                    </button>
+                </footer>
+            </form>
+        }
+
+        <ul class="guild-posts">
+            @if (store.loading()) {
+                @for (placeholder of postPlaceholders; track placeholder) {
+                    <li class="guild-post guild-post--skeleton" aria-busy="true">
+                        <header class="guild-post__head">
+                            <gc-skeleton width="9rem" height="0.9rem" />
+                            <gc-skeleton width="5rem" height="0.75rem" />
+                        </header>
+                        <gc-skeleton-text [lines]="2" />
+                    </li>
+                }
+            } @else {
+                @for (post of store.posts(); track post.publicId) {
+                    <li class="guild-post">
+                        <header class="guild-post__head">
+                            @if (post.isContactable()) {
+                                <a class="guild-post__author" [routerLink]="['/users', post.authorPlatformUserPublicId]">
+                                    {{ post.authorHandleLabel() }}
+                                </a>
+                            } @else {
+                                <span class="guild-post__author">{{ post.authorHandleLabel() }}</span>
+                            }
+                            <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
+                        </header>
+                        <p class="guild-post__body">{{ post.body }}</p>
+                        @if (post.mediaUrl) {
+                            <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
+                        }
+                        @if (canDelete(post)) {
+                            <footer class="guild-post__actions">
+                                <button nbButton ghost size="small" status="danger" (click)="remove(post)">
+                                    <span i18n="@@wow.guild.wall.delete">Delete</span>
+                                </button>
+                            </footer>
+                        }
+                    </li>
+                } @empty {
+                    <li class="guild-posts__empty" i18n="@@wow.guild.wall.empty">The wall is empty for now.</li>
+                }
+            }
+        </ul>
+
+        @if (store.hasMore() && !store.loading()) {
+            <div class="guild-wall__more">
+                <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
+                    <span i18n="@@wow.guild.wall.loadMore">Load more</span>
+                </button>
+            </div>
+        }
+    </nb-card-body>
+</nb-card>

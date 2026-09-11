@@ -1,0 +1,133 @@
+<nb-card>
+    <nb-card-header class="guild-roster__header">
+        <span i18n="@@wow.guild.members">Members</span>
+        @if (loading()) {
+            <gc-skeleton width="2.5rem" height="0.8rem" />
+        } @else {
+            <span class="guild-roster__count">{{ memberCount() }}</span>
+        }
+    </nb-card-header>
+
+    <nb-card-body>
+        <ul class="guild-members">
+            @if (loading()) {
+                @for (placeholder of memberPlaceholders; track placeholder) {
+                    <li class="guild-member guild-member--skeleton" aria-busy="true">
+                        <gc-skeleton width="2.5rem" height="2.5rem" shape="circle" />
+                        <div class="guild-member__main">
+                            <gc-skeleton width="8rem" height="0.95rem" />
+                            <gc-skeleton width="12rem" height="0.8rem" />
+                        </div>
+                    </li>
+                }
+            } @else {
+                @for (member of members(); track member.characterPublicId) {
+                    <li class="guild-member">
+                        <div class="guild-member__avatar-wrap" aria-hidden="true">
+                            @if (member.avatarUrl) {
+                                <img class="guild-member__avatar" [src]="member.avatarUrl" alt="" />
+                            } @else {
+                                <span class="guild-member__avatar guild-member__avatar--fallback">
+                                    {{ member.initials() }}
+                                </span>
+                            }
+                        </div>
+
+                        <div class="guild-member__main">
+                            <div class="guild-member__head">
+                                <strong class="guild-member__pseudo">{{ member.pseudo }}</strong>
+                                <span class="guild-member__rank">{{ member.rank | gameTerm }}</span>
+                            </div>
+                            <span class="guild-member__spec">
+                                {{ member.raceName | gameTerm }} {{ member.className | gameTerm }} ·
+                                {{ member.level }}
+                            </span>
+                        </div>
+
+                        <div class="guild-member__actions">
+                            @if (member.isContactable()) {
+                                <a
+                                    [routerLink]="['/users', member.platformUserPublicId]"
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="basic"
+                                    [title]="contactTitle"
+                                >
+                                    {{ member.handleLabel() }}
+                                </a>
+                            }
+
+                            @if (canPromote(member)) {
+                                <button
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="info"
+                                    [disabled]="busy()"
+                                    (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankOfficer })"
+                                >
+                                    <span i18n="@@wow.guild.roster.promote">Promote</span>
+                                </button>
+                            }
+
+                            @if (canDemote(member)) {
+                                <button
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="basic"
+                                    [disabled]="busy()"
+                                    (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankMember })"
+                                >
+                                    <span i18n="@@wow.guild.roster.demote">Demote</span>
+                                </button>
+                            }
+
+                            @if (canTransfer(member)) {
+                                <button
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="warning"
+                                    [disabled]="busy()"
+                                    (click)="transfer.emit(member.characterPublicId)"
+                                >
+                                    <span i18n="@@wow.guild.roster.transfer">Make leader</span>
+                                </button>
+                            }
+
+                            @if (canKick(member)) {
+                                <button
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="danger"
+                                    [disabled]="busy()"
+                                    (click)="kick.emit(member.characterPublicId)"
+                                >
+                                    <span i18n="@@wow.guild.roster.kick">Remove</span>
+                                </button>
+                            }
+
+                            @if (canLeave(member)) {
+                                <button
+                                    nbButton
+                                    ghost
+                                    size="small"
+                                    status="danger"
+                                    [disabled]="busy()"
+                                    (click)="leave.emit(member.characterPublicId)"
+                                >
+                                    <span i18n="@@wow.guild.roster.leave">Leave</span>
+                                </button>
+                            }
+                        </div>
+                    </li>
+                } @empty {
+                    <li class="guild-members__empty" i18n="@@wow.guild.members.empty">No members yet.</li>
+                }
+            }
+        </ul>
+    </nb-card-body>
+</nb-card>

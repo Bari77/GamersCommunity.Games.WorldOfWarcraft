@@ -31,15 +31,11 @@ public partial class Guild : IKeyTable
 
     public int IdMainDirection { get; set; }
 
-    public virtual ICollection<Character> Characters { get; set; } = new List<Character>();
-
     public virtual ICollection<GuildLink> GuildLinks { get; set; } = new List<GuildLink>();
 
     public virtual ICollection<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
 
-    public virtual ICollection<GuildMessage> GuildMessages { get; set; } = new List<GuildMessage>();
-
-    public virtual ICollection<GuildRequest> GuildRequests { get; set; } = new List<GuildRequest>();
+    public virtual ICollection<GuildApplication> GuildApplications { get; set; } = new List<GuildApplication>();
 
     public virtual ICollection<GuildVip> GuildVips { get; set; } = new List<GuildVip>();
 

@@ -24,9 +24,20 @@ public partial class GamePost : IKeyTable
 
     public int IdStatus { get; set; }
 
+    /// <summary>
+    /// Character of the officer who approved or rejected the post.
+    /// </summary>
+    public int? IdModerator { get; set; }
+
+    public DateTime? ModeratedAt { get; set; }
+
+    public string? ModerationReason { get; set; }
+
     public virtual Player IdPlayerNavigation { get; set; } = null!;
 
     public virtual Guild? IdGuildNavigation { get; set; }
+
+    public virtual Character? IdModeratorNavigation { get; set; }
 
     public virtual GamePostStatus IdStatusNavigation { get; set; } = null!;
 }

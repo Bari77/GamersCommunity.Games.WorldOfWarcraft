@@ -1,109 +1,111 @@
 <section class="guild-sheet gc-enter">
-    @if (loading()) {
-        <nb-card class="guild-sheet__card--skeleton" aria-busy="true">
-            <nb-card-header>
-                <gc-skeleton width="14rem" height="1.8rem" />
-                <gc-skeleton width="20rem" height="0.85rem" />
-            </nb-card-header>
-            <nb-card-body>
-                <gc-skeleton-text [lines]="2" />
-            </nb-card-body>
-        </nb-card>
-
-        <nb-card class="guild-sheet__card--skeleton" aria-busy="true">
-            <nb-card-header>
-                <gc-skeleton width="6rem" height="1rem" />
-            </nb-card-header>
-            <nb-card-body>
-                <ul class="guild-members">
-                    @for (member of memberPlaceholders; track member) {
-                        <li class="guild-member guild-member--skeleton">
-                            <gc-skeleton width="2.5rem" height="2.5rem" shape="circle" />
-                            <div class="guild-member__main">
-                                <gc-skeleton width="8rem" height="0.95rem" />
-                                <gc-skeleton width="12rem" height="0.8rem" />
-                            </div>
-                        </li>
-                    }
-                </ul>
-            </nb-card-body>
-        </nb-card>
-    } @else if (sheet.error()) {
-        <p i18n="@@wow.guild.notFound">Guild not found.</p>
-    } @else if (sheet.value(); as guild) {
+    @if (store.notFound()) {
         <nb-card>
-            <nb-card-header>
-                <h1 class="guild-sheet__handle gc-display">{{ guild.handleLabel() }}</h1>
-                <p class="guild-sheet__meta">
-                    {{ guild.serverName }} · {{ guild.directionName }} ·
-                    <span i18n="@@wow.guild.level">Level</span> {{ guild.level }} ·
-                    <span i18n="@@wow.guild.since">Created</span> {{ guild.creationDate | date: "mediumDate" }}
-                </p>
-            </nb-card-header>
             <nb-card-body>
-                @if (guild.sentence) {
-                    <p class="guild-sheet__sentence">{{ guild.sentence }}</p>
+                <p i18n="@@wow.guild.notFound">Guild not found.</p>
+            </nb-card-body>
+        </nb-card>
+    } @else {
+        <nb-card>
+            <nb-card-header class="guild-sheet__header">
+                @if (store.loading()) {
+                    <gc-skeleton width="14rem" height="1.8rem" />
+                    <gc-skeleton width="20rem" height="0.85rem" />
+                } @else if (store.sheet(); as guild) {
+                    <h1 class="guild-sheet__handle gc-display">{{ guild.handleLabel() }}</h1>
+                    <p class="guild-sheet__meta">
+                        {{ guild.serverName | gameTerm }} · {{ guild.directionName | gameTerm }} ·
+                        <span i18n="@@wow.guild.level">Level</span> {{ guild.level }} ·
+                        <span i18n="@@wow.guild.since">Created</span> {{ guild.creationDate | date: "mediumDate" }}
+                    </p>
                 }
+            </nb-card-header>
 
-                <div class="guild-sheet__links">
-                    @if (guild.linkDiscord) {
-                        <a [href]="guild.linkDiscord" target="_blank" rel="noopener" nbButton ghost status="basic">
-                            Discord
-                        </a>
-                    }
-                    @if (guild.linkForum) {
-                        <a [href]="guild.linkForum" target="_blank" rel="noopener" nbButton ghost status="basic">
-                            <span i18n="@@wow.guild.forum">Forum</span>
-                        </a>
-                    }
-                </div>
-            </nb-card-body>
-        </nb-card>
-
-        <nb-card>
-            <nb-card-header i18n="@@wow.guild.members">Members</nb-card-header>
             <nb-card-body>
-                <ul class="guild-members">
-                    @for (member of guild.members; track member.characterPublicId) {
-                        <li class="guild-member">
-                            <div class="guild-member__avatar-wrap" aria-hidden="true">
-                                @if (member.avatarUrl) {
-                                    <img class="guild-member__avatar" [src]="member.avatarUrl" alt="" />
-                                } @else {
-                                    <span class="guild-member__avatar guild-member__avatar--fallback">
-                                        {{ member.initials() }}
-                                    </span>
-                                }
-                            </div>
-
-                            <div class="guild-member__main">
-                                <div class="guild-member__head">
-                                    <strong class="guild-member__pseudo">{{ member.pseudo }}</strong>
-                                    <span class="guild-member__rank">{{ member.rank }}</span>
-                                </div>
-                                <span class="guild-member__spec">
-                                    {{ member.raceName }} {{ member.className }} · {{ member.level }}
-                                </span>
-                            </div>
-
-                            @if (member.isContactable()) {
-                                <a
-                                    class="guild-member__contact"
-                                    [routerLink]="['/users', member.platformUserPublicId]"
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="basic"
-                                >
-                                    {{ member.handleLabel() }}
-                                </a>
-                            }
-                        </li>
-                    } @empty {
-                        <li class="guild-members__empty" i18n="@@wow.guild.members.empty">No members yet.</li>
+                @if (store.loading()) {
+                    <gc-skeleton-text [lines]="2" />
+                } @else if (store.sheet(); as guild) {
+                    @if (guild.sentence) {
+                        <p class="guild-sheet__sentence">{{ guild.sentence }}</p>
                     }
-                </ul>
+
+                    <div class="guild-sheet__links">
+                        @if (guild.linkDiscord) {
+                            <a [href]="guild.linkDiscord" target="_blank" rel="noopener" nbButton ghost status="basic">
+                                Discord
+                            </a>
+                        }
+                        @if (guild.linkForum) {
+                            <a [href]="guild.linkForum" target="_blank" rel="noopener" nbButton ghost status="basic">
+                                <span i18n="@@wow.guild.forum">Forum</span>
+                            </a>
+                        }
+                        @if (guild.viewerRank) {
+                            <span class="guild-sheet__badge">{{ guild.viewerRank | gameTerm }}</span>
+                        }
+                    </div>
+                }
             </nb-card-body>
         </nb-card>
+
+        @if (store.sheet(); as guild) {
+            @if (store.canModerate()) {
+                <wow-guild-applications [guildPublicId]="guild.publicId" (reviewed)="onRosterChanged()" />
+            }
+
+            <wow-guild-wall
+                [guildPublicId]="guild.publicId"
+                [canPublish]="store.isMember()"
+                [canModerate]="store.canModerate()"
+                [playerPublicId]="membership.playerPublicId()"
+                (moderated)="store.refresh()"
+            />
+        } @else {
+            <nb-card aria-busy="true">
+                <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
+                <nb-card-body>
+                    <gc-skeleton-text [lines]="3" />
+                </nb-card-body>
+            </nb-card>
+        }
+
+        <wow-guild-roster
+            [members]="store.sheet()?.members ?? []"
+            [memberCount]="store.sheet()?.memberCount ?? 0"
+            [viewerRank]="store.sheet()?.viewerRank ?? null"
+            [loading]="store.loading()"
+            [busy]="store.saving()"
+            [myCharacterPublicIds]="myCharacterPublicIds()"
+            (setRank)="onSetRank($event)"
+            (kick)="onKick($event)"
+            (transfer)="onTransfer($event)"
+            (leave)="onLeave($event)"
+        />
+
+        @if (store.sheet(); as guild) {
+            @if (store.canModerate()) {
+                <wow-guild-admin
+                    [sheet]="guild"
+                    [saving]="store.saving()"
+                    [errorCode]="store.errorCode()"
+                    (save)="onSave($event)"
+                    (disband)="onDisband($event)"
+                />
+            }
+
+            @if (membership.needsSheet()) {
+                <wow-create-sheet-wall [message]="sheetWallMessage" />
+            } @else if (canApply()) {
+                <wow-guild-apply-form
+                    [candidates]="applyCandidates()"
+                    [loading]="loadingCharacters()"
+                    [saving]="store.saving()"
+                    [errorCode]="store.errorCode()"
+                    [pendingStatus]="guild.viewerApplicationStatus"
+                    (apply)="onApply($event)"
+                    (withdraw)="onWithdraw()"
+                />
+            }
+        }
     }
 </section>

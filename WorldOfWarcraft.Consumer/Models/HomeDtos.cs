@@ -27,6 +27,10 @@ public sealed class LfgAdSummaryDto
     public Guid? GuildPublicId { get; init; }
     public string? GuildName { get; init; }
     public string? GuildDiscriminator { get; init; }
+
+    // Snapshot of the author's server and role at posting time; drives the board filters.
+    public string? ServerName { get; init; }
+    public string? DirectionName { get; init; }
 }
 
 public sealed class CharacterSummaryDto
@@ -69,6 +73,10 @@ public sealed class GuildSummaryDto
     public DateTime CreationDate { get; init; }
     public string ServerName { get; init; } = "";
     public int MemberCount { get; init; }
+
+    // Filled on the guild directory, where cards need more than a handle to be worth browsing.
+    public string? Sentence { get; init; }
+    public string? AlignmentName { get; init; }
 }
 
 public sealed class ListLfgRecentRequest
@@ -83,6 +91,30 @@ public sealed class ListLfgBeforeRequest
     public DateTime BeforeCreationDate { get; init; }
     public Guid BeforePublicId { get; init; }
     public int Take { get; init; } = 50;
+}
+
+public sealed class SearchLfgRequest
+{
+    /// <summary>See <see cref="WorldOfWarcraft.Database.Models.LfgAdKinds"/>. Defaults to player ads.</summary>
+    public string? Kind { get; init; }
+
+    /// <summary>Free text matched against the ad body.</summary>
+    public string? Query { get; init; }
+
+    public int? IdServer { get; init; }
+    public int? IdDirection { get; init; }
+
+    // Cursor, both parts required together: creation date alone is not unique.
+    public DateTime? BeforeCreationDate { get; init; }
+    public Guid? BeforePublicId { get; init; }
+
+    public int Take { get; init; } = 20;
+}
+
+public sealed class LfgAdPageDto
+{
+    public IReadOnlyList<LfgAdSummaryDto> Items { get; init; } = [];
+    public bool HasMore { get; init; }
 }
 
 public sealed class CreateLfgAdRequest

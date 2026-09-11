@@ -1,21 +1,12 @@
-.guild-sheet__loading {
-    min-height: 12rem;
+.guild-sheet {
+    display: grid;
+    gap: 1rem;
 }
 
-.guild-sheet__card--skeleton nb-card-header {
+.guild-sheet__header {
     display: flex;
     flex-direction: column;
     gap: 0.45rem;
-}
-
-.guild-member--skeleton {
-    pointer-events: none;
-}
-
-.guild-member--skeleton .guild-member__main {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
 }
 
 .guild-sheet__handle {
@@ -23,7 +14,7 @@
 }
 
 .guild-sheet__meta {
-    margin: 0.35rem 0 0;
+    margin: 0;
     font-size: 0.85rem;
     opacity: 0.75;
 }
@@ -35,71 +26,15 @@
 .guild-sheet__links {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-}
-
-.guild-members {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 0.5rem;
-}
-
-.guild-member {
-    display: flex;
     align-items: center;
-    gap: 0.85rem;
-    padding: 0.65rem 0.75rem;
-    border-radius: 0.75rem;
-    background: color-mix(in srgb, currentColor 4%, transparent);
-}
-
-.guild-member__avatar-wrap {
-    flex: 0 0 auto;
-}
-
-.guild-member__avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    object-fit: cover;
-    display: grid;
-    place-items: center;
-}
-
-.guild-member__avatar--fallback {
-    background: color-mix(in srgb, currentColor 14%, transparent);
-    font-weight: 600;
-    text-transform: uppercase;
-}
-
-.guild-member__main {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.guild-member__head {
-    display: flex;
-    align-items: baseline;
     gap: 0.5rem;
 }
 
-.guild-member__rank {
+.guild-sheet__badge {
     font-size: 0.7rem;
     text-transform: uppercase;
     letter-spacing: 0.04em;
-    padding: 0.1rem 0.45rem;
+    padding: 0.15rem 0.5rem;
     border-radius: 999px;
     background: color-mix(in srgb, currentColor 12%, transparent);
-}
-
-.guild-member__spec {
-    display: block;
-    font-size: 0.8rem;
-    opacity: 0.75;
-}
-
-.guild-member__contact {
-    flex: 0 0 auto;
 }

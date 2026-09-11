@@ -46,9 +46,10 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
         MainSpecializationName = c.IdMainSpecializationClassNavigation == null ? null : c.IdMainSpecializationClassNavigation.IdSpecializationNavigation.Entitled,
         IdSecondarySpecializationClass = c.IdSecondarySpecializationClass,
         SecondarySpecializationName = c.IdSecondarySpecializationClassNavigation == null ? null : c.IdSecondarySpecializationClassNavigation.IdSpecializationNavigation.Entitled,
-        GuildPublicId = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.PublicId,
-        GuildName = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Entitled,
-        GuildDiscriminator = c.IdGuildNavigation == null ? null : c.IdGuildNavigation.Discriminator,
+        GuildPublicId = c.GuildMembers.Select(m => (Guid?)m.IdGuildNavigation.PublicId).FirstOrDefault(),
+        GuildName = c.GuildMembers.Select(m => m.IdGuildNavigation.Entitled).FirstOrDefault(),
+        GuildDiscriminator = c.GuildMembers.Select(m => m.IdGuildNavigation.Discriminator).FirstOrDefault(),
+        GuildRank = c.GuildMembers.Select(m => m.IdGuildRankNavigation.Entitled).FirstOrDefault(),
     };
 
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)

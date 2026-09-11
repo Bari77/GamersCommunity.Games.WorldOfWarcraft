@@ -1,0 +1,101 @@
+.guild-directory {
+    display: grid;
+    gap: 1rem;
+}
+
+.guild-directory__header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.guild-directory__title {
+    margin: 0;
+}
+
+.guild-directory__subtitle {
+    margin: 0.35rem 0 0;
+    font-size: 0.85rem;
+    opacity: 0.75;
+}
+
+.guild-directory__filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.guild-directory__search {
+    flex: 1 1 14rem;
+    min-width: 12rem;
+}
+
+.guild-directory__filter {
+    flex: 0 0 auto;
+    min-width: 10rem;
+}
+
+.guild-directory__create {
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.guild-cards {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
+    gap: 0.75rem;
+}
+
+.guild-card {
+    display: grid;
+    gap: 0.35rem;
+    align-content: start;
+    padding: 0.9rem 1rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.guild-card--skeleton {
+    pointer-events: none;
+    cursor: default;
+}
+
+.guild-card__handle {
+    font-weight: 600;
+    text-decoration: none;
+    color: inherit;
+}
+
+.guild-card__handle:hover {
+    text-decoration: underline;
+}
+
+.guild-card__meta,
+.guild-card__members {
+    margin: 0;
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.guild-card__sentence {
+    margin: 0;
+    font-size: 0.85rem;
+}
+
+.guild-cards__empty {
+    grid-column: 1 / -1;
+    font-size: 0.9rem;
+    opacity: 0.75;
+}
+
+.guild-directory__more {
+    display: flex;
+    justify-content: center;
+}

@@ -34,6 +34,7 @@ export class Character {
     public readonly guildPublicId: string | null;
     public readonly guildName: string | null;
     public readonly guildDiscriminator: string | null;
+    public readonly guildRank: string | null;
 
     public constructor(dto: CharacterDto) {
         this.publicId = dto.publicId;
@@ -62,6 +63,7 @@ export class Character {
         this.guildPublicId = dto.guildPublicId;
         this.guildName = dto.guildName;
         this.guildDiscriminator = dto.guildDiscriminator;
+        this.guildRank = dto.guildRank ?? null;
     }
 
     public get color(): string {

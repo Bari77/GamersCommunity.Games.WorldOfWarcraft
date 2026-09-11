@@ -32,8 +32,6 @@ public partial class Character : IKeyTable
 
     public int IdServer { get; set; }
 
-    public int? IdGuild { get; set; }
-
     public int? IdAlignment { get; set; }
 
     public int? IdMainSpecializationClass { get; set; }
@@ -46,17 +44,18 @@ public partial class Character : IKeyTable
 
     public virtual ICollection<Event> Events { get; set; } = new List<Event>();
 
-    public virtual ICollection<GuildMessage> GuildMessages { get; set; } = new List<GuildMessage>();
-
+    /// <summary>
+    /// Guilds this character leads, through <see cref="Guild.IdLeader"/>.
+    /// </summary>
     public virtual ICollection<Guild> Guilds { get; set; } = new List<Guild>();
 
     public virtual ICollection<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
 
+    public virtual ICollection<GuildApplication> GuildApplications { get; set; } = new List<GuildApplication>();
+
     public virtual Alignment? IdAlignmentNavigation { get; set; }
 
     public virtual Direction IdDirectionNavigation { get; set; } = null!;
-
-    public virtual Guild? IdGuildNavigation { get; set; }
 
     public virtual SpecializationClass? IdMainSpecializationClassNavigation { get; set; }
 

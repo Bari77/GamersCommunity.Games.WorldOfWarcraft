@@ -1,0 +1,140 @@
+<section class="lfg-board gc-enter">
+    <nb-card>
+        <nb-card-header>
+            <h1 class="lfg-board__title gc-display" i18n="@@wow.lfg.board.title">Looking for group</h1>
+            <p class="lfg-board__subtitle" i18n="@@wow.lfg.board.subtitle">
+                Browse player and guild ads, then open the sheet behind an ad to get in touch.
+            </p>
+        </nb-card-header>
+
+        <nb-card-body>
+            <div class="lfg-board__tabs" role="tablist">
+                <button
+                    nbButton
+                    [status]="store.kind() === kindPlayer ? 'primary' : 'basic'"
+                    [ghost]="store.kind() !== kindPlayer"
+                    role="tab"
+                    [attr.aria-selected]="store.kind() === kindPlayer"
+                    (click)="store.selectKind(kindPlayer)"
+                >
+                    <span i18n="@@wow.lfg.board.tabPlayers">Players</span>
+                </button>
+                <button
+                    nbButton
+                    [status]="store.kind() === kindRecruitment ? 'primary' : 'basic'"
+                    [ghost]="store.kind() !== kindRecruitment"
+                    role="tab"
+                    [attr.aria-selected]="store.kind() === kindRecruitment"
+                    (click)="store.selectKind(kindRecruitment)"
+                >
+                    <span i18n="@@wow.lfg.board.tabGuilds">Guild recruitment</span>
+                </button>
+            </div>
+
+            <form class="lfg-board__filters" (ngSubmit)="onSearchSubmit()">
+                <input
+                    class="lfg-board__search"
+                    nbInput
+                    fullWidth
+                    type="search"
+                    [placeholder]="searchPlaceholder"
+                    [ngModel]="store.query()"
+                    (ngModelChange)="store.query.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                />
+
+                <nb-select
+                    class="lfg-board__filter"
+                    placeholder="—"
+                    [disabled]="loadingOptions()"
+                    [ngModel]="store.idServer()"
+                    (ngModelChange)="store.idServer.set($event); onFilterChange()"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <nb-option [value]="null" i18n="@@wow.guild.directory.allServers">All servers</nb-option>
+                    @for (server of options.value().servers; track server.id) {
+                        <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
+                    }
+                </nb-select>
+
+                <nb-select
+                    class="lfg-board__filter"
+                    placeholder="—"
+                    [disabled]="loadingOptions()"
+                    [ngModel]="store.idDirection()"
+                    (ngModelChange)="store.idDirection.set($event); onFilterChange()"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <nb-option [value]="null" i18n="@@wow.lfg.board.allRoles">All roles</nb-option>
+                    @for (direction of options.value().directions; track direction.id) {
+                        <nb-option [value]="direction.id">{{ direction.entitled | gameTerm }}</nb-option>
+                    }
+                </nb-select>
+
+                <button nbButton status="basic" type="submit">
+                    <span i18n="@@wow.guild.directory.search">Search</span>
+                </button>
+
+                @if (store.isFiltered()) {
+                    <button nbButton ghost status="basic" type="button" (click)="store.resetFilters()">
+                        <span i18n="@@wow.guild.directory.reset">Clear</span>
+                    </button>
+                }
+            </form>
+        </nb-card-body>
+    </nb-card>
+
+    <ul class="lfg-ads">
+        @if (store.loading()) {
+            @for (placeholder of adPlaceholders; track placeholder) {
+                <li class="lfg-ad lfg-ad--skeleton" aria-busy="true">
+                    <header class="lfg-ad__head">
+                        <gc-skeleton width="10rem" height="1rem" />
+                        <gc-skeleton width="5rem" height="0.75rem" />
+                    </header>
+                    <gc-skeleton-text [lines]="2" />
+                </li>
+            }
+        } @else {
+            @for (ad of store.ads(); track ad.publicId) {
+                <li class="lfg-ad">
+                    <header class="lfg-ad__head">
+                        <a class="lfg-ad__handle" [routerLink]="targetLink(ad)">{{ ad.handleLabel() }}</a>
+                        <time class="lfg-ad__date">{{ ad.creationDate | date: "short" }}</time>
+                    </header>
+
+                    <p class="lfg-ad__meta">
+                        @if (ad.serverName) {
+                            {{ ad.serverName | gameTerm }}
+                        }
+                        @if (ad.directionName) {
+                            · {{ ad.directionName | gameTerm }}
+                        }
+                    </p>
+
+                    <p class="lfg-ad__body">{{ ad.body }}</p>
+
+                    <footer class="lfg-ad__actions">
+                        <a [routerLink]="targetLink(ad)" nbButton ghost size="small" status="basic">
+                            @if (ad.isGuildAd()) {
+                                <span i18n="@@wow.lfg.board.openGuild">See the guild</span>
+                            } @else {
+                                <span i18n="@@wow.lfg.board.openPlayer">See the player</span>
+                            }
+                        </a>
+                    </footer>
+                </li>
+            } @empty {
+                <li class="lfg-ads__empty" i18n="@@wow.lfg.board.empty">No ad matches these filters.</li>
+            }
+        }
+    </ul>
+
+    @if (store.hasMore() && !store.loading()) {
+        <div class="lfg-board__more">
+            <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
+                <span i18n="@@wow.guild.directory.loadMore">Load more</span>
+            </button>
+        </div>
+    }
+</section>

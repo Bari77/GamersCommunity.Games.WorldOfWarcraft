@@ -1,15 +1,22 @@
 import { Injectable } from "@angular/core";
 import {
     CreateLfgMessageRequestDto,
+    LfgAdPageDto,
     ListLfgBeforeRequestDto,
     LfgMessageDto,
     PostableGuildDto,
+    SearchLfgRequestDto,
 } from "@features/lfg/dto/lfg-message.dto";
 import { LfgKind, LfgMessage, PostableGuild } from "@features/lfg/models/lfg-message.model";
 import { BaseService } from "@shared/services/base.service";
 import { map, Observable } from "rxjs";
 
 const PAGE_SIZE = 50;
+
+export interface LfgAdPage {
+    items: LfgMessage[];
+    hasMore: boolean;
+}
 
 @Injectable({ providedIn: "root" })
 export class LfgChatService extends BaseService {
@@ -38,10 +45,20 @@ export class LfgChatService extends BaseService {
     public send(data: CreateLfgMessageRequestDto): Observable<LfgMessage> {
         return this.post<LfgMessageDto, LfgMessage>(LfgMessage, "actions/Create", data);
     }
+
+    /** Filtered and paginated read for the board, unlike the chat threads which only tail. */
+    public search(request: SearchLfgRequestDto): Observable<LfgAdPage> {
+        return this.http.post<LfgAdPageDto>(this.getURL("actions/Search"), request).pipe(
+            map((dto) => ({
+                items: (dto.items ?? []).map((item) => LfgMessage.fromDto(item)),
+                hasMore: dto.hasMore ?? false,
+            })),
+        );
+    }
 }
 
 @Injectable({ providedIn: "root" })
-export class GuildsService extends BaseService {
+export class PostableGuildsService extends BaseService {
     public constructor() {
         super("/worldofwarcraft/Guilds");
     }

@@ -40,9 +40,9 @@ public partial class WorldOfWarcraftDbContext : DbContext
 
     public virtual DbSet<GuildRank> GuildRanks { get; set; }
 
-    public virtual DbSet<GuildMessage> GuildMessages { get; set; }
+    public virtual DbSet<GuildApplication> GuildApplications { get; set; }
 
-    public virtual DbSet<GuildRequest> GuildRequests { get; set; }
+    public virtual DbSet<GuildApplicationStatus> GuildApplicationStatuses { get; set; }
 
     public virtual DbSet<GuildVip> GuildVips { get; set; }
 
@@ -117,10 +117,6 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasForeignKey(d => d.IdDirection)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Character_Direction");
-
-            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.Characters)
-                .HasForeignKey(d => d.IdGuild)
-                .HasConstraintName("FK_Character_Guild");
 
             entity.HasOne(d => d.IdMainSpecializationClassNavigation).WithMany(p => p.CharacterIdMainSpecializationClassNavigations)
                 .HasForeignKey(d => d.IdMainSpecializationClass)
@@ -274,6 +270,11 @@ public partial class WorldOfWarcraftDbContext : DbContext
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.ModeratedAt).HasColumnType("datetime");
+            entity.Property(e => e.ModerationReason).HasMaxLength(500);
+
+            // Drives both the guild wall (approved, newest first) and the officer moderation queue.
+            entity.HasIndex(e => new { e.IdGuild, e.IdStatus, e.CreationDate }, "IX_GamePost_GuildWall");
 
             entity.HasOne(d => d.IdPlayerNavigation).WithMany(p => p.GamePosts)
                 .HasForeignKey(d => d.IdPlayer)
@@ -283,6 +284,10 @@ public partial class WorldOfWarcraftDbContext : DbContext
             entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GamePosts)
                 .HasForeignKey(d => d.IdGuild)
                 .HasConstraintName("FK_GamePost_Guild");
+
+            entity.HasOne(d => d.IdModeratorNavigation).WithMany()
+                .HasForeignKey(d => d.IdModerator)
+                .HasConstraintName("FK_GamePost_Moderator");
 
             entity.HasOne(d => d.IdStatusNavigation).WithMany(p => p.GamePosts)
                 .HasForeignKey(d => d.IdStatus)
@@ -427,45 +432,56 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasConstraintName("FK_GuildLinks_Guild");
         });
 
-        modelBuilder.Entity<GuildMessage>(entity =>
+        modelBuilder.Entity<GuildApplication>(entity =>
         {
+            entity.ToTable("GuildApplication");
+
+            entity.HasKey(e => e.Id).HasName("PK_GuildApplication");
+
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Message).HasColumnType("text");
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Message).HasMaxLength(1000);
+            entity.Property(e => e.ReviewedAt).HasColumnType("datetime");
 
-            entity.HasOne(d => d.IdCharacterNavigation).WithMany(p => p.GuildMessages)
+            // Officer review queue, and the "already applied?" lookup on a guild sheet.
+            entity.HasIndex(e => new { e.IdGuild, e.IdStatus }, "IX_GuildApplication_Review");
+            entity.HasIndex(e => new { e.IdCharacter, e.IdStatus }, "IX_GuildApplication_Candidate");
+
+            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GuildApplications)
+                .HasForeignKey(d => d.IdGuild)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_GuildApplication_Guild");
+
+            entity.HasOne(d => d.IdCharacterNavigation).WithMany(p => p.GuildApplications)
                 .HasForeignKey(d => d.IdCharacter)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_GuildMessages_Characters");
+                .HasConstraintName("FK_GuildApplication_Character");
 
-            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GuildMessages)
-                .HasForeignKey(d => d.IdGuild)
+            entity.HasOne(d => d.IdReviewerNavigation).WithMany()
+                .HasForeignKey(d => d.IdReviewer)
+                .HasConstraintName("FK_GuildApplication_Reviewer");
+
+            entity.HasOne(d => d.IdStatusNavigation).WithMany(p => p.GuildApplications)
+                .HasForeignKey(d => d.IdStatus)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_GuildMessages_Guilds");
+                .HasConstraintName("FK_GuildApplication_Status");
         });
 
-        modelBuilder.Entity<GuildRequest>(entity =>
+        modelBuilder.Entity<GuildApplicationStatus>(entity =>
         {
-            entity.ToTable("GuildRequest");
+            entity.ToTable("GuildApplicationStatus");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
+            entity.Property(e => e.Entitled).HasMaxLength(150);
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Request).HasColumnType("text");
-            entity.Property(e => e.Title).HasMaxLength(255);
-
-            entity.HasOne(d => d.IdGuildNavigation).WithMany(p => p.GuildRequests)
-                .HasForeignKey(d => d.IdGuild)
-                .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_GuildRequest_Guilds");
         });
 
         modelBuilder.Entity<GuildVip>(entity =>

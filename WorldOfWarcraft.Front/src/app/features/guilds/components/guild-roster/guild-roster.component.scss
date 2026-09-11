@@ -1,0 +1,97 @@
+.guild-roster__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+}
+
+.guild-roster__count {
+    font-size: 0.8rem;
+    opacity: 0.7;
+}
+
+.guild-members {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 0.5rem;
+}
+
+.guild-member {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.65rem 0.75rem;
+    border-radius: 0.75rem;
+    background: color-mix(in srgb, currentColor 4%, transparent);
+}
+
+.guild-member--skeleton {
+    pointer-events: none;
+    cursor: default;
+}
+
+.guild-member--skeleton .guild-member__main {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.guild-member__avatar-wrap {
+    flex: 0 0 auto;
+}
+
+.guild-member__avatar {
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 50%;
+    object-fit: cover;
+    display: grid;
+    place-items: center;
+}
+
+.guild-member__avatar--fallback {
+    background: color-mix(in srgb, currentColor 14%, transparent);
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.guild-member__main {
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+.guild-member__head {
+    display: flex;
+    align-items: baseline;
+    gap: 0.5rem;
+}
+
+.guild-member__rank {
+    font-size: 0.7rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    padding: 0.1rem 0.45rem;
+    border-radius: 999px;
+    background: color-mix(in srgb, currentColor 12%, transparent);
+}
+
+.guild-member__spec {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.75;
+}
+
+.guild-member__actions {
+    flex: 0 0 auto;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.guild-members__empty {
+    font-size: 0.9rem;
+    opacity: 0.75;
+}

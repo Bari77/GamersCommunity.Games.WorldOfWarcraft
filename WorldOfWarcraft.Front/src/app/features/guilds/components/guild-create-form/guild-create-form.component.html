@@ -1,0 +1,122 @@
+<form class="guild-create" (ngSubmit)="submit()">
+    <div class="guild-create__grid">
+        <div class="guild-create__field">
+            <label for="guild-entitled" i18n="@@wow.guild.form.name">Guild name</label>
+            <input
+                id="guild-entitled"
+                nbInput
+                fullWidth
+                type="text"
+                maxlength="50"
+                [ngModel]="entitled()"
+                (ngModelChange)="entitled.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+            <small class="guild-create__hint" i18n="@@wow.guild.form.nameHint">
+                A number is appended to the name to keep the handle unique, like Nightfall#1274.
+            </small>
+        </div>
+
+        <div class="guild-create__field">
+            <span i18n="@@wow.guild.form.founder">Founding character</span>
+            <nb-select
+                fullWidth
+                placeholder="—"
+                [ngModel]="founderPublicId()"
+                (ngModelChange)="founderPublicId.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            >
+                @for (character of candidates(); track character.publicId) {
+                    <nb-option [value]="character.publicId">
+                        {{ character.pseudo }} · {{ character.serverName | gameTerm }}
+                    </nb-option>
+                }
+            </nb-select>
+            <small class="guild-create__hint" i18n="@@wow.guild.form.founderHint">
+                The guild inherits its server and faction from this character, which becomes its leader.
+            </small>
+        </div>
+    </div>
+
+    <div class="guild-create__field">
+        <label for="guild-sentence" i18n="@@wow.guild.form.sentence">Catchphrase</label>
+        <textarea
+            id="guild-sentence"
+            nbInput
+            fullWidth
+            rows="2"
+            maxlength="255"
+            [ngModel]="sentence()"
+            (ngModelChange)="sentence.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+        ></textarea>
+    </div>
+
+    <div class="guild-create__grid">
+        <div class="guild-create__field">
+            <label for="guild-discord" i18n="@@wow.guild.form.discord">Discord link</label>
+            <input
+                id="guild-discord"
+                nbInput
+                fullWidth
+                type="url"
+                placeholder="https://discord.gg/…"
+                [ngModel]="linkDiscord()"
+                (ngModelChange)="linkDiscord.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
+
+        <div class="guild-create__field">
+            <label for="guild-forum" i18n="@@wow.guild.form.forum">Forum link</label>
+            <input
+                id="guild-forum"
+                nbInput
+                fullWidth
+                type="url"
+                placeholder="https://…"
+                [ngModel]="linkForum()"
+                (ngModelChange)="linkForum.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            />
+        </div>
+    </div>
+
+    @if (errorCode(); as code) {
+        <p class="guild-create__error" role="alert">
+            @switch (code) {
+                @case ("CHARACTER_NOT_OWNED") {
+                    <span i18n="@@wow.guild.error.characterNotOwned">This character is not one of yours.</span>
+                }
+                @case ("CHARACTER_ALREADY_IN_GUILD") {
+                    <span i18n="@@wow.guild.error.characterInGuild">
+                        This character already belongs to a guild. A character may only join one.
+                    </span>
+                }
+                @case ("INVALID_LINK") {
+                    <span i18n="@@wow.guild.error.invalidLink">Links must start with http:// or https://.</span>
+                }
+                @case ("LINK_TOO_LONG") {
+                    <span i18n="@@wow.guild.error.linkTooLong">This link is too long.</span>
+                }
+                @case ("DISCRIMINATOR_EXHAUSTED") {
+                    <span i18n="@@wow.guild.error.nameExhausted">
+                        Too many guilds share this name. Please pick another one.
+                    </span>
+                }
+                @default {
+                    <span i18n="@@wow.guild.error.createFailed">The guild could not be created.</span>
+                }
+            }
+        </p>
+    }
+
+    <footer class="guild-create__actions">
+        <button nbButton ghost status="basic" type="button" (click)="cancel.emit()">
+            <span i18n="@@wow.guild.form.cancel">Cancel</span>
+        </button>
+        <button nbButton status="primary" type="submit" [disabled]="!canSave()">
+            <span i18n="@@wow.guild.form.submit">Found the guild</span>
+        </button>
+    </footer>
+</form>

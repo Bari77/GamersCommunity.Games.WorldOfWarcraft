@@ -36,6 +36,9 @@ public sealed class CharacterDto
     public Guid? GuildPublicId { get; init; }
     public string? GuildName { get; init; }
     public string? GuildDiscriminator { get; init; }
+
+    /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GuildRankCodes"/>. Null when unguilded.</summary>
+    public string? GuildRank { get; init; }
 }
 
 public sealed class CharacterListRequest

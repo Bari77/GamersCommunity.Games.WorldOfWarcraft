@@ -122,6 +122,7 @@ export const mockCharacters: CharacterDto[] = [
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
+        guildRank: "officer",
     },
     {
         publicId: "77777777-7777-7777-7777-777777777777",
@@ -150,6 +151,7 @@ export const mockCharacters: CharacterDto[] = [
         guildPublicId: null,
         guildName: null,
         guildDiscriminator: null,
+        guildRank: null,
     },
 ];
 
@@ -188,5 +190,6 @@ export function buildMockCharacter(request: CharacterCreateRequestDto, publicId:
         guildPublicId: null,
         guildName: null,
         guildDiscriminator: null,
+        guildRank: null,
     };
 }
