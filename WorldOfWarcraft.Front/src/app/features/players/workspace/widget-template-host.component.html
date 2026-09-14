@@ -45,7 +45,11 @@
 
 <ng-template gcWidget="characters">
     @if (preview()) {
-        <p class="widget-host__empty">Character list preview</p>
+        <div class="widget-host__character-grid">
+            @for (character of previewCharacters; track character.publicId) {
+                <wow-character-card [character]="character" />
+            }
+        </div>
     } @else {
         <wow-character-list
             [playerPublicId]="view().publicId"
@@ -57,7 +61,7 @@
 
 <ng-template gcWidget="photos">
     @if (preview()) {
-        <p class="widget-host__empty">Photo gallery preview</p>
+        <gc-media-gallery kind="photo" [items]="previewPhotos" [emptyLabel]="previewPhotosEmpty" />
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="photo" />
     }
@@ -65,7 +69,7 @@
 
 <ng-template gcWidget="videos">
     @if (preview()) {
-        <p class="widget-host__empty">Video gallery preview</p>
+        <gc-media-gallery kind="video" [items]="previewVideos" [emptyLabel]="previewVideosEmpty" />
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="video" />
     }
@@ -73,7 +77,16 @@
 
 <ng-template gcWidget="streams">
     @if (preview()) {
-        <p class="widget-host__empty">Streams preview</p>
+        <div class="widget-host__streams">
+            @for (stream of previewStreams; track stream.url) {
+                <figure class="widget-host__stream">
+                    <gc-twitch-embed [channel]="stream.url" />
+                    @if (stream.title) {
+                        <figcaption>{{ stream.title }}</figcaption>
+                    }
+                </figure>
+            }
+        </div>
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="stream" />
     }
@@ -81,7 +94,7 @@
 
 <ng-template gcWidget="gc-links">
     @if (preview()) {
-        <p class="widget-host__empty">Links preview</p>
+        <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
     } @else {
         <wow-link-board [playerPublicId]="view().publicId" />
     }

@@ -27,7 +27,7 @@
 
 <ng-template gcWidget="guild-roster">
     @if (preview()) {
-        <p class="widget-host__empty">Roster preview</p>
+        <wow-guild-roster [members]="view().members" [viewerRank]="view().viewerRank" [busy]="true" />
     } @else {
         <wow-guild-roster
             [members]="view().members"
@@ -44,7 +44,7 @@
 
 <ng-template gcWidget="guild-wall">
     @if (preview()) {
-        <p class="widget-host__empty">Guild wall preview</p>
+        <wow-workspace-preview-wall />
     } @else {
         <wow-guild-wall
             [guildPublicId]="view().publicId"
@@ -58,7 +58,7 @@
 
 <ng-template gcWidget="guild-applications">
     @if (preview()) {
-        <p class="widget-host__empty">Applications preview</p>
+        <wow-workspace-preview-applications />
     } @else if (view().canModerate()) {
         <wow-guild-applications [guildPublicId]="view().publicId" (reviewed)="rosterChanged.emit()" />
     } @else {
@@ -70,7 +70,7 @@
 
 <ng-template gcWidget="guild-recruitment">
     @if (preview()) {
-        <p class="widget-host__empty">Recruitment preview</p>
+        <wow-guild-apply-form [candidates]="previewApplyCandidates" />
     } @else if (needsSheet()) {
         <wow-create-sheet-wall [message]="sheetWallMessage" />
     } @else {
@@ -91,12 +91,12 @@
 </ng-template>
 
 <ng-template gcWidget="guild-videos" let-settings>
-    <gc-media-gallery kind="video" [items]="galleryItems(settings)" [emptyLabel]="emptyGalleryLabel" />
+    <gc-media-gallery kind="video" [items]="videoItems(settings)" [emptyLabel]="emptyGalleryLabel" />
 </ng-template>
 
 <ng-template gcWidget="gc-links">
     @if (preview()) {
-        <p class="widget-host__empty">Links preview</p>
+        <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
     } @else {
         <wow-guild-link-board [guildPublicId]="view().publicId" />
     }

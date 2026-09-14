@@ -1,0 +1,36 @@
+<nb-card>
+    <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
+    <nb-card-body>
+        <div class="guild-wall__composer">
+            <p class="guild-wall__notice" i18n="@@wow.workspace.preview.wall.composer">
+                Sample composer area for layout sizing.
+            </p>
+        </div>
+
+        <ul class="guild-posts">
+            @for (post of posts; track post.author) {
+                <li class="guild-post">
+                    <header class="guild-post__head">
+                        <span class="guild-post__author">{{ post.author }}</span>
+                        <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
+                    </header>
+                    <p class="guild-post__body">{{ post.body }}</p>
+                    @if (post.audience) {
+                        <p class="guild-post__audience">
+                            <span i18n="@@wow.guild.wall.audience">Readable from</span>
+                            <strong>{{ post.audience }}</strong>
+                        </p>
+                    }
+                    <footer class="guild-post__actions">
+                        <button nbButton ghost size="small" status="basic" type="button" tabindex="-1">
+                            <span i18n="@@wow.guild.wall.edit">Edit</span>
+                        </button>
+                        <button nbButton ghost size="small" status="danger" type="button" tabindex="-1">
+                            <span i18n="@@wow.guild.wall.delete">Delete</span>
+                        </button>
+                    </footer>
+                </li>
+            }
+        </ul>
+    </nb-card-body>
+</nb-card>

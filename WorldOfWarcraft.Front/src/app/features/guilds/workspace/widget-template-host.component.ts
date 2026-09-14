@@ -2,6 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
 import {
     GcGalleryItem,
+    LinkListComponent,
     MediaGalleryComponent,
     WidgetDefDirective,
     WidgetSettings,
@@ -20,6 +21,14 @@ import { GuildWallComponent } from "@features/guilds/components/guild-wall/guild
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GuildSheet } from "@features/guilds/models/guild.model";
 import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guild";
+import {
+    WORKSPACE_PREVIEW_APPLY_CANDIDATES,
+    WORKSPACE_PREVIEW_GUILD_LINKS,
+    WORKSPACE_PREVIEW_GUILD_PHOTOS,
+    WORKSPACE_PREVIEW_GUILD_VIDEOS,
+} from "@features/guilds/workspace/preview-guild-data";
+import { WorkspacePreviewApplicationsComponent } from "@features/guilds/workspace/workspace-preview-applications.component";
+import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/workspace-preview-wall.component";
 
 /** Declares every WoW widget template for the guild page and the workspace editor. */
 @Component({
@@ -34,9 +43,12 @@ import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guil
         GuildLinkBoardComponent,
         GuildRosterComponent,
         GuildWallComponent,
+        LinkListComponent,
         MediaGalleryComponent,
         WidgetDefDirective,
         WidgetSettingsDefDirective,
+        WorkspacePreviewApplicationsComponent,
+        WorkspacePreviewWallComponent,
     ],
     templateUrl: "./widget-template-host.component.html",
     styleUrl: "./widget-template-host.component.scss",
@@ -74,6 +86,11 @@ export class WowGuildWidgetTemplateHostComponent {
 
     protected readonly emptyGalleryLabel = $localize`:@@wow.guild.widget.media.empty:Nothing here yet.`;
     protected readonly sheetWallMessage = $localize`:@@wow.guild.sheetWall:Create your player profile to apply to this guild.`;
+    protected readonly previewApplyCandidates = WORKSPACE_PREVIEW_APPLY_CANDIDATES;
+    protected readonly previewLinks = WORKSPACE_PREVIEW_GUILD_LINKS;
+    protected readonly previewLinksEmpty = $localize`:@@wow.links.empty:No link shared yet.`;
+    protected readonly previewPhotos = WORKSPACE_PREVIEW_GUILD_PHOTOS;
+    protected readonly previewVideos = WORKSPACE_PREVIEW_GUILD_VIDEOS;
 
     /**
      * Guild galleries are configured from the widget settings rather than an API, so the leader
@@ -82,15 +99,42 @@ export class WowGuildWidgetTemplateHostComponent {
     protected galleryItems(settings: WidgetSettings): GcGalleryItem[] {
         const items = settings["items"];
         if (!Array.isArray(items)) {
-            return [];
+            return this.preview() ? this.previewPhotos : [];
         }
 
-        return items
+        const configured = items
             .map((item) => item as { url?: unknown; title?: unknown })
             .filter((item) => typeof item.url === "string" && item.url.trim().length > 0)
             .map((item) => ({
                 url: (item.url as string).trim(),
                 title: typeof item.title === "string" ? item.title : null,
             }));
+
+        if (configured.length > 0) {
+            return configured;
+        }
+
+        return this.preview() ? this.previewPhotos : [];
+    }
+
+    protected videoItems(settings: WidgetSettings): GcGalleryItem[] {
+        const items = settings["items"];
+        if (!Array.isArray(items)) {
+            return this.preview() ? this.previewVideos : [];
+        }
+
+        const configured = items
+            .map((item) => item as { url?: unknown; title?: unknown })
+            .filter((item) => typeof item.url === "string" && item.url.trim().length > 0)
+            .map((item) => ({
+                url: (item.url as string).trim(),
+                title: typeof item.title === "string" ? item.title : null,
+            }));
+
+        if (configured.length > 0) {
+            return configured;
+        }
+
+        return this.preview() ? this.previewVideos : [];
     }
 }
