@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { CharacterSummary } from "@features/home/models/home-feed.model";
+import { CharacterSummary } from "@features/characters/models/character.model";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 

@@ -4,10 +4,20 @@ import {
     CharacterOptionsDto,
 } from "@features/characters/dto/character.dto";
 import { PlayerSheetDto } from "@features/players/dto/player.dto";
+import { GuildCrestDto } from "@shared/models/guild-crest";
 
 export const PLAYER_PUBLIC_ID = "22222222-2222-2222-2222-222222222222";
 export const PLATFORM_USER_PUBLIC_ID = "33333333-3333-3333-3333-333333333333";
 const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
+
+const GUILD_CREST: GuildCrestDto = {
+    emblem: 42,
+    emblemColor: "#f0e6c8",
+    border: 3,
+    borderColor: "#c8a95a",
+    backgroundColor: "#1e2a4a",
+    faction: "alliance",
+};
 
 export const mockPlayerSheet: PlayerSheetDto = {
     publicId: PLAYER_PUBLIC_ID,
@@ -22,6 +32,13 @@ export const mockPlayerSheet: PlayerSheetDto = {
     creationDate: new Date("2024-02-11T10:00:00Z").toISOString(),
     characterCount: 2,
     layoutJson: null,
+    guild: {
+        publicId: GUILD_PUBLIC_ID,
+        entitled: "Guardians of Azeroth",
+        discriminator: "0001",
+        rank: "officer",
+        crest: GUILD_CREST,
+    },
 };
 
 export const mockCharacterOptions: CharacterOptionsDto = {
@@ -123,6 +140,7 @@ export const mockCharacters: CharacterDto[] = [
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
         guildRank: "officer",
+        guildCrest: GUILD_CREST,
     },
     {
         publicId: "77777777-7777-7777-7777-777777777777",

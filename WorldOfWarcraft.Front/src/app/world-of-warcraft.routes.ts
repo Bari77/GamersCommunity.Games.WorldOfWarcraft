@@ -24,6 +24,14 @@ export const worldOfWarcraftRoutes: Routes = [
             import("@features/players/pages/player-sheet/player-sheet.component").then((m) => m.PlayerSheetComponent),
     },
     {
+        path: "search",
+        data: { breadcrumb: $localize`:@@wow.breadcrumb.search:Search` },
+        loadComponent: () =>
+            import("@features/search/pages/global-search/global-search.component").then(
+                (m) => m.GlobalSearchComponent,
+            ),
+    },
+    {
         path: "guilds",
         data: { breadcrumb: $localize`:@@wow.breadcrumb.guilds:Guilds` },
         loadComponent: () =>
@@ -36,11 +44,5 @@ export const worldOfWarcraftRoutes: Routes = [
         data: { breadcrumb: $localize`:@@wow.breadcrumb.guild:Guild` },
         loadComponent: () =>
             import("@features/guilds/pages/guild-sheet/guild-sheet.component").then((m) => m.GuildSheetComponent),
-    },
-    {
-        path: "lfg",
-        data: { breadcrumb: $localize`:@@wow.breadcrumb.lfg:Looking for group` },
-        loadComponent: () =>
-            import("@features/lfg/pages/lfg-board/lfg-board.component").then((m) => m.LfgBoardComponent),
     },
 ];

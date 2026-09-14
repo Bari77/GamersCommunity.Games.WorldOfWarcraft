@@ -18,42 +18,56 @@
 
             <div class="guild-admin__grid">
                 <div class="guild-admin__field">
-                    <label for="guild-admin-discord" i18n="@@wow.guild.form.discord">Discord link</label>
+                    <label for="guild-admin-level" i18n="@@wow.guild.form.level">Guild level</label>
                     <input
-                        id="guild-admin-discord"
+                        id="guild-admin-level"
                         nbInput
                         fullWidth
-                        type="url"
-                        placeholder="https://discord.gg/…"
-                        [ngModel]="linkDiscord()"
-                        (ngModelChange)="linkDiscord.set($event)"
+                        type="number"
+                        min="1"
+                        max="100"
+                        [ngModel]="level()"
+                        (ngModelChange)="level.set($event)"
                         [ngModelOptions]="{ standalone: true }"
                     />
+                    <p class="guild-admin__hint" i18n="@@wow.guild.form.levelHint">
+                        Keep it in step with the game; the sheet shows it next to the faction.
+                    </p>
                 </div>
 
                 <div class="guild-admin__field">
-                    <label for="guild-admin-forum" i18n="@@wow.guild.form.forum">Forum link</label>
-                    <input
-                        id="guild-admin-forum"
-                        nbInput
+                    <span i18n="@@wow.guild.form.orientation">What the guild plays</span>
+                    <nb-select
                         fullWidth
-                        type="url"
-                        placeholder="https://…"
-                        [ngModel]="linkForum()"
-                        (ngModelChange)="linkForum.set($event)"
+                        [ngModel]="orientation()"
+                        (ngModelChange)="orientation.set($event)"
                         [ngModelOptions]="{ standalone: true }"
-                    />
+                    >
+                        @for (option of orientationOptions; track option.value) {
+                            <nb-option [value]="option.value">{{ option.label }}</nb-option>
+                        }
+                    </nb-select>
                 </div>
+            </div>
+
+            <div class="guild-admin__field">
+                <span i18n="@@wow.guild.form.crest">Guild crest</span>
+                <wow-guild-crest-editor [crest]="crest()" (changed)="crest.set($event)" />
             </div>
 
             @if (errorCode(); as code) {
                 <p class="guild-admin__error" role="alert">
                     @switch (code) {
-                        @case ("INVALID_LINK") {
-                            <span i18n="@@wow.guild.error.invalidLink">Links must start with http:// or https://.</span>
+                        @case ("INVALID_LEVEL") {
+                            <span i18n="@@wow.guild.error.invalidLevel">The level must be between 1 and 100.</span>
                         }
-                        @case ("LINK_TOO_LONG") {
-                            <span i18n="@@wow.guild.error.linkTooLong">This link is too long.</span>
+                        @case ("INVALID_CREST") {
+                            <span i18n="@@wow.guild.error.invalidCrest">This crest cannot be used.</span>
+                        }
+                        @case ("INVALID_ORIENTATION") {
+                            <span i18n="@@wow.guild.error.invalidOrientation">
+                                Pick PvE, PvP or both for the guild.
+                            </span>
                         }
                         @case ("GUILD_RANK_REQUIRED") {
                             <span i18n="@@wow.guild.error.rankRequired">

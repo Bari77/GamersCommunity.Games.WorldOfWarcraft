@@ -1,97 +1,154 @@
-.guild-roster__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 0.75rem;
-}
-
-.guild-roster__count {
-    font-size: 0.8rem;
-    opacity: 0.7;
-}
-
-.guild-members {
-    list-style: none;
-    margin: 0;
-    padding: 0;
+.guild-roster__grid {
     display: grid;
-    gap: 0.5rem;
-}
-
-.guild-member {
-    display: flex;
-    align-items: center;
+    grid-template-columns: repeat(auto-fill, minmax(16rem, 1fr));
     gap: 0.85rem;
-    padding: 0.65rem 0.75rem;
-    border-radius: 0.75rem;
-    background: color-mix(in srgb, currentColor 4%, transparent);
 }
 
-.guild-member--skeleton {
-    pointer-events: none;
-    cursor: default;
-}
-
-.guild-member--skeleton .guild-member__main {
+/* Same card as the character widget, so a roster reads like a list of characters. */
+.member-card {
+    position: relative;
     display: flex;
     flex-direction: column;
-    gap: 0.35rem;
+    gap: 0.6rem;
+    padding: 1rem 1rem 1rem 1.4rem;
+    border-radius: 0.75rem;
+    background: var(--gc-surface-2, rgba(255, 255, 255, 0.04));
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    overflow: hidden;
+    transition:
+        transform 0.15s ease,
+        border-color 0.15s ease;
 }
 
-.guild-member__avatar-wrap {
-    flex: 0 0 auto;
+.member-card::before {
+    content: "";
+    position: absolute;
+    inset: 0 auto 0 0;
+    width: 4px;
+    background: var(--class-color);
 }
 
-.guild-member__avatar {
-    width: 2.5rem;
-    height: 2.5rem;
-    border-radius: 50%;
-    object-fit: cover;
-    display: grid;
-    place-items: center;
+.member-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--class-color) 45%, transparent);
 }
 
-.guild-member__avatar--fallback {
-    background: color-mix(in srgb, currentColor 14%, transparent);
-    font-weight: 600;
-    text-transform: uppercase;
+.member-card--skeleton {
+    pointer-events: none;
 }
 
-.guild-member__main {
-    flex: 1 1 auto;
-    min-width: 0;
-}
-
-.guild-member__head {
+.member-card__head {
     display: flex;
-    align-items: baseline;
+    align-items: flex-start;
     gap: 0.5rem;
 }
 
-.guild-member__rank {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
+.member-card__emblem {
+    flex: none;
+    box-shadow: 0 0 0 1px color-mix(in srgb, var(--class-color) 55%, transparent);
+    border-radius: 0.3rem;
+}
+
+.member-card__who {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.member-card__name {
+    margin: 0;
+    font-size: 1.1rem;
+    line-height: 1.5rem;
+    font-weight: 600;
+    color: var(--class-color);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.member-card__tags {
+    display: flex;
+    gap: 0.3rem;
+    min-height: 1.05rem;
+    margin: 0;
+}
+
+.member-card__rank {
     padding: 0.1rem 0.45rem;
     border-radius: 999px;
-    background: color-mix(in srgb, currentColor 12%, transparent);
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: color-mix(in srgb, var(--class-color) 22%, transparent);
+    color: var(--class-color);
 }
 
-.guild-member__spec {
-    display: block;
-    font-size: 0.8rem;
-    opacity: 0.75;
+.member-card__level {
+    flex: none;
+    font-size: 1.35rem;
+    font-weight: 700;
+    line-height: 1.5rem;
+    opacity: 0.55;
 }
 
-.guild-member__actions {
-    flex: 0 0 auto;
+.member-card__spec {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0;
+    font-size: 0.9rem;
+    opacity: 0.85;
+}
+
+.member-card__spec--empty {
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.member-card__facts {
     display: flex;
     flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 0.25rem;
+    gap: 0.35rem 0.5rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
 }
 
-.guild-members__empty {
+.member-card__facts li {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.1rem 0.5rem;
+    border-radius: 999px;
+    font-size: 0.72rem;
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.member-card__handle {
+    font-size: 0.8rem;
+    color: inherit;
+    opacity: 0.7;
+    text-decoration: none;
+}
+
+.member-card__handle:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+.member-card__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem;
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.guild-roster__empty {
+    grid-column: 1 / -1;
+    margin: 0;
     font-size: 0.9rem;
     opacity: 0.75;
 }

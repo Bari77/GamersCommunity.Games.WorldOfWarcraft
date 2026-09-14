@@ -8,7 +8,8 @@ import {
     GuildMember,
     guildRankWeight,
 } from "@features/guilds/models/guild.model";
-import { NbButtonModule, NbCardModule } from "@nebular/theme";
+import { NbButtonModule } from "@nebular/theme";
+import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 
 export interface RankChange {
@@ -19,13 +20,12 @@ export interface RankChange {
 @Component({
     standalone: true,
     selector: "wow-guild-roster",
-    imports: [RouterLink, GameTermPipe, NbButtonModule, NbCardModule, SkeletonComponent],
+    imports: [RouterLink, GameTermPipe, NbButtonModule, SkeletonComponent, WowIconComponent],
     templateUrl: "./guild-roster.component.html",
     styleUrl: "./guild-roster.component.scss",
 })
 export class GuildRosterComponent {
     public readonly members = input.required<GuildMember[]>();
-    public readonly memberCount = input(0);
     public readonly viewerRank = input<string | null>(null);
     public readonly loading = input(false);
     public readonly busy = input(false);
@@ -76,5 +76,16 @@ export class GuildRosterComponent {
 
     protected canLeave(member: GuildMember): boolean {
         return this.isMine(member) && !member.isLeader();
+    }
+
+    /** Keeps the card free of an empty footer for the visitors who may do nothing. */
+    protected hasActions(member: GuildMember): boolean {
+        return (
+            this.canPromote(member) ||
+            this.canDemote(member) ||
+            this.canTransfer(member) ||
+            this.canKick(member) ||
+            this.canLeave(member)
+        );
     }
 }

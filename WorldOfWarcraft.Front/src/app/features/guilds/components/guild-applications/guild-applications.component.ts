@@ -2,6 +2,7 @@ import { DatePipe } from "@angular/common";
 import { Component, inject, input, OnInit, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { GuildApplicationsStore } from "@features/guilds/stores/guild-applications.store";
 import { NbButtonModule, NbCardModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
@@ -34,6 +35,11 @@ export class GuildApplicationsComponent implements OnInit {
 
     public async ngOnInit(): Promise<void> {
         await this.store.load(this.guildPublicId());
+    }
+
+    /** The in-game sheet, not the platform account: an officer judges a candidate on their game profile. */
+    protected playerLink(playerPublicId: string): string[] {
+        return [`${WOW_GAME_URL}/players`, playerPublicId];
     }
 
     protected async review(publicId: string, accept: boolean): Promise<void> {

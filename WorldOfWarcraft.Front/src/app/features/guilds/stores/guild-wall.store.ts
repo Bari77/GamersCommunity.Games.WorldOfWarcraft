@@ -6,6 +6,13 @@ import { firstValueFrom } from "rxjs";
 
 const PAGE_SIZE = 20;
 
+/** What the publish and edit forms both carry. */
+export interface GamePostDraft {
+    body: string;
+    mediaUrl: string | null;
+    visibility: string;
+}
+
 @Injectable()
 export class GuildWallStore {
     public readonly posts = signal<GamePost[]>([]);
@@ -87,7 +94,7 @@ export class GuildWallStore {
      * Returns the created post so the caller can tell a published message from one that landed in
      * the review queue, the two outcomes of the same button depending on the author's rank.
      */
-    public async publish(body: string, mediaUrl: string | null): Promise<GamePost | null> {
+    public async publish(draft: GamePostDraft): Promise<GamePost | null> {
         const guildPublicId = this.guildPublicId;
         if (!guildPublicId || this.posting()) {
             return null;
@@ -95,8 +102,9 @@ export class GuildWallStore {
 
         const request: GamePostCreateRequestDto = {
             guildPublicId,
-            body,
-            ...(mediaUrl ? { mediaUrl, mediaKind: "image" } : {}),
+            body: draft.body,
+            visibility: draft.visibility,
+            ...(draft.mediaUrl ? { mediaUrl: draft.mediaUrl, mediaKind: "image" } : {}),
         };
 
         this.posting.set(true);
@@ -108,6 +116,52 @@ export class GuildWallStore {
             } else {
                 this.posts.update((current) => [post, ...current]);
             }
+            return post;
+        } catch (err: unknown) {
+            this.errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");
+            return null;
+        } finally {
+            this.posting.set(false);
+        }
+    }
+
+    /**
+     * Editing an approved post sends a member's version back to the review queue, so the wall drops
+     * it and the officers' list picks it up. Officers keep theirs published.
+     */
+    public async edit(publicId: string, draft: GamePostDraft): Promise<GamePost | null> {
+        if (this.posting()) {
+            return null;
+        }
+
+        this.posting.set(true);
+        this.errorCode.set(null);
+        try {
+            const post = await firstValueFrom(
+                this.gamePosts.update({
+                    publicId,
+                    body: draft.body,
+                    visibility: draft.visibility,
+                    mediaUrl: draft.mediaUrl,
+                    mediaKind: draft.mediaUrl ? "image" : null,
+                }),
+            );
+
+            const replace = (current: GamePost[]) => current.map((item) => (item.publicId === publicId ? post : item));
+            const drop = (current: GamePost[]) => current.filter((item) => item.publicId !== publicId);
+
+            if (post.isPending()) {
+                this.posts.update(drop);
+                this.pending.update((current) =>
+                    current.some((item) => item.publicId === publicId) ? replace(current) : [post, ...current],
+                );
+            } else {
+                this.pending.update(drop);
+                this.posts.update((current) =>
+                    current.some((item) => item.publicId === publicId) ? replace(current) : [post, ...current],
+                );
+            }
+
             return post;
         } catch (err: unknown) {
             this.errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");

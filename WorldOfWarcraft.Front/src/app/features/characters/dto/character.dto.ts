@@ -1,3 +1,9 @@
+import { GuildCrestDto } from "@shared/models/guild-crest";
+
+/**
+ * Optional rather than nullable on every field the back may leave empty: its serializer omits null
+ * properties, so they reach the client as undefined. Models normalize them.
+ */
 export interface CharacterDto {
     publicId: string;
     playerPublicId: string;
@@ -5,7 +11,7 @@ export interface CharacterDto {
     level: number;
     ilvl: number;
     achievement: number;
-    sentence: string | null;
+    sentence?: string | null;
     main: boolean;
     creationDate: string;
     idRace: number;
@@ -14,22 +20,57 @@ export interface CharacterDto {
     serverName: string;
     idDirection: number;
     directionName: string;
-    idAlignment: number | null;
-    alignmentName: string | null;
-    idClass: number | null;
-    className: string | null;
-    idMainSpecializationClass: number | null;
-    mainSpecializationName: string | null;
-    idSecondarySpecializationClass: number | null;
-    secondarySpecializationName: string | null;
-    guildPublicId: string | null;
-    guildName: string | null;
-    guildDiscriminator: string | null;
-    guildRank: string | null;
+    idAlignment?: number | null;
+    alignmentName?: string | null;
+    idClass?: number | null;
+    className?: string | null;
+    idMainSpecializationClass?: number | null;
+    mainSpecializationName?: string | null;
+    idSecondarySpecializationClass?: number | null;
+    secondarySpecializationName?: string | null;
+    guildPublicId?: string | null;
+    guildName?: string | null;
+    guildDiscriminator?: string | null;
+    guildRank?: string | null;
+    guildCrest?: GuildCrestDto | null;
 }
 
 export interface CharacterListRequestDto {
     playerPublicId: string;
+}
+
+export interface CharacterSummaryDto {
+    publicId: string;
+    pseudo: string;
+    level: number;
+    ilvl: number;
+    main: boolean;
+    creationDate: string;
+    playerPublicId: string;
+    serverName: string;
+    raceName: string;
+    className?: string | null;
+    mainSpecializationName?: string | null;
+    guildPublicId?: string | null;
+    guildName?: string | null;
+    guildDiscriminator?: string | null;
+}
+
+export interface CharacterSearchRequestDto {
+    query?: string;
+    idServer?: number;
+    idAlignment?: number;
+    idDirection?: number;
+    idClass?: number;
+    minLevel?: number;
+    beforeCreationDate?: string;
+    beforePublicId?: string;
+    take?: number;
+}
+
+export interface CharacterSearchResultDto {
+    items: CharacterSummaryDto[];
+    hasMore: boolean;
 }
 
 export interface CharacterCreateRequestDto {

@@ -2,6 +2,7 @@ import { Component, computed, effect, input, output, signal, untracked } from "@
 import { FormsModule } from "@angular/forms";
 import { Character } from "@features/characters/models/character.model";
 import { GuildCreateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GUILD_ORIENTATION_OPTIONS, GUILD_ORIENTATION_PVE } from "@features/guilds/models/guild-orientation";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 
@@ -15,6 +16,10 @@ import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 export class GuildCreateFormComponent {
     /** Characters free to found a guild, i.e. the caller's own characters without a membership. */
     public readonly candidates = input.required<Character[]>();
+
+    /** Character the visitor came here to found with, arriving from its card. */
+    public readonly founder = input<string | null>(null);
+
     public readonly saving = input(false);
     public readonly errorCode = input<string | null>(null);
 
@@ -24,8 +29,9 @@ export class GuildCreateFormComponent {
     protected readonly entitled = signal("");
     protected readonly founderPublicId = signal<string | null>(null);
     protected readonly sentence = signal("");
-    protected readonly linkDiscord = signal("");
-    protected readonly linkForum = signal("");
+    protected readonly orientation = signal(GUILD_ORIENTATION_PVE);
+
+    protected readonly orientationOptions = GUILD_ORIENTATION_OPTIONS;
 
     protected readonly canSave = computed(
         () => !this.saving() && this.entitled().trim().length > 0 && this.founderPublicId() !== null,
@@ -35,9 +41,15 @@ export class GuildCreateFormComponent {
         // A single free character needs no choice; the founder picker then only states a fact.
         effect(() => {
             const candidates = this.candidates();
+            const founder = this.founder();
             untracked(() => {
                 if (candidates.length === 1) {
                     this.founderPublicId.set(candidates[0].publicId);
+                } else if (
+                    this.founderPublicId() === null &&
+                    candidates.some((character) => character.publicId === founder)
+                ) {
+                    this.founderPublicId.set(founder);
                 } else if (!candidates.some((character) => character.publicId === this.founderPublicId())) {
                     this.founderPublicId.set(null);
                 }
@@ -54,8 +66,7 @@ export class GuildCreateFormComponent {
             entitled: this.entitled().trim(),
             founderCharacterPublicId: this.founderPublicId()!,
             sentence: this.sentence().trim() || null,
-            linkDiscord: this.linkDiscord().trim() || null,
-            linkForum: this.linkForum().trim() || null,
+            orientation: this.orientation(),
         });
     }
 }

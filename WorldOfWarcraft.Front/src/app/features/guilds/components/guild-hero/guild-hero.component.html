@@ -1,0 +1,29 @@
+@let sheet = guild();
+
+<header class="guild-hero">
+    <div class="guild-hero__game">
+        @if (currentGame(); as game) {
+            <img class="guild-hero__game-icon" [src]="game.iconUrl" alt="" />
+        }
+        <div class="guild-hero__game-text">
+            <p class="guild-hero__kicker" i18n="@@wow.guild.hero.kicker">Guild sheet</p>
+            <p class="guild-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</p>
+        </div>
+    </div>
+
+    <div class="guild-hero__identity">
+        <wow-guild-crest class="guild-hero__tabard" [crest]="sheet.crest" [size]="72" />
+        <div class="guild-hero__who">
+            <h1 class="guild-hero__handle gc-display">{{ sheet.handleLabel() }}</h1>
+            <p class="guild-hero__meta">
+                {{ sheet.serverName | gameTerm }} · {{ orientationLabel() }} ·
+                <span i18n="@@wow.guild.level">Level</span> {{ sheet.level }} ·
+                <span i18n="@@wow.guild.since">Created</span> {{ sheet.creationDate | date: "mediumDate" }}
+            </p>
+        </div>
+    </div>
+
+    @if (sheet.viewerRank) {
+        <p class="guild-hero__badge">{{ sheet.viewerRank | gameTerm }}</p>
+    }
+</header>

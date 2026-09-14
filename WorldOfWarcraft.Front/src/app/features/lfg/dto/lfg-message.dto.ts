@@ -16,21 +16,6 @@ export interface LfgMessageDto {
     directionName?: string | null;
 }
 
-export interface SearchLfgRequestDto {
-    kind: string;
-    query?: string;
-    idServer?: number;
-    idDirection?: number;
-    beforeCreationDate?: string;
-    beforePublicId?: string;
-    take?: number;
-}
-
-export interface LfgAdPageDto {
-    items: LfgMessageDto[];
-    hasMore: boolean;
-}
-
 export interface ListLfgBeforeRequestDto {
     kind: string;
     beforeCreationDate: string;

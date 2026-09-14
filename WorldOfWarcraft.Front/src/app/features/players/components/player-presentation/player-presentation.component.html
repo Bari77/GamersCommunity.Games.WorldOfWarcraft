@@ -1,0 +1,36 @@
+@if (editing()) {
+    <div class="presentation__form">
+        <textarea
+            nbInput
+            fullWidth
+            rows="5"
+            maxlength="4000"
+            [ngModel]="draft()"
+            (ngModelChange)="draft.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+        ></textarea>
+        <div class="presentation__actions">
+            <button nbButton ghost size="small" status="basic" (click)="editing.set(false)">
+                <span i18n="@@wow.player.presentation.cancel">Cancel</span>
+            </button>
+            <button nbButton size="small" status="primary" [disabled]="saving()" (click)="submit()">
+                <span i18n="@@wow.player.presentation.save">Save</span>
+            </button>
+        </div>
+    </div>
+} @else {
+    @if (text()) {
+        <p class="presentation__text">{{ text() }}</p>
+    } @else {
+        <p class="presentation__empty" i18n="@@wow.player.noPresentation">
+            This player has not written a presentation yet.
+        </p>
+    }
+
+    @if (canEdit()) {
+        <button class="presentation__edit" nbButton ghost size="small" status="basic" (click)="open()">
+            <nb-icon icon="edit-2-outline"></nb-icon>
+            <span i18n="@@wow.player.presentation.edit">Edit</span>
+        </button>
+    }
+}

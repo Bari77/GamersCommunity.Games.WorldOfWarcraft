@@ -1,0 +1,90 @@
+<form class="guild-post-form" (ngSubmit)="submit()">
+    <textarea
+        nbInput
+        fullWidth
+        rows="3"
+        maxlength="2000"
+        [placeholder]="bodyPlaceholder"
+        [ngModel]="body()"
+        (ngModelChange)="body.set($event)"
+        [ngModelOptions]="{ standalone: true }"
+    ></textarea>
+
+    <input
+        nbInput
+        fullWidth
+        type="url"
+        [placeholder]="mediaPlaceholder"
+        [ngModel]="mediaUrl()"
+        (ngModelChange)="mediaUrl.set($event)"
+        [ngModelOptions]="{ standalone: true }"
+    />
+
+    <div class="guild-post-form__field">
+        <label for="guild-post-visibility" i18n="@@wow.guild.wall.visibility">Visibility</label>
+        <nb-select
+            id="guild-post-visibility"
+            fullWidth
+            [ngModel]="visibility()"
+            (ngModelChange)="visibility.set($event)"
+            [ngModelOptions]="{ standalone: true }"
+        >
+            @for (option of visibilityOptions; track option.value) {
+                <nb-option [value]="option.value">{{ option.label }}</nb-option>
+            }
+        </nb-select>
+        <p class="guild-post-form__hint" i18n="@@wow.guild.wall.visibility.hint">
+            Anything but “Public” stays inside the guild, readable from that rank upwards.
+        </p>
+    </div>
+
+    @if (!moderated()) {
+        <p class="guild-post-form__hint" i18n="@@wow.guild.wall.moderationHint">
+            Your posts are reviewed by an officer before they appear on the wall.
+        </p>
+    }
+
+    @if (errorCode(); as code) {
+        <p class="guild-post-form__error" role="alert">
+            @switch (code) {
+                @case ("MUTED") {
+                    <span i18n="@@wow.guild.wall.error.muted">You are muted and cannot publish for now.</span>
+                }
+                @case ("BANNED") {
+                    <span i18n="@@wow.guild.wall.error.banned">Your account is banned.</span>
+                }
+                @case ("SANCTIONS_UNAVAILABLE") {
+                    <span i18n="@@wow.guild.wall.error.unavailable">
+                        Publishing is unavailable right now. Please try again later.
+                    </span>
+                }
+                @case ("INVALID_MEDIA_URL") {
+                    <span i18n="@@wow.guild.wall.error.media">
+                        The image link must start with http:// or https://.
+                    </span>
+                }
+                @case ("INVALID_VISIBILITY") {
+                    <span i18n="@@wow.guild.wall.error.visibility">That visibility is not one of the choices.</span>
+                }
+                @default {
+                    <span i18n="@@wow.guild.wall.error.unknown">The post could not be sent.</span>
+                }
+            }
+        </p>
+    }
+
+    <footer class="guild-post-form__actions">
+        @if (post()) {
+            <button nbButton ghost status="basic" type="button" [disabled]="saving()" (click)="cancel.emit()">
+                <span i18n="@@wow.guild.form.cancel">Cancel</span>
+            </button>
+            <button nbButton status="primary" type="submit" [disabled]="saving() || !body().trim()">
+                <span i18n="@@wow.guild.wall.saveEdit">Save changes</span>
+            </button>
+        } @else {
+            <button nbButton status="primary" type="submit" [disabled]="saving() || !body().trim()">
+                <span i18n="@@wow.guild.wall.publish">Publish</span>
+            </button>
+        }
+    </footer>
+</form>

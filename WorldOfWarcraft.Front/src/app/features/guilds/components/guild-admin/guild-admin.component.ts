@@ -1,13 +1,23 @@
 import { Component, computed, effect, input, output, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
+import { GuildCrestEditorComponent } from "@features/guilds/components/guild-crest-editor/guild-crest-editor.component";
 import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GUILD_ORIENTATION_OPTIONS, GUILD_ORIENTATION_PVE } from "@features/guilds/models/guild-orientation";
 import { GuildSheet } from "@features/guilds/models/guild.model";
-import { NbButtonModule, NbCardModule, NbInputModule } from "@nebular/theme";
+import { NbButtonModule, NbCardModule, NbInputModule, NbSelectModule } from "@nebular/theme";
+import { GuildCrest } from "@shared/models/guild-crest";
 
 @Component({
     standalone: true,
     selector: "wow-guild-admin",
-    imports: [FormsModule, NbButtonModule, NbCardModule, NbInputModule],
+    imports: [
+        FormsModule,
+        GuildCrestEditorComponent,
+        NbButtonModule,
+        NbCardModule,
+        NbInputModule,
+        NbSelectModule,
+    ],
     templateUrl: "./guild-admin.component.html",
     styleUrl: "./guild-admin.component.scss",
 })
@@ -20,8 +30,11 @@ export class GuildAdminComponent {
     public readonly disband = output<string>();
 
     protected readonly sentence = signal("");
-    protected readonly linkDiscord = signal("");
-    protected readonly linkForum = signal("");
+    protected readonly level = signal(1);
+    protected readonly orientation = signal(GUILD_ORIENTATION_PVE);
+    protected readonly crest = signal(GuildCrest.fromDto(null));
+
+    protected readonly orientationOptions = GUILD_ORIENTATION_OPTIONS;
 
     protected readonly disbandOpen = signal(false);
     protected readonly confirmation = signal("");
@@ -38,15 +51,16 @@ export class GuildAdminComponent {
             const sheet = this.sheet();
             untracked(() => {
                 this.sentence.set(sheet.sentence ?? "");
-                this.linkDiscord.set(sheet.linkDiscord ?? "");
-                this.linkForum.set(sheet.linkForum ?? "");
+                this.level.set(sheet.level);
+                this.orientation.set(sheet.orientationName || GUILD_ORIENTATION_PVE);
+                this.crest.set(sheet.crest);
             });
         });
     }
 
     /**
      * Only the touched fields are sent: an absent field keeps its value, while a field sent as
-     * null erases it, the only way to remove an optional link.
+     * null erases it, the only way to clear the catchphrase.
      */
     protected submit(): void {
         const sheet = this.sheet();
@@ -57,14 +71,18 @@ export class GuildAdminComponent {
             request.sentence = sentence;
         }
 
-        const linkDiscord = this.linkDiscord().trim() || null;
-        if (linkDiscord !== sheet.linkDiscord) {
-            request.linkDiscord = linkDiscord;
+        const level = Number(this.level());
+        if (Number.isInteger(level) && level !== sheet.level) {
+            request.level = level;
         }
 
-        const linkForum = this.linkForum().trim() || null;
-        if (linkForum !== sheet.linkForum) {
-            request.linkForum = linkForum;
+        if (this.orientation() !== sheet.orientationName) {
+            request.orientation = this.orientation();
+        }
+
+        // The editor hands back a new crest on every tweak, so identity tells a touched one apart.
+        if (this.crest() !== sheet.crest) {
+            request.crest = this.crest().toDto();
         }
 
         if (Object.keys(request).length > 0) {

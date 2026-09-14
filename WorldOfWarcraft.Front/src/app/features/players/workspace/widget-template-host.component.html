@@ -17,42 +17,30 @@
 </ng-template>
 
 <ng-template gcWidget="presentation-irl">
-    @if (view().presentationIrl) {
-        <p>{{ view().presentationIrl }}</p>
-    } @else {
-        <p class="widget-host__empty" i18n="@@wow.player.noPresentation">
-            This player has not written a presentation yet.
-        </p>
-    }
+    <wow-player-presentation
+        [text]="view().presentationIrl"
+        [canEdit]="canEditFields()"
+        [saving]="savingField()"
+        (save)="saveField.emit({ presentationIrl: $event })"
+    />
 </ng-template>
 
 <ng-template gcWidget="presentation-ig">
-    @if (view().presentationIg) {
-        <p>{{ view().presentationIg }}</p>
-    } @else {
-        <p class="widget-host__empty" i18n="@@wow.player.noPresentation">
-            This player has not written a presentation yet.
-        </p>
-    }
+    <wow-player-presentation
+        [text]="view().presentationIg"
+        [canEdit]="canEditFields()"
+        [saving]="savingField()"
+        (save)="saveField.emit({ presentationIg: $event })"
+    />
 </ng-template>
 
 <ng-template gcWidget="stats">
-    <ul class="widget-host__stats">
-        <li>
-            <span i18n="@@wow.player.characters">Characters</span>
-            <strong>{{ view().characterCount }}</strong>
-        </li>
-        <li>
-            <span i18n="@@wow.player.mounts">Mounts</span>
-            <strong>{{ view().nbMount }}</strong>
-        </li>
-        @if (view().successPoints !== null) {
-            <li>
-                <span i18n="@@wow.player.successPoints">Achievement points</span>
-                <strong>{{ view().successPoints }}</strong>
-            </li>
-        }
-    </ul>
+    <wow-player-stats
+        [sheet]="view()"
+        [canEdit]="canEditFields()"
+        [saving]="savingField()"
+        (save)="saveField.emit($event)"
+    />
 </ng-template>
 
 <ng-template gcWidget="characters">
@@ -91,7 +79,7 @@
     }
 </ng-template>
 
-<ng-template [gcWidget]="linksWidget()">
+<ng-template gcWidget="gc-links">
     @if (preview()) {
         <p class="widget-host__empty">Links preview</p>
     } @else {
@@ -99,7 +87,7 @@
     }
 </ng-template>
 
-<ng-template [gcWidgetSettings]="linksWidget()">
+<ng-template gcWidgetSettings="gc-links">
     @if (!preview()) {
         <wow-link-admin [playerPublicId]="view().publicId" />
     }

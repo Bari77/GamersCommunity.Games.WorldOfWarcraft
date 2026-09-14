@@ -3,7 +3,7 @@
 <header class="player-hero">
     <div class="player-hero__game">
         @if (currentGame(); as game) {
-            <img class="player-hero__crest" [src]="game.iconUrl" alt="" />
+            <img class="player-hero__game-icon" [src]="game.iconUrl" alt="" />
         }
         <div class="player-hero__game-text">
             <p class="player-hero__kicker" i18n="@@wow.player.hero.kicker">Player sheet</p>
@@ -12,7 +12,17 @@
     </div>
 
     <div class="player-hero__identity">
-        @if (sheet.avatarUrl) {
+        <!-- The tabard of the guild the player mains in stands for them, and the avatar only fills in
+             for the guildless. -->
+        @if (sheet.guild; as guild) {
+            <a
+                class="player-hero__tabard"
+                [routerLink]="['/world-of-warcraft/guilds', guild.publicId]"
+                [title]="guild.handle"
+            >
+                <wow-guild-crest [crest]="guild.crest" [size]="64" [label]="guild.handle" />
+            </a>
+        } @else if (sheet.avatarUrl) {
             <img class="player-hero__avatar" [src]="sheet.avatarUrl" alt="" />
         }
         <div class="player-hero__who">
@@ -24,9 +34,17 @@
             >
                 {{ handle() }}
             </a>
-            <p class="player-hero__since">
-                <span i18n="@@wow.player.since">Member since</span>
-                {{ sheet.creationDate | date: "mediumDate" }}
+            <p class="player-hero__meta">
+                <span>
+                    <span i18n="@@wow.player.since">Member since</span>
+                    {{ sheet.creationDate | date: "mediumDate" }}
+                </span>
+                @if (sheet.guild; as guild) {
+                    <a class="player-hero__guild" [routerLink]="['/world-of-warcraft/guilds', guild.publicId]">
+                        {{ guild.entitled }}
+                        <span class="player-hero__guild-rank">{{ guild.rank | gameTerm }}</span>
+                    </a>
+                }
             </p>
         </div>
     </div>

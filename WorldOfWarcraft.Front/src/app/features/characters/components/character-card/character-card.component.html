@@ -28,7 +28,7 @@
     <p class="character-card__spec">
         @if (item.className) {
             <wow-icon kind="role" [slug]="role()" [label]="roleName()" [size]="18" />
-            {{ item.mainSpecializationName | gameTerm }} {{ item.className | gameTerm }}
+            {{ item.className | gameTerm }} {{ item.mainSpecializationName | gameTerm }}
         } @else {
             <span class="character-card__spec--empty" i18n="@@wow.character.noSpec">No specialization</span>
         }
@@ -59,7 +59,28 @@
 
     @if (item.guildPublicId) {
         <a class="character-card__guild" [routerLink]="['/world-of-warcraft/guilds', item.guildPublicId]">
-            {{ item.guildHandle }}
+            @if (item.guildCrest) {
+                <wow-guild-crest class="character-card__guild-crest" [crest]="item.guildCrest" [size]="38" />
+            }
+            <span class="character-card__guild-text">
+                <span class="character-card__guild-name">{{ item.guildName }}</span>
+                <span class="character-card__guild-meta">
+                    <span>#{{ item.guildDiscriminator }}</span>
+                    @if (item.guildRank) {
+                        <span>{{ item.guildRank | gameTerm }}</span>
+                    }
+                </span>
+            </span>
+            <nb-icon class="character-card__guild-go" icon="chevron-right-outline"></nb-icon>
+        </a>
+    } @else if (editable()) {
+        <a
+            class="character-card__guild character-card__guild--found"
+            routerLink="/world-of-warcraft/guilds"
+            [queryParams]="{ found: item.publicId }"
+        >
+            <nb-icon icon="plus-circle-outline"></nb-icon>
+            <span i18n="@@wow.character.foundGuild">Found a guild</span>
         </a>
     }
 

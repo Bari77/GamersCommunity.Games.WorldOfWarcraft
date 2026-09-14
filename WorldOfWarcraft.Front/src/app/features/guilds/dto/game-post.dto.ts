@@ -7,6 +7,10 @@ export interface GamePostDto {
     mediaUrl?: string | null;
     mediaKind?: string | null;
     status: string;
+
+    /** `public`, or the lowest guild rank allowed to read the post. */
+    visibility?: string;
+
     creationDate: string;
     authorPlayerPublicId: string;
     authorPlatformUserPublicId: string;
@@ -34,6 +38,16 @@ export interface GamePostCreateRequestDto {
     body: string;
     mediaUrl?: string | null;
     mediaKind?: string | null;
+    visibility?: string;
+}
+
+/** Reserved to the author, and replacing the post wholesale rather than patching it. */
+export interface GamePostUpdateRequestDto {
+    publicId: string;
+    body: string;
+    mediaUrl?: string | null;
+    mediaKind?: string | null;
+    visibility?: string;
 }
 
 export interface GamePostModerateRequestDto {

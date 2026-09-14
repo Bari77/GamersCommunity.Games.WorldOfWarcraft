@@ -1,0 +1,34 @@
+:host {
+    display: block;
+}
+
+.guild-post-form {
+    display: grid;
+    gap: 0.5rem;
+}
+
+.guild-post-form__field {
+    display: grid;
+    gap: 0.25rem;
+    font-size: 0.85rem;
+}
+
+.guild-post-form__hint,
+.guild-post-form__error {
+    margin: 0;
+    font-size: 0.8rem;
+}
+
+.guild-post-form__hint {
+    opacity: 0.65;
+}
+
+.guild-post-form__error {
+    color: var(--color-danger-default, #ff3d71);
+}
+
+.guild-post-form__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}

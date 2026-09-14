@@ -1,13 +1,12 @@
 <section class="character-list">
-    <header class="character-list__head">
-        <h2 class="gc-display" i18n="@@wow.character.listTitle">Characters</h2>
-        @if (editable() && !formOpen()) {
+    @if (editable() && !formOpen()) {
+        <header class="character-list__head">
             <button nbButton size="small" status="primary" (click)="openCreate()">
                 <nb-icon icon="plus-outline"></nb-icon>
                 <span i18n="@@wow.character.new">New character</span>
             </button>
-        }
-    </header>
+        </header>
+    }
 
     @if (formOpen()) {
         @if (store.options.value(); as options) {

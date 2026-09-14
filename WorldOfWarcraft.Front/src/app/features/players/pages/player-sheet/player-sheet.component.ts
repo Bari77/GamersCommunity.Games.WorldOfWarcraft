@@ -10,11 +10,12 @@ import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { PlayerLinkStore } from "@features/links/stores/player-link.store";
 import { PlayerMediaStores } from "@features/media/stores/player-media-stores";
 import { PlayerHeroComponent } from "@features/players/components/player-hero/player-hero.component";
+import { PlayerUpdateRequestDto } from "@features/players/dto/player.dto";
 import { PlayerSheet } from "@features/players/models/player.model";
 import { PlayersService } from "@features/players/services/players.service";
 import {
+    PLAYER_PAGE_VISIBILITY_OPTIONS,
     PLAYER_WIDGET_CATALOG,
-    PLAYER_WIDGETS,
     PLAYER_WORKSPACE_COLUMNS,
     PLAYER_WORKSPACE_ROW_HEIGHT,
 } from "@features/players/workspace/widget-catalog";
@@ -36,7 +37,7 @@ export class PlayerSheetComponent {
     public readonly catalog = PLAYER_WIDGET_CATALOG;
     public readonly columns = PLAYER_WORKSPACE_COLUMNS;
     public readonly rowHeight = PLAYER_WORKSPACE_ROW_HEIGHT;
-    public readonly linksWidget = PLAYER_WIDGETS.links;
+    public readonly pageVisibilityOptions = PLAYER_PAGE_VISIBILITY_OPTIONS;
 
     public readonly sheet = resource({
         params: () => this.publicId(),
@@ -53,6 +54,8 @@ export class PlayerSheetComponent {
     public readonly editing = signal(false);
     public readonly saving = signal(false);
     public readonly saveFailed = signal(false);
+    public readonly savingField = signal(false);
+    public readonly fieldSaveFailed = signal(false);
 
     public readonly workspace = computed(
         () =>
@@ -84,6 +87,25 @@ export class PlayerSheetComponent {
 
     public onCharactersChanged(): void {
         this.sheet.reload();
+    }
+
+    /** Widgets save one field at a time, so the sheet is reloaded to show the stored value. */
+    public async onSaveField(patch: PlayerUpdateRequestDto): Promise<void> {
+        const sheet = this.sheet.value();
+        if (!sheet) {
+            return;
+        }
+
+        this.savingField.set(true);
+        this.fieldSaveFailed.set(false);
+        try {
+            await firstValueFrom(this.players.update(sheet.publicId, patch));
+            this.sheet.reload();
+        } catch {
+            this.fieldSaveFailed.set(true);
+        } finally {
+            this.savingField.set(false);
+        }
     }
 
     public async onSave(workspace: WidgetWorkspace): Promise<void> {

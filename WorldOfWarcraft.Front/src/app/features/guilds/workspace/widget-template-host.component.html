@@ -1,0 +1,109 @@
+<ng-template gcWidget="guild-presentation">
+    @if (view().sentence) {
+        <p class="widget-host__sentence">{{ view().sentence }}</p>
+    } @else {
+        <p class="widget-host__empty" i18n="@@wow.guild.noSentence">
+            This guild has not written a presentation yet.
+        </p>
+    }
+</ng-template>
+
+<ng-template gcWidget="guild-stats">
+    <ul class="widget-host__stats">
+        <li>
+            <span i18n="@@wow.guild.level">Level</span>
+            <strong>{{ view().level }}</strong>
+        </li>
+        <li>
+            <span i18n="@@wow.guild.members">Members</span>
+            <strong>{{ view().memberCount }}</strong>
+        </li>
+        <li>
+            <span i18n="@@wow.guild.founded">Founded</span>
+            <strong>{{ view().creationDate | date: "mediumDate" }}</strong>
+        </li>
+    </ul>
+</ng-template>
+
+<ng-template gcWidget="guild-roster">
+    @if (preview()) {
+        <p class="widget-host__empty">Roster preview</p>
+    } @else {
+        <wow-guild-roster
+            [members]="view().members"
+            [viewerRank]="view().viewerRank"
+            [busy]="busy()"
+            [myCharacterPublicIds]="myCharacterPublicIds()"
+            (setRank)="setRank.emit($event)"
+            (kick)="kick.emit($event)"
+            (transfer)="transfer.emit($event)"
+            (leave)="leave.emit($event)"
+        />
+    }
+</ng-template>
+
+<ng-template gcWidget="guild-wall">
+    @if (preview()) {
+        <p class="widget-host__empty">Guild wall preview</p>
+    } @else {
+        <wow-guild-wall
+            [guildPublicId]="view().publicId"
+            [canPublish]="view().isMember()"
+            [canModerate]="view().canModerate()"
+            [playerPublicId]="playerPublicId()"
+            (moderated)="rosterChanged.emit()"
+        />
+    }
+</ng-template>
+
+<ng-template gcWidget="guild-applications">
+    @if (preview()) {
+        <p class="widget-host__empty">Applications preview</p>
+    } @else if (view().canModerate()) {
+        <wow-guild-applications [guildPublicId]="view().publicId" (reviewed)="rosterChanged.emit()" />
+    } @else {
+        <p class="widget-host__empty" i18n="@@wow.guild.widget.applications.hidden">
+            Only the leader and the officers see the applications.
+        </p>
+    }
+</ng-template>
+
+<ng-template gcWidget="guild-recruitment">
+    @if (preview()) {
+        <p class="widget-host__empty">Recruitment preview</p>
+    } @else if (needsSheet()) {
+        <wow-create-sheet-wall [message]="sheetWallMessage" />
+    } @else {
+        <wow-guild-apply-form
+            [candidates]="applyCandidates()"
+            [loading]="applyLoading()"
+            [saving]="applySaving()"
+            [errorCode]="applyErrorCode()"
+            [pendingStatus]="view().viewerApplicationStatus"
+            (apply)="apply.emit($event)"
+            (withdraw)="withdraw.emit()"
+        />
+    }
+</ng-template>
+
+<ng-template gcWidget="guild-photos" let-settings>
+    <gc-media-gallery kind="photo" [items]="galleryItems(settings)" [emptyLabel]="emptyGalleryLabel" />
+</ng-template>
+
+<ng-template gcWidget="guild-videos" let-settings>
+    <gc-media-gallery kind="video" [items]="galleryItems(settings)" [emptyLabel]="emptyGalleryLabel" />
+</ng-template>
+
+<ng-template gcWidget="gc-links">
+    @if (preview()) {
+        <p class="widget-host__empty">Links preview</p>
+    } @else {
+        <wow-guild-link-board [guildPublicId]="view().publicId" />
+    }
+</ng-template>
+
+<ng-template gcWidgetSettings="gc-links">
+    @if (!preview()) {
+        <wow-guild-link-admin [guildPublicId]="view().publicId" />
+    }
+</ng-template>

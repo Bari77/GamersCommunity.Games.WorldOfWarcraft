@@ -14,4 +14,5 @@ export const WORKSPACE_PREVIEW_PLAYER = new PlayerSheet(
     new Date('2024-01-15T12:00:00Z'),
     3,
     null,
+    null,
 );

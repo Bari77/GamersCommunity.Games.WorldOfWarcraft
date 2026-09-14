@@ -1,4 +1,15 @@
-import type { WidgetCatalog } from '@bari77/gc-widgets';
+import type { WidgetCatalog, WidgetPageVisibilityOption } from '@bari77/gc-widgets';
+
+export const PAGE_VISIBILITY_PUBLIC = 'public';
+export const PAGE_VISIBILITY_FRIENDS = 'friends';
+export const PAGE_VISIBILITY_PRIVATE = 'private';
+
+/** Audiences a sheet page may be restricted to, from the widest to the narrowest. */
+export const PLAYER_PAGE_VISIBILITY_OPTIONS: WidgetPageVisibilityOption[] = [
+    { value: PAGE_VISIBILITY_PUBLIC, label: $localize`:@@wow.player.page.visibility.public:Everyone` },
+    { value: PAGE_VISIBILITY_FRIENDS, label: $localize`:@@wow.player.page.visibility.friends:My friends` },
+    { value: PAGE_VISIBILITY_PRIVATE, label: $localize`:@@wow.player.page.visibility.private:Only me` },
+];
 
 /**
  * Widget types the WoW sheet can render. `parseWorkspace` drops anything absent
@@ -97,6 +108,7 @@ export const gameWorkspaceRegistry = {
     ] satisfies WidgetCatalog,
     columns: 12,
     rowHeight: 90,
+    pageVisibilityOptions: PLAYER_PAGE_VISIBILITY_OPTIONS,
 };
 
 export const PLAYER_WIDGET_CATALOG = gameWorkspaceRegistry.catalog;

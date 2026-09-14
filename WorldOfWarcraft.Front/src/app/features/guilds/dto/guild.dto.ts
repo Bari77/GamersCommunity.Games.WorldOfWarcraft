@@ -1,9 +1,14 @@
+import { GuildCrestDto } from "@shared/models/guild-crest";
+
 export interface GuildMemberDto {
     characterPublicId: string;
     pseudo: string;
     level: number;
+    ilvl: number;
     className: string;
     raceName: string;
+    mainSpecializationName?: string | null;
+    directionName?: string | null;
     rank: string;
     playerPublicId: string;
     platformUserPublicId: string;
@@ -18,11 +23,11 @@ export interface GuildSheetDto {
     entitled: string;
     discriminator: string;
     level: number;
-    sentence: string | null;
-    linkDiscord: string | null;
-    linkForum: string | null;
+    sentence?: string | null;
+    layoutJson?: string | null;
     serverName: string;
-    directionName: string;
+    orientationName: string;
+    crest: GuildCrestDto;
     creationDate: string;
     memberCount: number;
     members: GuildMemberDto[];
@@ -43,6 +48,8 @@ export interface GuildSummaryDto {
     memberCount: number;
     sentence?: string | null;
     alignmentName?: string | null;
+    orientationName?: string | null;
+    crest?: GuildCrestDto | null;
 }
 
 export interface GuildSearchRequestDto {
@@ -63,14 +70,17 @@ export interface GuildCreateRequestDto {
     entitled: string;
     founderCharacterPublicId: string;
     sentence?: string | null;
-    linkDiscord?: string | null;
-    linkForum?: string | null;
+    orientation?: string;
 }
 
 export interface GuildUpdateRequestDto {
     sentence?: string | null;
-    linkDiscord?: string | null;
-    linkForum?: string | null;
+    level?: number;
+    orientation?: string;
+    crest?: GuildCrestDto;
+
+    /** Only the leader may send this one; officers get a 403. */
+    layoutJson?: string | null;
 }
 
 export interface GuildMemberTargetRequestDto {

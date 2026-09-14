@@ -7,8 +7,10 @@ import { LinkAdminComponent } from '@features/links/components/link-admin/link-a
 import { LinkBoardComponent } from '@features/links/components/link-board/link-board.component';
 import { MediaAdminComponent } from '@features/media/components/media-admin/media-admin.component';
 import { MediaManagerComponent } from '@features/media/components/media-manager/media-manager.component';
+import { PlayerPresentationComponent } from '@features/players/components/player-presentation/player-presentation.component';
+import { PlayerStatsComponent } from '@features/players/components/player-stats/player-stats.component';
+import { PlayerUpdateRequestDto } from '@features/players/dto/player.dto';
 import { PlayerSheet } from '@features/players/models/player.model';
-import { PLAYER_WIDGETS } from '@features/players/workspace/widget-catalog';
 import { WORKSPACE_PREVIEW_PLAYER } from '@features/players/workspace/preview-player';
 import { NbButtonModule } from '@nebular/theme';
 
@@ -24,6 +26,8 @@ import { NbButtonModule } from '@nebular/theme';
         MediaAdminComponent,
         MediaManagerComponent,
         NbButtonModule,
+        PlayerPresentationComponent,
+        PlayerStatsComponent,
         RouterLink,
         WidgetDefDirective,
         WidgetSettingsDefDirective,
@@ -36,9 +40,15 @@ export class WowWidgetTemplateHostComponent {
     public readonly player = input.required<PlayerSheet>();
     public readonly isOwner = input(false);
     public readonly editing = input(false);
-    public readonly linksWidget = input(PLAYER_WIDGETS.links);
+    public readonly savingField = input(false);
 
     public readonly charactersChanged = output<void>();
 
+    /** Patch of the sole fields a widget touched, saved by the page hosting the workspace. */
+    public readonly saveField = output<PlayerUpdateRequestDto>();
+
     protected readonly view = computed(() => (this.preview() ? WORKSPACE_PREVIEW_PLAYER : this.player()));
+
+    /** Rearranging the page is a mode of its own, so field edition steps aside while it lasts. */
+    protected readonly canEditFields = computed(() => this.isOwner() && !this.editing() && !this.preview());
 }

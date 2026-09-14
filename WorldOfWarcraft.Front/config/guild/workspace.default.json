@@ -1,0 +1,115 @@
+{
+  "version": 2,
+  "pages": [
+    {
+      "id": "home",
+      "title": "Home",
+      "locked": true,
+      "widgets": [
+        {
+          "id": "w-stats",
+          "type": "guild-stats",
+          "x": 0,
+          "y": 0,
+          "cols": 4,
+          "rows": 6,
+          "settings": {}
+        },
+        {
+          "id": "w-presentation",
+          "type": "guild-presentation",
+          "x": 4,
+          "y": 0,
+          "cols": 8,
+          "rows": 3,
+          "settings": {
+            "title": "Presentation"
+          }
+        },
+        {
+          "id": "w-links",
+          "type": "gc-links",
+          "x": 4,
+          "y": 3,
+          "cols": 8,
+          "rows": 3,
+          "settings": {
+            "title": "Links"
+          }
+        },
+        {
+          "id": "w-wall",
+          "type": "guild-wall",
+          "x": 0,
+          "y": 6,
+          "cols": 12,
+          "rows": 8,
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "id": "roster",
+      "title": "Roster",
+      "widgets": [
+        {
+          "id": "w-roster",
+          "type": "guild-roster",
+          "x": 0,
+          "y": 0,
+          "cols": 12,
+          "rows": 7,
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "id": "recruitment",
+      "title": "Recruitment",
+      "widgets": [
+        {
+          "id": "w-recruitment",
+          "type": "guild-recruitment",
+          "x": 0,
+          "y": 0,
+          "cols": 6,
+          "rows": 6,
+          "settings": {}
+        },
+        {
+          "id": "w-applications",
+          "type": "guild-applications",
+          "x": 6,
+          "y": 0,
+          "cols": 6,
+          "rows": 6,
+          "settings": {}
+        }
+      ]
+    },
+    {
+      "id": "media",
+      "title": "Media",
+      "widgets": [
+        {
+          "id": "w-videos",
+          "type": "guild-videos",
+          "x": 0,
+          "y": 0,
+          "cols": 12,
+          "rows": 6,
+          "settings": {}
+        },
+        {
+          "id": "w-photos",
+          "type": "guild-photos",
+          "x": 0,
+          "y": 6,
+          "cols": 12,
+          "rows": 6,
+          "settings": {}
+        }
+      ]
+    }
+  ]
+}

@@ -8,10 +8,17 @@
                 </p>
             </div>
 
-            @if (membership.needsSheet()) {
+            @if (membership.loading()) {
+                <gc-skeleton width="9rem" height="2.5rem" radius="0.25rem" />
+            } @else if (!membership.isAuthenticated()) {
+                <a href="/users/login" nbButton status="primary">
+                    <span i18n="@@wow.guild.directory.loginToFound">Log in to found a guild</span>
+                </a>
+            } @else if (membership.needsSheet()) {
                 <wow-create-sheet-wall variant="inline" [message]="sheetWallMessage" />
-            } @else if (membership.hasSheet() && !formOpen()) {
-                <button nbButton status="primary" [disabled]="noFreeCharacter()" (click)="formOpen.set(true)">
+            } @else if (!formOpen()) {
+                <!-- Stays clickable without a free character: the form is where the reason is explained. -->
+                <button nbButton status="primary" (click)="formOpen.set(true)">
                     <span i18n="@@wow.guild.directory.found">Found a guild</span>
                 </button>
             }
@@ -73,6 +80,13 @@
                 <div class="guild-directory__create">
                     @if (loadingCandidates()) {
                         <gc-skeleton-text [lines]="3" />
+                    } @else if (noCharacter()) {
+                        <p i18n="@@wow.guild.directory.noCharacter">
+                            A guild is founded by a character. Create one on your profile first.
+                        </p>
+                        <a nbButton status="primary" size="small" [routerLink]="sheetLink">
+                            <span i18n="@@wow.guild.directory.createCharacter">Create a character</span>
+                        </a>
                     } @else if (candidates().length === 0) {
                         <p i18n="@@wow.guild.directory.noFreeCharacter">
                             All your characters already belong to a guild. Create a new one to found a guild.
@@ -80,13 +94,33 @@
                     } @else {
                         <wow-guild-create-form
                             [candidates]="candidates()"
+                            [founder]="founder()"
                             [saving]="creating()"
                             [errorCode]="createErrorCode()"
                             (create)="onCreate($event)"
-                            (cancel)="formOpen.set(false)"
+                            (cancel)="closeForm()"
                         />
                     }
                 </div>
+            }
+
+            @if (pendingApplications().length > 0) {
+                <aside class="guild-directory__applications">
+                    <h2 class="guild-directory__applicationsTitle" i18n="@@wow.guild.directory.pendingTitle">
+                        Applications awaiting an answer
+                    </h2>
+                    <ul>
+                        @for (application of pendingApplications(); track application.publicId) {
+                            <li>
+                                <a [routerLink]="applicationLink(application)">{{ application.guildHandleLabel() }}</a>
+                                <span class="guild-directory__applicationsWith">
+                                    <span i18n="@@wow.guild.directory.pendingWith">with</span>
+                                    {{ application.characterPseudo }}
+                                </span>
+                            </li>
+                        }
+                    </ul>
+                </aside>
             }
         </nb-card-body>
     </nb-card>
@@ -103,23 +137,29 @@
         } @else {
             @for (guild of store.guilds(); track guild.publicId) {
                 <li class="guild-card">
-                    <a class="guild-card__handle" [routerLink]="guildLink(guild.publicId)">
-                        {{ guild.handleLabel() }}
-                    </a>
-                    <p class="guild-card__meta">
-                        {{ guild.serverName | gameTerm }}
-                        @if (guild.alignmentName) {
-                            · {{ guild.alignmentName | gameTerm }}
+                    <wow-guild-crest class="guild-card__crest" [crest]="guild.crest" [size]="56" />
+                    <div class="guild-card__body">
+                        <a class="guild-card__handle" [routerLink]="guildLink(guild.publicId)">
+                            {{ guild.handleLabel() }}
+                        </a>
+                        <p class="guild-card__meta">
+                            {{ guild.serverName | gameTerm }}
+                            @if (guild.alignmentName) {
+                                · {{ guild.alignmentName | gameTerm }}
+                            }
+                            @if (orientationLabel(guild.orientationName); as orientation) {
+                                · {{ orientation }}
+                            }
+                            · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }}
+                        </p>
+                        @if (guild.sentence) {
+                            <p class="guild-card__sentence">{{ guild.sentence }}</p>
                         }
-                        · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }}
-                    </p>
-                    @if (guild.sentence) {
-                        <p class="guild-card__sentence">{{ guild.sentence }}</p>
-                    }
-                    <p class="guild-card__members">
-                        {{ guild.memberCount }}
-                        <span i18n="@@wow.guild.directory.memberCount">members</span>
-                    </p>
+                        <p class="guild-card__members">
+                            {{ guild.memberCount }}
+                            <span i18n="@@wow.guild.directory.memberCount">members</span>
+                        </p>
+                    </div>
                 </li>
             } @empty {
                 <li class="guild-cards__empty" i18n="@@wow.guild.directory.empty">No guild matches these filters.</li>

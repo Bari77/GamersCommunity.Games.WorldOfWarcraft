@@ -1,0 +1,256 @@
+<section class="search gc-enter">
+    <nb-card>
+        <nb-card-header>
+            <h1 class="search__title gc-display" i18n="@@wow.search.title">Search</h1>
+            <p class="search__subtitle" i18n="@@wow.search.subtitle">
+                Find a guild, a character or a player. Type a full handle such as Name#1234 to jump straight to it.
+            </p>
+        </nb-card-header>
+
+        <nb-card-body>
+            <form class="search__form" (ngSubmit)="submitTerm()">
+                <input
+                    class="search__term"
+                    nbInput
+                    fullWidth
+                    type="search"
+                    [placeholder]="searchPlaceholder"
+                    [ngModel]="term()"
+                    (ngModelChange)="term.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                />
+                <button nbButton status="primary" type="submit">
+                    <span i18n="@@wow.search.submit">Search</span>
+                </button>
+            </form>
+
+            <div class="search__filters">
+                <nb-select
+                    class="search__filter"
+                    placeholder="—"
+                    [disabled]="loadingOptions()"
+                    [ngModel]="store.criteria().idServer"
+                    (ngModelChange)="setServer($event)"
+                    [ngModelOptions]="{ standalone: true }"
+                >
+                    <nb-option [value]="null" i18n="@@wow.search.allServers">All servers</nb-option>
+                    @for (server of options.value().servers; track server.id) {
+                        <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
+                    }
+                </nb-select>
+
+                @if (showsGuilds() || showsCharacters()) {
+                    <nb-select
+                        class="search__filter"
+                        placeholder="—"
+                        [disabled]="loadingOptions()"
+                        [ngModel]="store.criteria().idAlignment"
+                        (ngModelChange)="setAlignment($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    >
+                        <nb-option [value]="null" i18n="@@wow.search.allFactions">All factions</nb-option>
+                        @for (alignment of options.value().alignments; track alignment.id) {
+                            <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                        }
+                    </nb-select>
+                }
+
+                @if (showsCharacters()) {
+                    <nb-select
+                        class="search__filter"
+                        placeholder="—"
+                        [disabled]="loadingOptions()"
+                        [ngModel]="store.criteria().idClass"
+                        (ngModelChange)="setClass($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    >
+                        <nb-option [value]="null" i18n="@@wow.search.allClasses">All classes</nb-option>
+                        @for (gameClass of options.value().classes; track gameClass.id) {
+                            <nb-option [value]="gameClass.id">{{ gameClass.entitled | gameTerm }}</nb-option>
+                        }
+                    </nb-select>
+
+                    <input
+                        class="search__level"
+                        nbInput
+                        type="number"
+                        min="1"
+                        [attr.max]="options.value().maxLevel || null"
+                        [placeholder]="minLevelPlaceholder"
+                        [ngModel]="store.criteria().minLevel"
+                        (ngModelChange)="setMinLevel($event)"
+                        [ngModelOptions]="{ standalone: true }"
+                    />
+                }
+            </div>
+
+            <nav class="search__tabs" [attr.aria-label]="tabsLabel">
+                <button
+                    nbButton
+                    size="small"
+                    [status]="scope() === 'all' ? 'primary' : 'basic'"
+                    [ghost]="scope() !== 'all'"
+                    (click)="setScope('all')"
+                >
+                    <span i18n="@@wow.search.tab.all">All</span>
+                </button>
+                <button
+                    nbButton
+                    size="small"
+                    [status]="scope() === 'guilds' ? 'primary' : 'basic'"
+                    [ghost]="scope() !== 'guilds'"
+                    (click)="setScope('guilds')"
+                >
+                    <span i18n="@@wow.search.tab.guilds">Guilds</span>
+                </button>
+                <button
+                    nbButton
+                    size="small"
+                    [status]="scope() === 'characters' ? 'primary' : 'basic'"
+                    [ghost]="scope() !== 'characters'"
+                    (click)="setScope('characters')"
+                >
+                    <span i18n="@@wow.search.tab.characters">Characters</span>
+                </button>
+                <button
+                    nbButton
+                    size="small"
+                    [status]="scope() === 'players' ? 'primary' : 'basic'"
+                    [ghost]="scope() !== 'players'"
+                    (click)="setScope('players')"
+                >
+                    <span i18n="@@wow.search.tab.players">Players</span>
+                </button>
+            </nav>
+        </nb-card-body>
+    </nb-card>
+
+    @if (store.loading()) {
+        <ul class="search__results">
+            @for (placeholder of resultPlaceholders; track placeholder) {
+                <li class="search-hit search-hit--skeleton" aria-busy="true">
+                    <gc-skeleton width="55%" height="1.1rem" />
+                    <gc-skeleton-text [lines]="2" />
+                </li>
+            }
+        </ul>
+    } @else if (store.isEmpty()) {
+        <p class="search__empty" i18n="@@wow.search.empty">Nothing matches these criteria.</p>
+    } @else {
+        @if (showsGuilds() && store.guilds().length > 0) {
+            <section class="search__group">
+                <header class="search__groupHead">
+                    <h2 class="search__groupTitle gc-display" i18n="@@wow.search.group.guilds">Guilds</h2>
+                    @if (scope() === "all") {
+                        <button nbButton ghost size="small" status="basic" (click)="setScope('guilds')">
+                            <span i18n="@@wow.search.seeAll">See all</span>
+                        </button>
+                    }
+                </header>
+
+                <ul class="search__results">
+                    @for (guild of store.guilds(); track guild.publicId) {
+                        <li class="search-hit">
+                            <a class="search-hit__name" [routerLink]="guildLink(guild.publicId)">
+                                {{ guild.handleLabel() }}
+                            </a>
+                            <p class="search-hit__meta">
+                                {{ guild.serverName | gameTerm }}
+                                @if (guild.alignmentName) {
+                                    · {{ guild.alignmentName | gameTerm }}
+                                }
+                                · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }} ·
+                                {{ guild.memberCount }}
+                                <span i18n="@@wow.search.memberCount">members</span>
+                            </p>
+                            @if (guild.sentence) {
+                                <p class="search-hit__sentence">{{ guild.sentence }}</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (showsCharacters() && store.characters().length > 0) {
+            <section class="search__group">
+                <header class="search__groupHead">
+                    <h2 class="search__groupTitle gc-display" i18n="@@wow.search.group.characters">Characters</h2>
+                    @if (scope() === "all") {
+                        <button nbButton ghost size="small" status="basic" (click)="setScope('characters')">
+                            <span i18n="@@wow.search.seeAll">See all</span>
+                        </button>
+                    }
+                </header>
+
+                <ul class="search__results">
+                    @for (character of store.characters(); track character.publicId) {
+                        <li class="search-hit" [style.--class-color]="character.color">
+                            <a class="search-hit__name" [routerLink]="playerLink(character.playerPublicId)">
+                                <wow-icon
+                                    [kind]="character.emblem().kind"
+                                    [slug]="character.emblem().slug"
+                                    [label]="character.className | gameTerm"
+                                    [size]="20"
+                                />
+                                {{ character.pseudo }}
+                            </a>
+                            <p class="search-hit__meta">
+                                <span i18n="@@wow.character.level">Level</span> {{ character.level }} ·
+                                {{ character.raceName | gameTerm }}
+                                @if (character.className) {
+                                    · {{ character.mainSpecializationName | gameTerm }}
+                                    {{ character.className | gameTerm }}
+                                }
+                                · {{ character.serverName | gameTerm }}
+                            </p>
+                            @if (character.guildPublicId) {
+                                <a class="search-hit__guild" [routerLink]="guildLink(character.guildPublicId)">
+                                    {{ character.guildHandle }}
+                                </a>
+                            }
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (showsPlayers() && store.players().length > 0) {
+            <section class="search__group">
+                <header class="search__groupHead">
+                    <h2 class="search__groupTitle gc-display" i18n="@@wow.search.group.players">Players</h2>
+                    @if (scope() === "all") {
+                        <button nbButton ghost size="small" status="basic" (click)="setScope('players')">
+                            <span i18n="@@wow.search.seeAll">See all</span>
+                        </button>
+                    }
+                </header>
+
+                <ul class="search__results">
+                    @for (player of store.players(); track player.publicId) {
+                        <li class="search-hit">
+                            <a class="search-hit__name" [routerLink]="playerLink(player.publicId)">
+                                {{ player.handleLabel() }}
+                            </a>
+                            <p class="search-hit__meta">
+                                {{ player.characterCount }}
+                                <span i18n="@@wow.search.characterCount">characters</span>
+                            </p>
+                            @if (player.presentationIrl) {
+                                <p class="search-hit__sentence">{{ player.presentationIrl }}</p>
+                            }
+                        </li>
+                    }
+                </ul>
+            </section>
+        }
+
+        @if (store.hasMore()) {
+            <div class="search__more">
+                <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
+                    <span i18n="@@wow.search.loadMore">Load more</span>
+                </button>
+            </div>
+        }
+    }
+</section>

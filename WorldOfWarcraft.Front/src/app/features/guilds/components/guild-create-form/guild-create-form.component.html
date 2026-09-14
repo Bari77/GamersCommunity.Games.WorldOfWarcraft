@@ -36,6 +36,23 @@
                 The guild inherits its server and faction from this character, which becomes its leader.
             </small>
         </div>
+
+        <div class="guild-create__field">
+            <span i18n="@@wow.guild.form.orientation">What the guild plays</span>
+            <nb-select
+                fullWidth
+                [ngModel]="orientation()"
+                (ngModelChange)="orientation.set($event)"
+                [ngModelOptions]="{ standalone: true }"
+            >
+                @for (option of orientationOptions; track option.value) {
+                    <nb-option [value]="option.value">{{ option.label }}</nb-option>
+                }
+            </nb-select>
+            <small class="guild-create__hint" i18n="@@wow.guild.form.crestLater">
+                The crest is designed later, from the guild settings.
+            </small>
+        </div>
     </div>
 
     <div class="guild-create__field">
@@ -52,54 +69,22 @@
         ></textarea>
     </div>
 
-    <div class="guild-create__grid">
-        <div class="guild-create__field">
-            <label for="guild-discord" i18n="@@wow.guild.form.discord">Discord link</label>
-            <input
-                id="guild-discord"
-                nbInput
-                fullWidth
-                type="url"
-                placeholder="https://discord.gg/…"
-                [ngModel]="linkDiscord()"
-                (ngModelChange)="linkDiscord.set($event)"
-                [ngModelOptions]="{ standalone: true }"
-            />
-        </div>
-
-        <div class="guild-create__field">
-            <label for="guild-forum" i18n="@@wow.guild.form.forum">Forum link</label>
-            <input
-                id="guild-forum"
-                nbInput
-                fullWidth
-                type="url"
-                placeholder="https://…"
-                [ngModel]="linkForum()"
-                (ngModelChange)="linkForum.set($event)"
-                [ngModelOptions]="{ standalone: true }"
-            />
-        </div>
-    </div>
+    <p class="guild-create__hint" i18n="@@wow.guild.form.linksLater">
+        Discord, forum and social links are added later, from the links widget on the guild page.
+    </p>
 
     @if (errorCode(); as code) {
         <p class="guild-create__error" role="alert">
             @switch (code) {
-                @case ("CHARACTER_NOT_OWNED") {
+                @case ("FORBIDDEN") {
                     <span i18n="@@wow.guild.error.characterNotOwned">This character is not one of yours.</span>
                 }
-                @case ("CHARACTER_ALREADY_IN_GUILD") {
+                @case ("CHARACTER_ALREADY_GUILDED") {
                     <span i18n="@@wow.guild.error.characterInGuild">
                         This character already belongs to a guild. A character may only join one.
                     </span>
                 }
-                @case ("INVALID_LINK") {
-                    <span i18n="@@wow.guild.error.invalidLink">Links must start with http:// or https://.</span>
-                }
-                @case ("LINK_TOO_LONG") {
-                    <span i18n="@@wow.guild.error.linkTooLong">This link is too long.</span>
-                }
-                @case ("DISCRIMINATOR_EXHAUSTED") {
+                @case ("GUILD_NAME_EXHAUSTED") {
                     <span i18n="@@wow.guild.error.nameExhausted">
                         Too many guilds share this name. Please pick another one.
                     </span>

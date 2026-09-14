@@ -4,12 +4,14 @@ import { RouterLink } from "@angular/router";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlatformGamesService } from "@core/services/platform-games.service";
 import { PlayerSheet } from "@features/players/models/player.model";
+import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
+import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { firstValueFrom } from "rxjs";
 
 @Component({
     standalone: true,
     selector: "wow-player-hero",
-    imports: [DatePipe, RouterLink],
+    imports: [DatePipe, GameTermPipe, GuildCrestComponent, RouterLink],
     templateUrl: "./player-hero.component.html",
     styleUrl: "./player-hero.component.scss",
 })

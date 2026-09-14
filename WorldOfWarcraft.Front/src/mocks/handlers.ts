@@ -1,7 +1,13 @@
 import { createGatewayListHandler, gatewayUrl } from "@bari77/gc-msw";
 import { CharacterCreateRequestDto, CharacterDto } from "@features/characters/dto/character.dto";
-import { GamePostDto } from "@features/guilds/dto/game-post.dto";
+import { GamePostDto, GamePostUpdateRequestDto } from "@features/guilds/dto/game-post.dto";
 import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
+import {
+    GuildLinkCreateRequestDto,
+    GuildLinkDto,
+    GuildLinkReorderRequestDto,
+    GuildLinkUpdateRequestDto,
+} from "@features/guilds/dto/guild-link.dto";
 import { GuildSheetDto } from "@features/guilds/dto/guild.dto";
 import {
     PlayerLinkCreateRequestDto,
@@ -28,6 +34,7 @@ import {
     mockGuildWallPosts,
     mockPendingPosts,
 } from "./data/guilds";
+import { mockGuildLinks } from "./data/guild-links";
 import { mockHomeFeed, mockLfgMessages, mockPostableGuilds, mockRecruitmentMessages } from "./data/home-feed";
 import { mockPlayerLinks } from "./data/links";
 import { mockPlayerPictures, mockPlayerStreams, mockPlayerVideos } from "./data/media";
@@ -37,7 +44,7 @@ const playersUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players");
 const linksUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "PlayerLinks");
 
 let characters: CharacterDto[] = [...mockCharacters];
-let layoutJson: string | null = mockPlayerSheet.layoutJson;
+let player = { ...mockPlayerSheet };
 
 /** `?noSheet` in the URL browses as a logged-in visitor who has no player sheet yet. */
 let hasPlayerSheet = !new URLSearchParams(location.search).has("noSheet");
@@ -107,8 +114,8 @@ const guildHandlers = [
         return HttpResponse.json(guildSheet);
     }),
     http.put(`${guildsUrl}/:publicId`, async ({ request }) => {
-        const body = (await request.json()) as Partial<GuildSheetDto>;
-        guildSheet = { ...guildSheet, ...body };
+        const { orientation, ...body } = (await request.json()) as Partial<GuildSheetDto> & { orientation?: string };
+        guildSheet = { ...guildSheet, ...body, orientationName: orientation ?? guildSheet.orientationName };
         return HttpResponse.json(guildSheet);
     }),
     http.post(`${guildsUrl}/actions/SetRank`, async ({ request }) => {
@@ -196,18 +203,37 @@ const gamePostHandlers = [
     http.post(`${gamePostsUrl}/actions/ListGuildWall`, () => HttpResponse.json({ items: wallPosts, hasMore: false })),
     http.post(`${gamePostsUrl}/actions/ListPending`, () => HttpResponse.json({ items: pendingPosts, hasMore: false })),
     http.post(`${gamePostsUrl}/actions/Create`, async ({ request }) => {
-        const body = (await request.json()) as { body: string; mediaUrl?: string | null };
-        // The mocked visitor is an officer, so posts are published without review.
+        const body = (await request.json()) as { body: string; mediaUrl?: string | null; visibility?: string };
+        // The mocked visitor leads the guild, so posts are published without review.
         const created: GamePostDto = {
             ...mockGuildWallPosts[0],
             publicId: crypto.randomUUID(),
             body: body.body,
             mediaUrl: body.mediaUrl ?? null,
+            visibility: body.visibility ?? "member",
             status: "approved",
             creationDate: new Date().toISOString(),
         };
         wallPosts = [created, ...wallPosts];
         return HttpResponse.json(created);
+    }),
+    http.post(`${gamePostsUrl}/actions/Update`, async ({ request }) => {
+        const body = (await request.json()) as GamePostUpdateRequestDto;
+        const rewrite = (post: GamePostDto): GamePostDto => ({
+            ...post,
+            body: body.body,
+            mediaUrl: body.mediaUrl ?? null,
+            visibility: body.visibility ?? post.visibility,
+        });
+        const target = [...wallPosts, ...pendingPosts].find((item) => item.publicId === body.publicId);
+        if (!target) {
+            return new HttpResponse(null, { status: 404 });
+        }
+
+        const updated = rewrite(target);
+        wallPosts = wallPosts.map((item) => (item.publicId === body.publicId ? updated : item));
+        pendingPosts = pendingPosts.map((item) => (item.publicId === body.publicId ? updated : item));
+        return HttpResponse.json(updated);
     }),
     http.post(`${gamePostsUrl}/actions/Moderate`, async ({ request }) => {
         const { publicId, approve } = (await request.json()) as { publicId: string; approve: boolean };
@@ -228,6 +254,45 @@ const gamePostHandlers = [
         wallPosts = wallPosts.filter((item) => item.publicId !== publicId);
         pendingPosts = pendingPosts.filter((item) => item.publicId !== publicId);
         return HttpResponse.json({ publicId });
+    }),
+];
+
+const guildLinksUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "GuildLinks");
+
+let guildLinks: GuildLinkDto[] = [...mockGuildLinks];
+
+const guildLinkHandlers = [
+    http.post(`${guildLinksUrl}/actions/List`, () => HttpResponse.json(guildLinks)),
+    http.post(`${guildLinksUrl}/actions/Create`, async ({ request }) => {
+        const body = (await request.json()) as GuildLinkCreateRequestDto;
+        const created: GuildLinkDto = {
+            publicId: crypto.randomUUID(),
+            guildPublicId: body.guildPublicId,
+            url: body.url,
+            label: body.label,
+            icon: body.icon,
+            position: guildLinks.length,
+        };
+        guildLinks = [...guildLinks, created];
+        return HttpResponse.json(created);
+    }),
+    http.post(`${guildLinksUrl}/actions/Reorder`, async ({ request }) => {
+        const { publicIds } = (await request.json()) as GuildLinkReorderRequestDto;
+        guildLinks = guildLinks
+            .map((item) => ({ ...item, position: publicIds.indexOf(item.publicId) }))
+            .sort((a, b) => a.position - b.position);
+        return HttpResponse.json(guildLinks);
+    }),
+    http.put(`${guildLinksUrl}/:publicId`, async ({ request, params }) => {
+        const publicId = params["publicId"] as string;
+        const body = (await request.json()) as GuildLinkUpdateRequestDto;
+        guildLinks = guildLinks.map((item) => (item.publicId === publicId ? { ...item, ...body } : item));
+        return HttpResponse.json(guildLinks.find((item) => item.publicId === publicId));
+    }),
+    http.delete(`${guildLinksUrl}/:publicId`, ({ params }) => {
+        const publicId = params["publicId"] as string;
+        guildLinks = guildLinks.filter((item) => item.publicId !== publicId);
+        return new HttpResponse(null, { status: 204 });
     }),
 ];
 
@@ -271,6 +336,7 @@ const linkHandlers = [
 export const handlers = [
     ...mediaHandlers,
     ...linkHandlers,
+    ...guildLinkHandlers,
     ...guildHandlers,
     ...guildApplicationHandlers,
     ...gamePostHandlers,
@@ -286,13 +352,6 @@ export const handlers = [
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "ListRecent"), async ({ request }) => {
         const { kind } = (await request.json()) as { kind?: string };
         return HttpResponse.json(kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages);
-    }),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "Search"), async ({ request }) => {
-        const { kind, query } = (await request.json()) as { kind?: string; query?: string };
-        const source = kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages;
-        const needle = query?.trim().toLowerCase();
-        const items = needle ? source.filter((ad) => ad.body.toLowerCase().includes(needle)) : source;
-        return HttpResponse.json({ items, hasMore: false });
     }),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "Create"), async ({ request }) => {
         const body = (await request.json()) as { body: string; guildPublicId?: string };
@@ -320,12 +379,12 @@ export const handlers = [
         return HttpResponse.json(mockPlayerSheet);
     }),
     http.get(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", mockPlayerSheet.publicId), () =>
-        HttpResponse.json({ ...mockPlayerSheet, characterCount: characters.length, layoutJson }),
+        HttpResponse.json({ ...player, characterCount: characters.length }),
     ),
     http.put(`${playersUrl}/:publicId`, async ({ request }) => {
         const body = (await request.json()) as PlayerUpdateRequestDto;
-        layoutJson = body.layoutJson ?? layoutJson;
-        return HttpResponse.json({ ...mockPlayerSheet, characterCount: characters.length, layoutJson });
+        player = { ...player, ...body };
+        return HttpResponse.json({ ...player, characterCount: characters.length });
     }),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "List"), () =>
         HttpResponse.json(characters),
@@ -333,6 +392,22 @@ export const handlers = [
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Options"), () =>
         HttpResponse.json(mockCharacterOptions),
     ),
+    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Search"), async ({ request }) => {
+        const { query } = (await request.json()) as { query?: string };
+        const needle = query?.trim().toLowerCase();
+        const items = needle
+            ? mockHomeFeed.latestCharacters.filter((character) => character.pseudo.toLowerCase().includes(needle))
+            : mockHomeFeed.latestCharacters;
+        return HttpResponse.json({ items, hasMore: false });
+    }),
+    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Search"), async ({ request }) => {
+        const { query } = (await request.json()) as { query?: string };
+        const needle = query?.trim().toLowerCase().split("#")[0];
+        const items = needle
+            ? mockHomeFeed.latestPlayers.filter((player) => player.nickname.toLowerCase().includes(needle))
+            : mockHomeFeed.latestPlayers;
+        return HttpResponse.json({ items, hasMore: false });
+    }),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Create"), async ({ request }) => {
         const body = (await request.json()) as CharacterCreateRequestDto;
         const created = buildMockCharacter(body, crypto.randomUUID());

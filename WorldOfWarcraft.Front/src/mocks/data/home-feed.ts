@@ -108,6 +108,7 @@ export const mockHomeFeed: HomeFeedDto = {
             avatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aelindra",
             presentationIrl: "Casual raider, EU evenings.",
             creationDate: new Date().toISOString(),
+            characterCount: 3,
         },
     ],
     latestGuilds: [

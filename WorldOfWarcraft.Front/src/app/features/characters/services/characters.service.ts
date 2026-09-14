@@ -4,11 +4,18 @@ import {
     CharacterDto,
     CharacterListRequestDto,
     CharacterOptionsDto,
+    CharacterSearchRequestDto,
+    CharacterSearchResultDto,
     CharacterUpdateRequestDto,
 } from "@features/characters/dto/character.dto";
-import { Character, CharacterOptions } from "@features/characters/models/character.model";
+import { Character, CharacterOptions, CharacterSummary } from "@features/characters/models/character.model";
 import { BaseService } from "@shared/services/base.service";
 import { map, Observable } from "rxjs";
+
+export interface CharacterSearchPage {
+    items: CharacterSummary[];
+    hasMore: boolean;
+}
 
 @Injectable({ providedIn: "root" })
 export class CharactersService extends BaseService {
@@ -25,6 +32,15 @@ export class CharactersService extends BaseService {
 
     public getByPublicId(publicId: string): Observable<Character> {
         return this.getOne<CharacterDto, Character>(Character, publicId);
+    }
+
+    public search(request: CharacterSearchRequestDto): Observable<CharacterSearchPage> {
+        return this.http.post<CharacterSearchResultDto>(this.getURL("actions/Search"), request).pipe(
+            map((dto) => ({
+                items: (dto.items ?? []).map((item) => CharacterSummary.fromDto(item)),
+                hasMore: dto.hasMore ?? false,
+            })),
+        );
     }
 
     public options(): Observable<CharacterOptions> {

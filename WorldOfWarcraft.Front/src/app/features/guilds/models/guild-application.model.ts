@@ -66,8 +66,8 @@ export class GuildApplication {
         return this.status === APPLICATION_PENDING;
     }
 
-    public isContactable(): boolean {
-        return !!this.platformUserPublicId && this.platformUserPublicId !== EMPTY_GUID;
+    public hasPlayerSheet(): boolean {
+        return !!this.playerPublicId && this.playerPublicId !== EMPTY_GUID;
     }
 
     public initials(): string {

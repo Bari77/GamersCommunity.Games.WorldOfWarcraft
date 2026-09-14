@@ -8,6 +8,12 @@
             </p>
         }
 
+        @if (fieldSaveFailed()) {
+            <p class="player-sheet__error" role="alert" i18n="@@wow.player.field.saveFailed">
+                Your change could not be saved. Please try again.
+            </p>
+        }
+
         <gc-widget-workspace
             [workspace]="workspace()"
             [catalog]="catalog"
@@ -16,6 +22,9 @@
             [columns]="columns"
             [rowHeight]="rowHeight"
             [(editing)]="editing"
+            [pageVisibilityOptions]="pageVisibilityOptions"
+            pageVisibilityLabel="Who can see this page"
+            i18n-pageVisibilityLabel="@@wow.player.page.visibility"
             navLabel="Profile pages"
             i18n-navLabel="@@wow.player.nav"
             addPageLabel="New page"
@@ -56,8 +65,9 @@
                 [player]="player"
                 [isOwner]="isOwner()"
                 [editing]="editing()"
-                [linksWidget]="linksWidget"
+                [savingField]="savingField()"
                 (charactersChanged)="onCharactersChanged()"
+                (saveField)="onSaveField($event)"
             />
         </gc-widget-workspace>
     } @else if (sheet.error()) {

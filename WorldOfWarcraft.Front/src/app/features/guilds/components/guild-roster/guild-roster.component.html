@@ -1,63 +1,91 @@
-<nb-card>
-    <nb-card-header class="guild-roster__header">
-        <span i18n="@@wow.guild.members">Members</span>
-        @if (loading()) {
-            <gc-skeleton width="2.5rem" height="0.8rem" />
-        } @else {
-            <span class="guild-roster__count">{{ memberCount() }}</span>
-        }
-    </nb-card-header>
-
-    <nb-card-body>
-        <ul class="guild-members">
-            @if (loading()) {
-                @for (placeholder of memberPlaceholders; track placeholder) {
-                    <li class="guild-member guild-member--skeleton" aria-busy="true">
-                        <gc-skeleton width="2.5rem" height="2.5rem" shape="circle" />
-                        <div class="guild-member__main">
-                            <gc-skeleton width="8rem" height="0.95rem" />
-                            <gc-skeleton width="12rem" height="0.8rem" />
+<section class="guild-roster">
+    @if (loading()) {
+        <div class="guild-roster__grid" aria-busy="true">
+            @for (placeholder of memberPlaceholders; track placeholder) {
+                <article class="member-card member-card--skeleton">
+                    <header class="member-card__head">
+                        <gc-skeleton width="2.125rem" height="2.125rem" radius="0.5rem" />
+                        <div class="member-card__who">
+                            <gc-skeleton width="7rem" height="1rem" />
+                            <gc-skeleton width="3.5rem" height="0.7rem" />
                         </div>
-                    </li>
-                }
-            } @else {
-                @for (member of members(); track member.characterPublicId) {
-                    <li class="guild-member">
-                        <div class="guild-member__avatar-wrap" aria-hidden="true">
-                            @if (member.avatarUrl) {
-                                <img class="guild-member__avatar" [src]="member.avatarUrl" alt="" />
-                            } @else {
-                                <span class="guild-member__avatar guild-member__avatar--fallback">
-                                    {{ member.initials() }}
-                                </span>
-                            }
+                    </header>
+                    <gc-skeleton width="70%" height="0.9rem" />
+                    <div class="member-card__facts">
+                        <gc-skeleton width="4.5rem" height="0.8rem" />
+                        <gc-skeleton width="4rem" height="0.8rem" />
+                    </div>
+                </article>
+            }
+        </div>
+    } @else {
+        <div class="guild-roster__grid">
+            @for (member of members(); track member.characterPublicId) {
+                <article class="member-card" [style.--class-color]="member.color">
+                    <header class="member-card__head">
+                        <wow-icon
+                            class="member-card__emblem"
+                            [kind]="member.emblem().kind"
+                            [slug]="member.emblem().slug"
+                            [label]="member.className | gameTerm"
+                            [size]="34"
+                        />
+                        <div class="member-card__who">
+                            <h3 class="member-card__name">{{ member.pseudo }}</h3>
+                            <p class="member-card__tags">
+                                <span class="member-card__rank">{{ member.rank | gameTerm }}</span>
+                            </p>
                         </div>
+                        <span class="member-card__level">
+                            <span class="sr-only" i18n="@@wow.character.level">Level</span>
+                            {{ member.level }}
+                        </span>
+                    </header>
 
-                        <div class="guild-member__main">
-                            <div class="guild-member__head">
-                                <strong class="guild-member__pseudo">{{ member.pseudo }}</strong>
-                                <span class="guild-member__rank">{{ member.rank | gameTerm }}</span>
-                            </div>
-                            <span class="guild-member__spec">
-                                {{ member.raceName | gameTerm }} {{ member.className | gameTerm }} ·
-                                {{ member.level }}
+                    <p class="member-card__spec">
+                        @if (member.className) {
+                            <wow-icon kind="role" [slug]="member.role()" [label]="member.roleName()" [size]="18" />
+                            {{ member.className | gameTerm }} {{ member.mainSpecializationName | gameTerm }}
+                        } @else {
+                            <span class="member-card__spec--empty" i18n="@@wow.character.noSpec">
+                                No specialization
                             </span>
-                        </div>
+                        }
+                    </p>
 
-                        <div class="guild-member__actions">
-                            @if (member.isContactable()) {
-                                <a
-                                    [routerLink]="['/users', member.platformUserPublicId]"
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="basic"
-                                    [title]="contactTitle"
-                                >
-                                    {{ member.handleLabel() }}
-                                </a>
-                            }
+                    <ul class="member-card__facts">
+                        <li>
+                            <wow-icon
+                                kind="race"
+                                [slug]="member.raceName"
+                                [label]="member.raceName | gameTerm"
+                                [size]="16"
+                            />
+                            {{ member.raceName | gameTerm }}
+                        </li>
+                        @if (member.directionName) {
+                            <li>{{ member.directionName | gameTerm }}</li>
+                        }
+                        @if (member.ilvl) {
+                            <li>
+                                <span i18n="@@wow.character.ilvl">Item level</span>
+                                {{ member.ilvl }}
+                            </li>
+                        }
+                    </ul>
 
+                    @if (member.isContactable()) {
+                        <a
+                            class="member-card__handle"
+                            [routerLink]="['/users', member.platformUserPublicId]"
+                            [title]="contactTitle"
+                        >
+                            {{ member.handleLabel() }}
+                        </a>
+                    }
+
+                    @if (hasActions(member)) {
+                        <footer class="member-card__actions">
                             @if (canPromote(member)) {
                                 <button
                                     nbButton
@@ -122,12 +150,12 @@
                                     <span i18n="@@wow.guild.roster.leave">Leave</span>
                                 </button>
                             }
-                        </div>
-                    </li>
-                } @empty {
-                    <li class="guild-members__empty" i18n="@@wow.guild.members.empty">No members yet.</li>
-                }
+                        </footer>
+                    }
+                </article>
+            } @empty {
+                <p class="guild-roster__empty" i18n="@@wow.guild.members.empty">No members yet.</p>
             }
-        </ul>
-    </nb-card-body>
-</nb-card>
+        </div>
+    }
+</section>

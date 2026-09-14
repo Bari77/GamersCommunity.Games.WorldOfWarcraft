@@ -44,10 +44,10 @@
                                 </span>
                             </div>
 
-                            @if (application.isContactable()) {
+                            @if (application.hasPlayerSheet()) {
                                 <a
                                     class="guild-application__player"
-                                    [routerLink]="['/users', application.platformUserPublicId]"
+                                    [routerLink]="playerLink(application.playerPublicId)"
                                 >
                                     {{ application.playerHandleLabel() }}
                                 </a>
@@ -101,7 +101,7 @@
                             This application has already been handled.
                         </span>
                     }
-                    @case ("CHARACTER_ALREADY_IN_GUILD") {
+                    @case ("CHARACTER_ALREADY_GUILDED") {
                         <span i18n="@@wow.guild.applications.error.alreadyInGuild">
                             This character joined another guild in the meantime.
                         </span>

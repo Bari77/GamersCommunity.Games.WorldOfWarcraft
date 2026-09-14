@@ -1,0 +1,29 @@
+<div
+    class="crest"
+    [style.width.px]="size()"
+    [style.height.px]="size()"
+    [attr.role]="label() ? 'img' : null"
+    [attr.aria-label]="label() || null"
+>
+    <span
+        class="crest__layer crest__flag"
+        [style.backgroundImage]="flagArt"
+        [style.maskImage]="flagArt"
+        [style.backgroundColor]="crest().backgroundColor"
+    ></span>
+    <img class="crest__hooks" [src]="hooksUrl" alt="" />
+    <span
+        class="crest__layer crest__border"
+        [style.backgroundImage]="borderArt()"
+        [style.maskImage]="borderArt()"
+        [style.backgroundColor]="crest().borderColor"
+    ></span>
+    <span
+        class="crest__layer crest__emblem"
+        [style.backgroundImage]="emblemArt()"
+        [style.maskImage]="emblemArt()"
+        [style.backgroundColor]="crest().emblemColor"
+    ></span>
+    <!-- The faction ring sits behind the cloth, which overflows it on purpose. -->
+    <img class="crest__ring" [src]="ringUrl()" alt="" />
+</div>

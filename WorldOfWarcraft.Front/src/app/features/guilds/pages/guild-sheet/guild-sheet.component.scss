@@ -1,40 +1,64 @@
 .guild-sheet {
-    display: grid;
-    gap: 1rem;
+    width: 100%;
+    max-width: 72rem;
+    margin: 0 auto;
+    padding: 1.5rem 1rem 3rem;
+    overflow-x: clip;
+
+    --gc-widget-border: rgba(255, 255, 255, 0.1);
+    --gc-widget-background: var(--gc-surface-2);
+    --gc-widget-editing-border: rgba(120, 170, 255, 0.55);
+    --gc-widget-accent: #3366ff;
+    --gc-widget-danger: #ff3d71;
+    --gc-widget-hover: rgba(255, 255, 255, 0.06);
 }
 
-.guild-sheet__header {
-    display: flex;
-    flex-direction: column;
-    gap: 0.45rem;
+.guild-sheet gc-widget-workspace,
+.guild-sheet gc-widget-grid {
+    display: block;
+    width: 100%;
 }
 
-.guild-sheet__handle {
-    margin: 0;
+.guild-sheet wow-guild-admin {
+    display: block;
+    margin-top: 1.5rem;
 }
 
-.guild-sheet__meta {
-    margin: 0;
+.guild-sheet__error {
+    margin: 0 0 0.75rem;
     font-size: 0.85rem;
-    opacity: 0.75;
+    color: var(--color-danger-default, #ff3d71);
 }
 
-.guild-sheet__sentence {
-    margin: 0 0 1rem;
-}
-
-.guild-sheet__links {
+.guild-hero--skeleton {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 0.5rem;
+    gap: 1rem 1.75rem;
+    margin-bottom: 1.25rem;
+    padding: 1.1rem 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 1rem;
+    background: var(--gc-surface-2, rgba(255, 255, 255, 0.04));
+    pointer-events: none;
 }
 
-.guild-sheet__badge {
-    font-size: 0.7rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    padding: 0.15rem 0.5rem;
-    border-radius: 999px;
-    background: color-mix(in srgb, currentColor 12%, transparent);
+.guild-hero--skeleton .guild-hero__game {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.guild-hero--skeleton .guild-hero__game-text,
+.guild-hero--skeleton .guild-hero__identity {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.guild-sheet__workspace-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 0.85rem;
+    pointer-events: none;
 }

@@ -2,12 +2,19 @@ import { Injectable } from "@angular/core";
 import {
     PlayerLoadRequestDto,
     PlayerResolveResultDto,
+    PlayerSearchRequestDto,
+    PlayerSearchResultDto,
     PlayerSheetDto,
     PlayerUpdateRequestDto,
 } from "@features/players/dto/player.dto";
-import { PlayerResolveResult, PlayerSheet } from "@features/players/models/player.model";
+import { PlayerResolveResult, PlayerSheet, PlayerSummary } from "@features/players/models/player.model";
 import { BaseService } from "@shared/services/base.service";
-import { Observable } from "rxjs";
+import { map, Observable } from "rxjs";
+
+export interface PlayerSearchPage {
+    items: PlayerSummary[];
+    hasMore: boolean;
+}
 
 @Injectable({ providedIn: "root" })
 export class PlayersService extends BaseService {
@@ -21,6 +28,15 @@ export class PlayersService extends BaseService {
 
     public getByPublicId(publicId: string): Observable<PlayerSheet> {
         return this.getOne<PlayerSheetDto, PlayerSheet>(PlayerSheet, publicId);
+    }
+
+    public search(request: PlayerSearchRequestDto): Observable<PlayerSearchPage> {
+        return this.http.post<PlayerSearchResultDto>(this.getURL("actions/Search"), request).pipe(
+            map((dto) => ({
+                items: (dto.items ?? []).map((item) => PlayerSummary.fromDto(item)),
+                hasMore: dto.hasMore ?? false,
+            })),
+        );
     }
 
     public resolve(platformUserPublicId: string): Observable<PlayerResolveResult> {

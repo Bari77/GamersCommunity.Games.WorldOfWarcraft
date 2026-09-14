@@ -4,16 +4,11 @@
     gap: 1rem;
 }
 
+/* The widget host draws the title, so the row only carries the create button. */
 .character-list__head {
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.character-list__head h2 {
-    margin: 0;
-    font-size: 1.1rem;
+    justify-content: flex-end;
 }
 
 .character-list__grid {

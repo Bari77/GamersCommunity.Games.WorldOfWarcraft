@@ -1,0 +1,50 @@
+:host {
+    display: block;
+}
+
+.stats__list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+    }
+}
+
+.stats__form {
+    display: flex;
+    flex-direction: column;
+    gap: 0.6rem;
+}
+
+.stats__field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.stats__field label {
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.stats__hint {
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.6;
+}
+
+.stats__actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.25rem;
+}
+
+.stats__edit {
+    margin-top: 0.5rem;
+}

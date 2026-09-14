@@ -25,18 +25,41 @@
                                 }
                                 <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
                             </header>
-                            <p class="guild-post__body">{{ post.body }}</p>
-                            @if (post.mediaUrl) {
-                                <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
+
+                            @if (editingId() === post.publicId) {
+                                <wow-guild-post-form
+                                    [post]="post"
+                                    [saving]="store.posting()"
+                                    [errorCode]="store.errorCode()"
+                                    [moderated]="canModerate()"
+                                    (save)="saveEdit(post, $event)"
+                                    (cancel)="cancelEdit()"
+                                />
+                            } @else {
+                                <p class="guild-post__body">{{ post.body }}</p>
+                                @if (post.mediaUrl) {
+                                    <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
+                                }
+                                @if (!post.isPublic()) {
+                                    <p class="guild-post__audience">
+                                        <span i18n="@@wow.guild.wall.audience">Readable from</span>
+                                        <strong>{{ visibilityLabel(post) }}</strong>
+                                    </p>
+                                }
+                                <footer class="guild-post__actions">
+                                    @if (isAuthor(post)) {
+                                        <button nbButton ghost size="small" status="basic" (click)="startEdit(post)">
+                                            <span i18n="@@wow.guild.wall.edit">Edit</span>
+                                        </button>
+                                    }
+                                    <button nbButton ghost size="small" status="success" (click)="moderate(post, true)">
+                                        <span i18n="@@wow.guild.wall.approve">Approve</span>
+                                    </button>
+                                    <button nbButton ghost size="small" status="danger" (click)="moderate(post, false)">
+                                        <span i18n="@@wow.guild.wall.reject">Reject</span>
+                                    </button>
+                                </footer>
                             }
-                            <footer class="guild-post__actions">
-                                <button nbButton ghost size="small" status="success" (click)="moderate(post, true)">
-                                    <span i18n="@@wow.guild.wall.approve">Approve</span>
-                                </button>
-                                <button nbButton ghost size="small" status="danger" (click)="moderate(post, false)">
-                                    <span i18n="@@wow.guild.wall.reject">Reject</span>
-                                </button>
-                            </footer>
                         </li>
                     } @empty {
                         <li class="guild-posts__empty" i18n="@@wow.guild.wall.queueEmpty">
@@ -53,74 +76,21 @@
     <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
     <nb-card-body>
         @if (canPublish()) {
-            <form class="guild-wall__composer" (ngSubmit)="publish()">
-                <textarea
-                    nbInput
-                    fullWidth
-                    rows="3"
-                    maxlength="2000"
-                    [placeholder]="bodyPlaceholder"
-                    [ngModel]="body()"
-                    (ngModelChange)="body.set($event)"
-                    [ngModelOptions]="{ standalone: true }"
-                ></textarea>
-
-                <input
-                    nbInput
-                    fullWidth
-                    type="url"
-                    [placeholder]="mediaPlaceholder"
-                    [ngModel]="mediaUrl()"
-                    (ngModelChange)="mediaUrl.set($event)"
-                    [ngModelOptions]="{ standalone: true }"
+            <div class="guild-wall__composer">
+                <wow-guild-post-form
+                    #composer
+                    [saving]="store.posting()"
+                    [errorCode]="editingId() ? null : store.errorCode()"
+                    [moderated]="canModerate()"
+                    (save)="publish($event)"
                 />
-
-                @if (!canModerate()) {
-                    <p class="guild-wall__hint" i18n="@@wow.guild.wall.moderationHint">
-                        Your posts are reviewed by an officer before they appear on the wall.
-                    </p>
-                }
 
                 @if (queuedNotice()) {
                     <p class="guild-wall__notice" role="status" i18n="@@wow.guild.wall.queued">
                         Sent. An officer will review it shortly.
                     </p>
                 }
-
-                @if (store.errorCode(); as code) {
-                    <p class="guild-wall__error" role="alert">
-                        @switch (code) {
-                            @case ("MUTED") {
-                                <span i18n="@@wow.guild.wall.error.muted">
-                                    You are muted and cannot publish for now.
-                                </span>
-                            }
-                            @case ("BANNED") {
-                                <span i18n="@@wow.guild.wall.error.banned">Your account is banned.</span>
-                            }
-                            @case ("SANCTIONS_UNAVAILABLE") {
-                                <span i18n="@@wow.guild.wall.error.unavailable">
-                                    Publishing is unavailable right now. Please try again later.
-                                </span>
-                            }
-                            @case ("INVALID_MEDIA_URL") {
-                                <span i18n="@@wow.guild.wall.error.media">
-                                    The image link must start with http:// or https://.
-                                </span>
-                            }
-                            @default {
-                                <span i18n="@@wow.guild.wall.error.unknown">The post could not be sent.</span>
-                            }
-                        }
-                    </p>
-                }
-
-                <footer class="guild-wall__composer-actions">
-                    <button nbButton status="primary" type="submit" [disabled]="store.posting() || !body().trim()">
-                        <span i18n="@@wow.guild.wall.publish">Publish</span>
-                    </button>
-                </footer>
-            </form>
+            </div>
         }
 
         <ul class="guild-posts">
@@ -147,16 +117,41 @@
                             }
                             <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
                         </header>
-                        <p class="guild-post__body">{{ post.body }}</p>
-                        @if (post.mediaUrl) {
-                            <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
-                        }
-                        @if (canDelete(post)) {
-                            <footer class="guild-post__actions">
-                                <button nbButton ghost size="small" status="danger" (click)="remove(post)">
-                                    <span i18n="@@wow.guild.wall.delete">Delete</span>
-                                </button>
-                            </footer>
+
+                        @if (editingId() === post.publicId) {
+                            <wow-guild-post-form
+                                [post]="post"
+                                [saving]="store.posting()"
+                                [errorCode]="store.errorCode()"
+                                [moderated]="canModerate()"
+                                (save)="saveEdit(post, $event)"
+                                (cancel)="cancelEdit()"
+                            />
+                        } @else {
+                            <p class="guild-post__body">{{ post.body }}</p>
+                            @if (post.mediaUrl) {
+                                <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
+                            }
+                            @if (!post.isPublic()) {
+                                <p class="guild-post__audience">
+                                    <span i18n="@@wow.guild.wall.audience">Readable from</span>
+                                    <strong>{{ visibilityLabel(post) }}</strong>
+                                </p>
+                            }
+                            @if (isAuthor(post) || canDelete(post)) {
+                                <footer class="guild-post__actions">
+                                    @if (isAuthor(post)) {
+                                        <button nbButton ghost size="small" status="basic" (click)="startEdit(post)">
+                                            <span i18n="@@wow.guild.wall.edit">Edit</span>
+                                        </button>
+                                    }
+                                    @if (canDelete(post)) {
+                                        <button nbButton ghost size="small" status="danger" (click)="remove(post)">
+                                            <span i18n="@@wow.guild.wall.delete">Delete</span>
+                                        </button>
+                                    }
+                                </footer>
+                            }
                         }
                     </li>
                 } @empty {

@@ -1,0 +1,82 @@
+@let current = crest();
+
+<div class="crest-editor">
+    <div class="crest-editor__preview">
+        <wow-guild-crest [crest]="current" [size]="150" />
+    </div>
+
+    <div class="crest-editor__controls">
+        <div class="crest-editor__colors">
+            <label>
+                <span i18n="@@wow.guild.crest.background">Cloth</span>
+                <input
+                    type="color"
+                    [value]="current.backgroundColor"
+                    (input)="recolor('backgroundColor', $any($event.target).value)"
+                />
+            </label>
+            <label>
+                <span i18n="@@wow.guild.crest.borderColor">Border</span>
+                <input
+                    type="color"
+                    [value]="current.borderColor"
+                    (input)="recolor('borderColor', $any($event.target).value)"
+                />
+            </label>
+            <label>
+                <span i18n="@@wow.guild.crest.emblemColor">Emblem</span>
+                <input
+                    type="color"
+                    [value]="current.emblemColor"
+                    (input)="recolor('emblemColor', $any($event.target).value)"
+                />
+            </label>
+        </div>
+
+        <fieldset class="crest-editor__parts">
+            <legend i18n="@@wow.guild.crest.borders">Border shape</legend>
+            <div class="crest-editor__row">
+                @for (part of borders; track part.index) {
+                    <button
+                        type="button"
+                        class="crest-editor__choice"
+                        [class.crest-editor__choice--active]="part.index === current.border"
+                        [attr.aria-label]="borderLabel + ' ' + (part.index + 1)"
+                        [attr.aria-pressed]="part.index === current.border"
+                        (click)="pick({ border: part.index })"
+                    >
+                        <span
+                            class="crest-editor__art"
+                            [style.backgroundImage]="part.art"
+                            [style.maskImage]="part.art"
+                            [style.backgroundColor]="current.borderColor"
+                        ></span>
+                    </button>
+                }
+            </div>
+        </fieldset>
+
+        <fieldset class="crest-editor__parts">
+            <legend i18n="@@wow.guild.crest.emblems">Emblem</legend>
+            <div class="crest-editor__grid">
+                @for (part of emblems; track part.index) {
+                    <button
+                        type="button"
+                        class="crest-editor__choice"
+                        [class.crest-editor__choice--active]="part.index === current.emblem"
+                        [attr.aria-label]="emblemLabel + ' ' + (part.index + 1)"
+                        [attr.aria-pressed]="part.index === current.emblem"
+                        (click)="pick({ emblem: part.index })"
+                    >
+                        <span
+                            class="crest-editor__art"
+                            [style.backgroundImage]="part.art"
+                            [style.maskImage]="part.art"
+                            [style.backgroundColor]="current.emblemColor"
+                        ></span>
+                    </button>
+                }
+            </div>
+        </fieldset>
+    </div>
+</div>

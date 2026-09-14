@@ -1,3 +1,7 @@
+import { CharacterSummaryDto } from "@features/characters/dto/character.dto";
+import { GuildSummaryDto } from "@features/guilds/dto/guild.dto";
+import { PlayerSummaryDto } from "@features/players/dto/player.dto";
+
 export interface HomeFeedDto {
     latestLfg: LfgAdSummaryDto[];
     latestCharacters: CharacterSummaryDto[];
@@ -14,43 +18,6 @@ export interface LfgAdSummaryDto {
     expiresAt: string;
     playerPublicId: string;
     platformUserPublicId: string;
-}
-
-export interface CharacterSummaryDto {
-    publicId: string;
-    pseudo: string;
-    level: number;
-    ilvl: number;
-    main: boolean;
-    creationDate: string;
-    playerPublicId: string;
-    serverName: string;
-    raceName: string;
-    className: string | null;
-    mainSpecializationName: string | null;
-    guildPublicId: string | null;
-    guildName: string | null;
-    guildDiscriminator: string | null;
-}
-
-export interface PlayerSummaryDto {
-    publicId: string;
-    platformUserPublicId: string;
-    nickname: string;
-    discriminator: string;
-    avatarUrl: string;
-    presentationIrl: string | null;
-    creationDate: string;
-}
-
-export interface GuildSummaryDto {
-    publicId: string;
-    entitled: string;
-    discriminator: string;
-    level: number;
-    creationDate: string;
-    serverName: string;
-    memberCount: number;
 }
 
 export interface CreateLfgAdRequestDto {

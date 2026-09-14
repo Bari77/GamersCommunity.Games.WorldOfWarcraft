@@ -2,25 +2,32 @@ import { GamePostDto } from "@features/guilds/dto/game-post.dto";
 import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
 import { GuildSheetDto, GuildSummaryDto } from "@features/guilds/dto/guild.dto";
 
-const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
+export const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
 
 const PLAYER_PUBLIC_ID = "22222222-2222-2222-2222-222222222222";
 const PLATFORM_USER_PUBLIC_ID = "33333333-3333-3333-3333-333333333333";
 
-/** The mocked visitor is an officer, so the moderation surfaces are reachable offline. */
+/** The mocked visitor leads the guild, so both the moderation and the layout editor are reachable. */
 export const mockGuildSheet: GuildSheetDto = {
     publicId: GUILD_PUBLIC_ID,
     entitled: "Guardians of Azeroth",
     discriminator: "0001",
     level: 25,
     sentence: "Heroic progress guild, EU evenings.",
-    linkDiscord: "https://discord.gg/example",
-    linkForum: null,
+    layoutJson: null,
     serverName: "hyjal",
-    directionName: "heal",
+    orientationName: "pvpe",
+    crest: {
+        emblem: 42,
+        emblemColor: "#f0e6c8",
+        border: 3,
+        borderColor: "#c8a95a",
+        backgroundColor: "#1e2a4a",
+        faction: "alliance",
+    },
     creationDate: new Date("2024-11-02T18:00:00Z").toISOString(),
     memberCount: 2,
-    viewerRank: "officer",
+    viewerRank: "leader",
     viewerApplicationStatus: null,
     viewerApplicationPublicId: null,
     pendingApplicationCount: 1,
@@ -30,9 +37,12 @@ export const mockGuildSheet: GuildSheetDto = {
             characterPublicId: "44444444-4444-4444-4444-444444444444",
             pseudo: "Aelindra",
             level: 80,
+            ilvl: 636,
             className: "druid",
             raceName: "night_elf",
-            rank: "officer",
+            mainSpecializationName: "restoration",
+            directionName: "heal",
+            rank: "leader",
             playerPublicId: PLAYER_PUBLIC_ID,
             platformUserPublicId: PLATFORM_USER_PUBLIC_ID,
             nickname: "Aelindra",
@@ -44,9 +54,12 @@ export const mockGuildSheet: GuildSheetDto = {
             characterPublicId: "44444444-4444-4444-4444-44444444444a",
             pseudo: "Thalorim",
             level: 80,
+            ilvl: 628,
             className: "paladin",
             raceName: "human",
-            rank: "leader",
+            mainSpecializationName: "protection",
+            directionName: "tank",
+            rank: "officer",
             playerPublicId: "22222222-2222-2222-2222-22222222222a",
             platformUserPublicId: "33333333-3333-3333-3333-33333333333a",
             nickname: "Thalorim",
@@ -68,6 +81,8 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         memberCount: 2,
         sentence: "Heroic progress guild, EU evenings.",
         alignmentName: "alliance",
+        orientationName: "pvpe",
+        crest: mockGuildSheet.crest,
     },
     {
         publicId: "55555555-5555-5555-5555-55555555555a",
@@ -79,6 +94,15 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         memberCount: 34,
         sentence: "Casual PvP, Horde side.",
         alignmentName: "horde",
+        orientationName: "pvp",
+        crest: {
+            emblem: 7,
+            emblemColor: "#e8c23a",
+            border: 1,
+            borderColor: "#7a1414",
+            backgroundColor: "#3c0d0d",
+            faction: "horde",
+        },
     },
 ];
 
@@ -116,14 +140,34 @@ export const mockGuildWallPosts: GamePostDto[] = [
         mediaUrl: null,
         mediaKind: null,
         status: "approved",
+        visibility: "member",
         creationDate: new Date("2026-09-10T20:00:00Z").toISOString(),
+        authorPlayerPublicId: PLAYER_PUBLIC_ID,
+        authorPlatformUserPublicId: PLATFORM_USER_PUBLIC_ID,
+        authorNickname: "Aelindra",
+        authorDiscriminator: "0042",
+        authorAvatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Aelindra",
+        moderationReason: null,
+        moderatedAt: new Date("2026-09-10T20:00:00Z").toISOString(),
+    },
+    {
+        publicId: "99999999-9999-9999-9999-99999999999b",
+        guildPublicId: GUILD_PUBLIC_ID,
+        guildName: "Guardians of Azeroth",
+        guildDiscriminator: "0001",
+        body: "We are recruiting a healer for the mythic roster.",
+        mediaUrl: null,
+        mediaKind: null,
+        status: "approved",
+        visibility: "public",
+        creationDate: new Date("2026-09-09T17:30:00Z").toISOString(),
         authorPlayerPublicId: "22222222-2222-2222-2222-22222222222a",
         authorPlatformUserPublicId: "33333333-3333-3333-3333-33333333333a",
         authorNickname: "Thalorim",
         authorDiscriminator: "0108",
         authorAvatarUrl: "https://api.dicebear.com/9.x/avataaars/svg?seed=Thalorim",
         moderationReason: null,
-        moderatedAt: new Date("2026-09-10T20:00:00Z").toISOString(),
+        moderatedAt: new Date("2026-09-09T17:30:00Z").toISOString(),
     },
 ];
 
@@ -137,6 +181,7 @@ export const mockPendingPosts: GamePostDto[] = [
         mediaUrl: null,
         mediaKind: null,
         status: "pending",
+        visibility: "member",
         creationDate: new Date("2026-09-11T08:30:00Z").toISOString(),
         authorPlayerPublicId: "22222222-2222-2222-2222-22222222222b",
         authorPlatformUserPublicId: "33333333-3333-3333-3333-33333333333b",

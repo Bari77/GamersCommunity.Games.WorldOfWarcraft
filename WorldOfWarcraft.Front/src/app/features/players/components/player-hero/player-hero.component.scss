@@ -23,7 +23,7 @@
     min-width: 0;
 }
 
-.player-hero__crest {
+.player-hero__game-icon {
     width: 3rem;
     height: 3rem;
     border-radius: 0.6rem;
@@ -68,6 +68,18 @@
     border: 2px solid rgba(255, 255, 255, 0.16);
 }
 
+.player-hero__tabard {
+    display: block;
+    flex: none;
+    line-height: 0;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+    transition: transform 0.15s ease;
+}
+
+.player-hero__tabard:hover {
+    transform: scale(1.05);
+}
+
 .player-hero__who {
     min-width: 0;
 }
@@ -90,10 +102,35 @@
     text-decoration: underline;
 }
 
-.player-hero__since {
+.player-hero__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.6rem;
     margin: 0.15rem 0 0;
     font-size: 0.8rem;
     opacity: 0.6;
+}
+
+.player-hero__guild {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    color: inherit;
+    text-decoration: none;
+}
+
+.player-hero__guild:hover {
+    color: var(--gc-accent, var(--game-accent, #3366ff));
+}
+
+.player-hero__guild-rank {
+    padding: 0.05rem 0.4rem;
+    border-radius: 999px;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .player-hero__switch-label {

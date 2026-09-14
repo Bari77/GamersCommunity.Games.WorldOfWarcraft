@@ -1,4 +1,34 @@
-import { PlayerResolveResultDto, PlayerSheetDto } from "@features/players/dto/player.dto";
+import {
+    PlayerGuildDto,
+    PlayerResolveResultDto,
+    PlayerSheetDto,
+    PlayerSummaryDto,
+} from "@features/players/dto/player.dto";
+import { GuildCrest } from "@shared/models/guild-crest";
+
+export class PlayerGuild {
+    public constructor(
+        public publicId: string,
+        public entitled: string,
+        public discriminator: string,
+        public rank: string,
+        public crest: GuildCrest,
+    ) {}
+
+    public static fromDto(dto: PlayerGuildDto): PlayerGuild {
+        return new PlayerGuild(
+            dto.publicId,
+            dto.entitled,
+            dto.discriminator,
+            dto.rank,
+            GuildCrest.fromDto(dto.crest),
+        );
+    }
+
+    public get handle(): string {
+        return `${this.entitled}#${this.discriminator}`;
+    }
+}
 
 export class PlayerSheet {
     public constructor(
@@ -14,6 +44,7 @@ export class PlayerSheet {
         public creationDate: Date,
         public characterCount: number,
         public layoutJson: string | null,
+        public guild: PlayerGuild | null,
     ) {}
 
     public get handle(): string {
@@ -27,14 +58,51 @@ export class PlayerSheet {
             dto.nickname,
             dto.discriminator,
             dto.avatarUrl,
-            dto.presentationIrl,
-            dto.presentationIg,
+            // `?? null` throughout: the API omits its null properties, so they arrive undefined
+            // and would slip past a `=== null` test.
+            dto.presentationIrl ?? null,
+            dto.presentationIg ?? null,
             dto.nbMount,
-            dto.successPoints,
+            dto.successPoints ?? null,
             new Date(dto.creationDate),
             dto.characterCount,
-            dto.layoutJson,
+            dto.layoutJson ?? null,
+            dto.guild ? PlayerGuild.fromDto(dto.guild) : null,
         );
+    }
+}
+
+export class PlayerSummary {
+    public constructor(
+        public publicId: string,
+        public platformUserPublicId: string,
+        public nickname: string,
+        public discriminator: string,
+        public avatarUrl: string,
+        public presentationIrl: string | null,
+        public creationDate: Date,
+        public characterCount: number,
+    ) {}
+
+    public static fromDto(dto: PlayerSummaryDto): PlayerSummary {
+        return new PlayerSummary(
+            dto.publicId,
+            dto.platformUserPublicId,
+            dto.nickname,
+            dto.discriminator,
+            dto.avatarUrl,
+            dto.presentationIrl ?? null,
+            new Date(dto.creationDate),
+            dto.characterCount ?? 0,
+        );
+    }
+
+    public handleLabel(): string {
+        return `${this.nickname}#${this.discriminator}`;
+    }
+
+    public initials(): string {
+        return this.nickname.charAt(0) || "?";
     }
 }
 
@@ -45,6 +113,6 @@ export class PlayerResolveResult {
     ) {}
 
     public static fromDto(dto: PlayerResolveResultDto): PlayerResolveResult {
-        return new PlayerResolveResult(dto.playerPublicId, dto.hasSheet);
+        return new PlayerResolveResult(dto.playerPublicId ?? null, dto.hasSheet);
     }
 }

@@ -1,10 +1,14 @@
 import { GamePostDto, GamePostPageDto } from "@features/guilds/dto/game-post.dto";
+import { GUILD_RANK_MEMBER } from "@features/guilds/models/guild.model";
 
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
 export const POST_PENDING = "pending";
 export const POST_APPROVED = "approved";
 export const POST_REJECTED = "rejected";
+
+/** Audience of a post: this, or one of the guild rank codes read as a minimum. */
+export const POST_VISIBILITY_PUBLIC = "public";
 
 export class GamePost {
     public constructor(
@@ -16,6 +20,7 @@ export class GamePost {
         public mediaUrl: string | null,
         public mediaKind: string | null,
         public status: string,
+        public visibility: string,
         public creationDate: Date,
         public authorPlayerPublicId: string,
         public authorPlatformUserPublicId: string,
@@ -36,6 +41,8 @@ export class GamePost {
             dto.mediaUrl ?? null,
             dto.mediaKind ?? null,
             dto.status,
+            // Falling back to members rather than public: a missing audience must never widen one.
+            dto.visibility ?? GUILD_RANK_MEMBER,
             new Date(dto.creationDate),
             dto.authorPlayerPublicId,
             dto.authorPlatformUserPublicId,
@@ -65,6 +72,10 @@ export class GamePost {
 
     public isMine(playerPublicId: string | null | undefined): boolean {
         return !!playerPublicId && this.authorPlayerPublicId === playerPublicId;
+    }
+
+    public isPublic(): boolean {
+        return this.visibility === POST_VISIBILITY_PUBLIC;
     }
 }
 

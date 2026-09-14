@@ -1,22 +1,22 @@
 import { DatePipe } from "@angular/common";
-import { Component, inject, input, OnInit, output, signal } from "@angular/core";
-import { FormsModule } from "@angular/forms";
+import { Component, inject, input, OnInit, output, signal, viewChild } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { GuildPostFormComponent } from "@features/guilds/components/guild-post-form/guild-post-form.component";
 import { GamePost } from "@features/guilds/models/game-post.model";
-import { GuildWallStore } from "@features/guilds/stores/guild-wall.store";
-import { NbButtonModule, NbCardModule, NbInputModule } from "@nebular/theme";
+import { postVisibilityLabel } from "@features/guilds/models/post-visibility";
+import { GamePostDraft, GuildWallStore } from "@features/guilds/stores/guild-wall.store";
+import { NbButtonModule, NbCardModule } from "@nebular/theme";
 
 @Component({
     standalone: true,
     selector: "wow-guild-wall",
     imports: [
         DatePipe,
-        FormsModule,
         RouterLink,
+        GuildPostFormComponent,
         NbButtonModule,
         NbCardModule,
-        NbInputModule,
         SkeletonComponent,
         SkeletonTextComponent,
     ],
@@ -35,35 +35,49 @@ export class GuildWallComponent implements OnInit {
 
     protected readonly store = inject(GuildWallStore);
 
-    protected readonly bodyPlaceholder = $localize`:@@wow.guild.wall.bodyPlaceholder:Share something with the guild…`;
-    protected readonly mediaPlaceholder = $localize`:@@wow.guild.wall.mediaPlaceholder:Image link (optional)`;
-
     protected readonly postPlaceholders = [0, 1, 2];
 
-    protected readonly body = signal("");
-    protected readonly mediaUrl = signal("");
+    /** Public id of the post being rewritten; only its author ever gets there. */
+    protected readonly editingId = signal<string | null>(null);
 
     /** Set after a member's post landed in the queue, since nothing appears on the wall. */
     protected readonly queuedNotice = signal(false);
+
+    private readonly composer = viewChild<GuildPostFormComponent>("composer");
 
     public async ngOnInit(): Promise<void> {
         await this.store.load(this.guildPublicId(), this.canModerate());
     }
 
-    protected async publish(): Promise<void> {
-        const body = this.body().trim();
-        if (!body || this.store.posting()) {
-            return;
-        }
-
-        const post = await this.store.publish(body, this.mediaUrl().trim() || null);
+    protected async publish(draft: GamePostDraft): Promise<void> {
+        const post = await this.store.publish(draft);
         if (!post) {
             return;
         }
 
-        this.body.set("");
-        this.mediaUrl.set("");
+        this.composer()?.reset();
         this.queuedNotice.set(post.isPending());
+    }
+
+    protected async saveEdit(post: GamePost, draft: GamePostDraft): Promise<void> {
+        const saved = await this.store.edit(post.publicId, draft);
+        if (!saved) {
+            return;
+        }
+
+        this.editingId.set(null);
+        // A member's edit needs a fresh review, which drops the post off the wall until then.
+        this.queuedNotice.set(saved.isPending() && !this.canModerate());
+    }
+
+    protected startEdit(post: GamePost): void {
+        this.store.errorCode.set(null);
+        this.queuedNotice.set(false);
+        this.editingId.set(post.publicId);
+    }
+
+    protected cancelEdit(): void {
+        this.editingId.set(null);
     }
 
     protected async moderate(post: GamePost, approve: boolean): Promise<void> {
@@ -79,6 +93,15 @@ export class GuildWallComponent implements OnInit {
     }
 
     protected canDelete(post: GamePost): boolean {
-        return this.canModerate() || post.isMine(this.playerPublicId());
+        return this.canModerate() || this.isAuthor(post);
+    }
+
+    /** Officers moderate what they are shown; rewriting is the author's own business. */
+    protected isAuthor(post: GamePost): boolean {
+        return post.isMine(this.playerPublicId());
+    }
+
+    protected visibilityLabel(post: GamePost): string {
+        return postVisibilityLabel(post.visibility);
     }
 }

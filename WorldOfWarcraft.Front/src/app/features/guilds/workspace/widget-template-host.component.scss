@@ -1,0 +1,47 @@
+/* Roster, wall, applications and recruitment were standalone cards on the old page. Inside a
+   widget the grid already draws the frame and pads the body, so their chrome has to go. */
+:host ::ng-deep nb-card {
+    margin: 0;
+    border: none;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+:host ::ng-deep nb-card + nb-card {
+    margin-top: 1.25rem;
+}
+
+:host ::ng-deep nb-card-header {
+    padding: 0 0 0.6rem;
+}
+
+:host ::ng-deep nb-card-body {
+    padding: 0.75rem 0 0;
+    overflow: visible;
+}
+
+.widget-host__sentence {
+    margin: 0;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+}
+
+.widget-host__empty {
+    margin: 0;
+    opacity: 0.65;
+}
+
+.widget-host__stats {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    li {
+        display: flex;
+        justify-content: space-between;
+        gap: 1rem;
+        padding: 0.35rem 0;
+        border-bottom: 1px solid rgb(255 255 255 / 8%);
+    }
+}

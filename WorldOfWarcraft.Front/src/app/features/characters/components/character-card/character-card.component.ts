@@ -4,12 +4,13 @@ import { Character } from "@features/characters/models/character.model";
 import { roleLabel, specKey, specRole } from "@features/characters/models/spec-roles";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
+import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { WowIconComponent, WowIconKind } from "@shared/components/wow-icon/wow-icon.component";
 
 @Component({
     standalone: true,
     selector: "wow-character-card",
-    imports: [GameTermPipe, NbButtonModule, NbIconModule, RouterLink, WowIconComponent],
+    imports: [GameTermPipe, GuildCrestComponent, NbButtonModule, NbIconModule, RouterLink, WowIconComponent],
     templateUrl: "./character-card.component.html",
     styleUrl: "./character-card.component.scss",
 })

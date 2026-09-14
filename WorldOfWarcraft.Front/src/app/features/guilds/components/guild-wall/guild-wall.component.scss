@@ -24,24 +24,9 @@
     border-bottom: 1px solid color-mix(in srgb, currentColor 12%, transparent);
 }
 
-.guild-wall__composer-actions {
-    display: flex;
-    justify-content: flex-end;
-}
-
-.guild-wall__hint,
-.guild-wall__notice,
-.guild-wall__error {
-    margin: 0;
+.guild-wall__notice {
+    margin: 0.5rem 0 0;
     font-size: 0.8rem;
-}
-
-.guild-wall__hint {
-    opacity: 0.65;
-}
-
-.guild-wall__error {
-    color: var(--color-danger-default, #ff3d71);
 }
 
 .guild-posts {
@@ -101,6 +86,15 @@ a.guild-post__author:hover {
 .guild-post__media {
     max-width: 100%;
     border-radius: 0.5rem;
+}
+
+.guild-post__audience {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    margin: 0;
+    font-size: 0.75rem;
+    opacity: 0.6;
 }
 
 .guild-post__actions {

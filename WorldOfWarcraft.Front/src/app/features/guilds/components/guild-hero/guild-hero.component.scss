@@ -1,0 +1,101 @@
+:host {
+    display: block;
+    margin-bottom: 1.25rem;
+}
+
+.guild-hero {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.75rem;
+    padding: 1.1rem 1.35rem;
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 1rem;
+    background:
+        radial-gradient(120% 160% at 0% 0%, rgba(0, 112, 221, 0.28), transparent 55%),
+        var(--gc-surface-2, rgba(255, 255, 255, 0.04));
+}
+
+.guild-hero__game {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    min-width: 0;
+}
+
+.guild-hero__game-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 0.6rem;
+    object-fit: cover;
+}
+
+.guild-hero__game-text {
+    min-width: 0;
+}
+
+.guild-hero__kicker {
+    margin: 0;
+    font-size: 0.65rem;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    opacity: 0.55;
+}
+
+.guild-hero__game-name {
+    margin: 0;
+    font-family: var(--gc-font-display, inherit);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.guild-hero__identity {
+    display: flex;
+    align-items: center;
+    gap: 0.9rem;
+    min-width: 0;
+    /* Takes the slack so the rank badge stays pinned right on wide screens. */
+    flex: 1 1 14rem;
+    padding-left: 1.75rem;
+    border-left: 1px solid rgba(255, 255, 255, 0.09);
+}
+
+.guild-hero__tabard {
+    flex: none;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.5));
+}
+
+.guild-hero__who {
+    min-width: 0;
+}
+
+.guild-hero__handle {
+    margin: 0;
+    font-size: 1.6rem;
+    line-height: 1.15;
+    font-weight: 700;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.guild-hero__meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.8rem;
+    opacity: 0.65;
+}
+
+.guild-hero__badge {
+    margin: 0;
+    padding: 0.25rem 0.7rem;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    background: color-mix(in srgb, currentColor 14%, transparent);
+}
+
+@media (max-width: 40rem) {
+    .guild-hero__identity {
+        padding-left: 0;
+        border-left: none;
+    }
+}

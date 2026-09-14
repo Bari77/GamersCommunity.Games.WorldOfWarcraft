@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { PlayerSummary } from "@features/home/models/home-feed.model";
+import { PlayerSummary } from "@features/players/models/player.model";
 
 @Component({
     standalone: true,

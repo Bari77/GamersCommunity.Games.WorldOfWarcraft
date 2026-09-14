@@ -1,55 +1,76 @@
-import { Component, computed, inject, input, OnInit, resource } from "@angular/core";
+import { Component, computed, effect, inject, input, OnInit, resource, signal, untracked } from "@angular/core";
 import { Router } from "@angular/router";
-import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { SkeletonComponent } from "@bari77/gc-ui";
+import {
+    parseWorkspace,
+    serializeWorkspace,
+    WidgetWorkspace,
+    WidgetWorkspaceComponent,
+} from "@bari77/gc-widgets";
+import defaultLayout from "../../../../../../config/guild/workspace.default.json";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { Character } from "@features/characters/models/character.model";
 import { CharactersService } from "@features/characters/services/characters.service";
 import { GuildAdminComponent } from "@features/guilds/components/guild-admin/guild-admin.component";
-import { GuildApplicationsComponent } from "@features/guilds/components/guild-applications/guild-applications.component";
-import {
-    GuildApplicationDraft,
-    GuildApplyFormComponent,
-} from "@features/guilds/components/guild-apply-form/guild-apply-form.component";
-import { GuildRosterComponent, RankChange } from "@features/guilds/components/guild-roster/guild-roster.component";
-import { GuildWallComponent } from "@features/guilds/components/guild-wall/guild-wall.component";
+import { GuildApplicationDraft } from "@features/guilds/components/guild-apply-form/guild-apply-form.component";
+import { GuildHeroComponent } from "@features/guilds/components/guild-hero/guild-hero.component";
+import { RankChange } from "@features/guilds/components/guild-roster/guild-roster.component";
 import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GuildLinkStore } from "@features/guilds/stores/guild-link.store";
 import { GuildSheetStore } from "@features/guilds/stores/guild-sheet.store";
-import { NbButtonModule, NbCardModule } from "@nebular/theme";
-import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
-import { GameTermPipe } from "@shared/pipes/game-term.pipe";
+import {
+    GUILD_PAGE_VISIBILITY_OPTIONS,
+    GUILD_WIDGET_CATALOG,
+    GUILD_WORKSPACE_COLUMNS,
+    GUILD_WORKSPACE_ROW_HEIGHT,
+} from "@features/guilds/workspace/widget-catalog";
+import { WowGuildWidgetTemplateHostComponent } from "@features/guilds/workspace/widget-template-host.component";
+import { NbCardModule } from "@nebular/theme";
 import { ResourceUtils } from "@shared/utils/resource.utils";
-import { DatePipe } from "@angular/common";
 import { firstValueFrom } from "rxjs";
 
 @Component({
     standalone: true,
     selector: "wow-guild-sheet",
     imports: [
-        DatePipe,
-        GameTermPipe,
-        NbButtonModule,
         NbCardModule,
         SkeletonComponent,
-        SkeletonTextComponent,
-        CreateSheetWallComponent,
         GuildAdminComponent,
-        GuildApplicationsComponent,
-        GuildApplyFormComponent,
-        GuildRosterComponent,
-        GuildWallComponent,
+        GuildHeroComponent,
+        WowGuildWidgetTemplateHostComponent,
+        WidgetWorkspaceComponent,
     ],
-    providers: [GuildSheetStore],
+    providers: [GuildSheetStore, GuildLinkStore],
     templateUrl: "./guild-sheet.component.html",
     styleUrl: "./guild-sheet.component.scss",
 })
 export class GuildSheetComponent implements OnInit {
     public readonly publicId = input.required<string>();
 
+    public readonly catalog = GUILD_WIDGET_CATALOG;
+    public readonly columns = GUILD_WORKSPACE_COLUMNS;
+    public readonly rowHeight = GUILD_WORKSPACE_ROW_HEIGHT;
+    public readonly pageVisibilityOptions = GUILD_PAGE_VISIBILITY_OPTIONS;
+
     protected readonly store = inject(GuildSheetStore);
     protected readonly membership = inject(GameMembershipStore);
 
-    protected readonly sheetWallMessage = $localize`:@@wow.guild.sheetWall:Create your player profile to apply to this guild.`;
+    /** The page belongs to the leader; officers keep the settings and the moderation. */
+    protected readonly canEditLayout = computed(() => this.store.isLeader());
+
+    protected readonly editing = signal(false);
+    protected readonly saveFailed = signal(false);
+
+    /** A saved layout comes back on the refreshed sheet, so the server stays the single source. */
+    protected readonly workspace = computed(() =>
+        parseWorkspace(
+            this.store.sheet()?.layoutJson,
+            defaultLayout as WidgetWorkspace,
+            GUILD_WORKSPACE_COLUMNS,
+            GUILD_WIDGET_CATALOG.map((entry) => entry.type),
+        ),
+    );
 
     /** Needed both to apply with a free character and to leave the guild with a member one. */
     private readonly myCharacters = resource({
@@ -73,16 +94,31 @@ export class GuildSheetComponent implements OnInit {
             .map((character) => character.publicId),
     );
 
-    /** Nothing to apply with once one of the visitor's characters is already in the roster. */
-    protected readonly canApply = computed(
-        () => this.membership.hasSheet() && !this.store.isMember() && this.store.sheet() !== null,
-    );
-
     private readonly characters = inject(CharactersService);
     private readonly router = inject(Router);
 
+    public constructor() {
+        effect(() => {
+            this.publicId();
+            untracked(() => {
+                this.editing.set(false);
+                this.saveFailed.set(false);
+            });
+        });
+    }
+
     public async ngOnInit(): Promise<void> {
         await this.store.load(this.publicId());
+    }
+
+    protected async onSaveLayout(workspace: WidgetWorkspace): Promise<void> {
+        this.saveFailed.set(false);
+
+        if (await this.store.updateProfile({ layoutJson: serializeWorkspace(workspace) })) {
+            this.editing.set(false);
+        } else {
+            this.saveFailed.set(true);
+        }
     }
 
     protected onSave(request: GuildUpdateRequestDto): void {

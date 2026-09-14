@@ -5,6 +5,7 @@ import {
     GamePostModerateRequestDto,
     GamePostPageDto,
     GamePostTargetRequestDto,
+    GamePostUpdateRequestDto,
     GuildWallRequestDto,
 } from "@features/guilds/dto/game-post.dto";
 import { GamePost, GamePostPage } from "@features/guilds/models/game-post.model";
@@ -29,6 +30,11 @@ export class GamePostsService extends BaseService {
 
     public create(request: GamePostCreateRequestDto): Observable<GamePost> {
         return this.post<GamePostDto, GamePost>(GamePost, "actions/Create", request);
+    }
+
+    /** Rewrites a post; the microservice refuses anyone but its author. */
+    public update(request: GamePostUpdateRequestDto): Observable<GamePost> {
+        return this.post<GamePostDto, GamePost>(GamePost, "actions/Update", request);
     }
 
     public moderate(request: GamePostModerateRequestDto): Observable<GamePost> {
