@@ -12,7 +12,7 @@
           "x": 0,
           "y": 0,
           "cols": 4,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         },
         {
@@ -32,7 +32,7 @@
           "x": 4,
           "y": 3,
           "cols": 8,
-          "rows": 4,
+          "rows": 3,
           "settings": {
             "title": "In-game presentation"
           }
@@ -49,7 +49,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         }
       ]
@@ -64,10 +64,11 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         }
-      ]
+      ],
+      "visibility": "friends"
     },
     {
       "id": "photos",
@@ -79,10 +80,11 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         }
-      ]
+      ],
+      "visibility": "friends"
     },
     {
       "id": "links",
@@ -94,10 +96,11 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         }
-      ]
+      ],
+      "visibility": "friends"
     }
   ]
 }

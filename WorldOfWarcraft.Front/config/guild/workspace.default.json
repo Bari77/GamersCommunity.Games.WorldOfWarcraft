@@ -21,30 +21,10 @@
           "x": 4,
           "y": 0,
           "cols": 8,
-          "rows": 3,
+          "rows": 6,
           "settings": {
             "title": "Presentation"
           }
-        },
-        {
-          "id": "w-links",
-          "type": "gc-links",
-          "x": 4,
-          "y": 3,
-          "cols": 8,
-          "rows": 3,
-          "settings": {
-            "title": "Links"
-          }
-        },
-        {
-          "id": "w-wall",
-          "type": "guild-wall",
-          "x": 0,
-          "y": 6,
-          "cols": 12,
-          "rows": 8,
-          "settings": {}
         }
       ]
     },
@@ -58,10 +38,74 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 6,
           "settings": {}
         }
       ]
+    },
+    {
+      "id": "page-d555eb50",
+      "title": "Wall",
+      "widgets": [
+        {
+          "type": "guild-wall",
+          "cols": 12,
+          "rows": 6,
+          "settings": {},
+          "id": "w-a999060e",
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "visibility": "public"
+    },
+    {
+      "id": "media",
+      "title": "Videos",
+      "widgets": [
+        {
+          "id": "w-videos",
+          "type": "guild-videos",
+          "x": 0,
+          "y": 0,
+          "cols": 12,
+          "rows": 6,
+          "settings": {}
+        }
+      ],
+      "visibility": "member"
+    },
+    {
+      "id": "page-85f288b1",
+      "title": "Photos",
+      "widgets": [
+        {
+          "type": "guild-photos",
+          "cols": 12,
+          "rows": 6,
+          "settings": {},
+          "id": "w-5d310f71",
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "visibility": "member"
+    },
+    {
+      "id": "page-cf1a5388",
+      "title": "Links",
+      "widgets": [
+        {
+          "type": "gc-links",
+          "cols": 12,
+          "rows": 6,
+          "settings": {},
+          "id": "w-d98b67a6",
+          "x": 0,
+          "y": 0
+        }
+      ],
+      "visibility": "member"
     },
     {
       "id": "recruitment",
@@ -72,41 +116,17 @@
           "type": "guild-recruitment",
           "x": 0,
           "y": 0,
-          "cols": 6,
-          "rows": 6,
+          "cols": 12,
+          "rows": 3,
           "settings": {}
         },
         {
           "id": "w-applications",
           "type": "guild-applications",
-          "x": 6,
-          "y": 0,
-          "cols": 6,
-          "rows": 6,
-          "settings": {}
-        }
-      ]
-    },
-    {
-      "id": "media",
-      "title": "Media",
-      "widgets": [
-        {
-          "id": "w-videos",
-          "type": "guild-videos",
           "x": 0,
-          "y": 0,
+          "y": 3,
           "cols": 12,
-          "rows": 6,
-          "settings": {}
-        },
-        {
-          "id": "w-photos",
-          "type": "guild-photos",
-          "x": 0,
-          "y": 6,
-          "cols": 12,
-          "rows": 6,
+          "rows": 3,
           "settings": {}
         }
       ]
