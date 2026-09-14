@@ -2,7 +2,7 @@
     display: block;
 }
 
-.latest-characters {
+.latest-guilds {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -10,14 +10,9 @@
     gap: 0.5rem;
 }
 
-.latest-characters__empty {
+.latest-guilds__empty {
     margin: 0;
     padding: 0.5rem 0;
     color: rgb(160 170 200 / 68%);
     font-size: 0.9rem;
-}
-
-.latest-characters__emblem {
-    border-radius: 0.3rem;
-    box-shadow: 0 0 0 1px color-mix(in srgb, var(--row-accent) 55%, transparent);
 }

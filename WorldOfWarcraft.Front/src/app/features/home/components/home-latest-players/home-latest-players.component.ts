@@ -1,15 +1,16 @@
-import { DatePipe } from "@angular/common";
 import { Component, input } from "@angular/core";
-import { RouterLink } from "@angular/router";
 import { PlayerSummary } from "@features/players/models/player.model";
+import { EntityRowComponent } from "@shared/components/entity-row/entity-row.component";
 
 @Component({
     standalone: true,
     selector: "wow-home-latest-players",
-    imports: [DatePipe, RouterLink],
+    imports: [EntityRowComponent],
     templateUrl: "./home-latest-players.component.html",
     styleUrl: "./home-latest-players.component.scss",
 })
 export class HomeLatestPlayersComponent {
     public readonly players = input.required<PlayerSummary[]>();
+
+    protected readonly discoverLabel = $localize`:@@wow.home.players.cta:Discover their WoW sheet`;
 }

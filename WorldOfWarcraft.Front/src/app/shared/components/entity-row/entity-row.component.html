@@ -1,0 +1,66 @@
+<a class="entity-row" [style.--row-accent]="accent()" [routerLink]="link()">
+    <span class="entity-row__visual" aria-hidden="true">
+        <ng-content select="[rowVisual]" />
+    </span>
+
+    <span class="entity-row__main">
+        <span class="entity-row__head">
+            <span class="entity-row__identity">
+                <span class="entity-row__name gc-display">
+                    {{ name() }}
+                    @if (badge(); as pill) {
+                        <span class="entity-row__badge">{{ pill }}</span>
+                    }
+                </span>
+
+                @if (subtitle()) {
+                    <span class="entity-row__subtitle" [class.entity-row__subtitle--muted]="subtitleMuted()">
+                        @for (icon of subtitleIcons(); track $index) {
+                            <wow-icon [kind]="icon.kind" [slug]="icon.slug" [label]="icon.label ?? ''" [size]="24" />
+                        }
+                        <span>{{ subtitle() }}</span>
+                    </span>
+                }
+            </span>
+
+            <span class="entity-row__trailing">
+                <ng-content select="[rowTrailing]" />
+
+                <span class="entity-row__trailing-stack">
+                    @if (level() !== null) {
+                        <span class="entity-row__level">
+                            <span class="sr-only">{{ levelLabel() }}</span>
+                            {{ level() }}
+                        </span>
+                    }
+                </span>
+            </span>
+        </span>
+
+        @if (description(); as text) {
+            <span class="entity-row__description" [class.entity-row__description--muted]="descriptionMuted()">
+                {{ text }}
+            </span>
+        }
+
+        @if (facts().length > 0) {
+            <span class="entity-row__facts">
+                @for (fact of facts(); track fact.label) {
+                    <span class="entity-row__fact" [class.entity-row__fact--accent]="fact.accent">
+                        @if (fact.icon; as icon) {
+                            <wow-icon [kind]="icon.kind" [slug]="icon.slug" [label]="icon.label ?? ''" [size]="14" />
+                        }
+                        @if (fact.prefix; as prefix) {
+                            <span class="entity-row__fact-prefix">{{ prefix }}</span>
+                        }
+                        {{ fact.label }}
+                    </span>
+                }
+            </span>
+        }
+
+        @if (date(); as created) {
+            <time class="entity-row__date">{{ created | date: "mediumDate" }}</time>
+        }
+    </span>
+</a>

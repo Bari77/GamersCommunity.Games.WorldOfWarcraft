@@ -37,19 +37,7 @@
                 @if (feedLoading()) {
                     <gc-skeleton-text [lines]="4" />
                 } @else if (store.feed.value(); as feed) {
-                    <ul class="wow-home__list">
-                        @for (guild of feed.latestGuilds; track guild.publicId) {
-                            <li>
-                                <a [routerLink]="['/world-of-warcraft/guilds', guild.publicId]">
-                                    <strong>{{ guild.handleLabel() }}</strong>
-                                </a>
-                                <span> — {{ guild.serverName }} ({{ guild.level }})</span>
-                                <small>{{ guild.creationDate | date: "shortDate" }}</small>
-                            </li>
-                        } @empty {
-                            <li i18n="@@wow.home.guilds.empty">No guilds yet.</li>
-                        }
-                    </ul>
+                    <wow-home-latest-guilds [guilds]="feed.latestGuilds" />
                 }
             </nb-card-body>
         </nb-card>

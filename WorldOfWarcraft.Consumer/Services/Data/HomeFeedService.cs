@@ -121,6 +121,18 @@ public class HomeFeedService(WorldOfWarcraftDbContext context) : IBusService
                 CreationDate = g.CreationDate,
                 ServerName = g.IdLeaderNavigation.IdServerNavigation.Entitled,
                 MemberCount = g.GuildMembers.Count,
+                Sentence = g.Sentence,
+                AlignmentName = g.IdLeaderNavigation.IdAlignmentNavigation == null ? null : g.IdLeaderNavigation.IdAlignmentNavigation.Entitled,
+                OrientationName = g.IdOrientationNavigation.Entitled,
+                Crest = new GuildCrestDto
+                {
+                    Emblem = g.CrestEmblem,
+                    EmblemColor = g.CrestEmblemColor,
+                    Border = g.CrestBorder,
+                    BorderColor = g.CrestBorderColor,
+                    BackgroundColor = g.CrestBackgroundColor,
+                    Faction = g.IdLeaderNavigation.IdAlignmentNavigation == null ? null : g.IdLeaderNavigation.IdAlignmentNavigation.Entitled,
+                },
             })
             .ToListAsync(ct);
 
