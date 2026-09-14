@@ -12,6 +12,14 @@ export interface LfgMessageDto {
     guildPublicId?: string | null;
     guildName?: string | null;
     guildDiscriminator?: string | null;
+    guildCrest?: {
+        emblem: number;
+        emblemColor: string;
+        border: number;
+        borderColor: string;
+        backgroundColor: string;
+        faction?: string | null;
+    } | null;
     serverName?: string | null;
     directionName?: string | null;
 }

@@ -1,3 +1,5 @@
+using WorldOfWarcraft.Consumer.Models;
+
 namespace WorldOfWarcraft.Consumer.Realtime;
 
 public sealed class LfgMessageCreatedRealtimeEvent
@@ -20,5 +22,6 @@ public sealed class LfgMessageRealtimePayload
     public Guid? GuildPublicId { get; init; }
     public string? GuildName { get; init; }
     public string? GuildDiscriminator { get; init; }
+    public GuildCrestDto? GuildCrest { get; init; }
     public DateTime CreationDate { get; init; }
 }

@@ -1,4 +1,5 @@
 import { LfgMessageDto, PostableGuildDto } from "@features/lfg/dto/lfg-message.dto";
+import { GuildCrest } from "@shared/models/guild-crest";
 
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
@@ -22,6 +23,7 @@ export class LfgMessage {
         public guildPublicId: string | null,
         public guildName: string | null,
         public guildDiscriminator: string | null,
+        public guildCrest: GuildCrest | null,
         public serverName: string | null,
         public directionName: string | null,
     ) {}
@@ -41,6 +43,7 @@ export class LfgMessage {
             dto.guildPublicId ?? null,
             dto.guildName ?? null,
             dto.guildDiscriminator ?? null,
+            dto.guildCrest ? GuildCrest.fromDto(dto.guildCrest) : null,
             dto.serverName ?? null,
             dto.directionName ?? null,
         );

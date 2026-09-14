@@ -19,6 +19,7 @@ import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service"
 import { NbChatModule, NbSelectModule } from "@nebular/theme";
 import { SkeletonComponent } from "@bari77/gc-ui";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
+import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 
 const NEAR_BOTTOM_PX = 48;
 const NEAR_TOP_PX = 48;
@@ -34,6 +35,7 @@ const NEAR_TOP_PX = 48;
         NbSelectModule,
         SkeletonComponent,
         CreateSheetWallComponent,
+        GuildCrestComponent,
     ],
     providers: [LfgChatStore],
     templateUrl: "./lfg-chat.component.html",

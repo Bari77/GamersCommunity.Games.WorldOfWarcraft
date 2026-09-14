@@ -27,6 +27,7 @@ public sealed class LfgAdSummaryDto
     public Guid? GuildPublicId { get; init; }
     public string? GuildName { get; init; }
     public string? GuildDiscriminator { get; init; }
+    public GuildCrestDto? GuildCrest { get; init; }
 
     // Snapshot of the author's server and role at posting time; drives the board filters.
     public string? ServerName { get; init; }

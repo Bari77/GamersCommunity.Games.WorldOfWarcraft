@@ -59,6 +59,7 @@ export class LfgRealtimeService {
                 guildPublicId: payload.guildPublicId ?? null,
                 guildName: payload.guildName ?? null,
                 guildDiscriminator: payload.guildDiscriminator ?? null,
+                guildCrest: payload.guildCrest ?? null,
             }));
         });
 
@@ -106,4 +107,12 @@ interface LfgMessageDtoPayload {
     guildPublicId?: string | null;
     guildName?: string | null;
     guildDiscriminator?: string | null;
+    guildCrest?: {
+        emblem: number;
+        emblemColor: string;
+        border: number;
+        borderColor: string;
+        backgroundColor: string;
+        faction?: string | null;
+    } | null;
 }

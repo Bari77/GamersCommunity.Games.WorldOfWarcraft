@@ -134,6 +134,15 @@ public class LfgAdsService(
             GuildPublicId = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.PublicId : null,
             GuildName = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.Entitled : null,
             GuildDiscriminator = ad.IdGuildNavigation != null ? ad.IdGuildNavigation.Discriminator : null,
+            GuildCrest = ad.IdGuildNavigation != null ? new GuildCrestDto
+            {
+                Emblem = ad.IdGuildNavigation.CrestEmblem,
+                EmblemColor = ad.IdGuildNavigation.CrestEmblemColor,
+                Border = ad.IdGuildNavigation.CrestBorder,
+                BorderColor = ad.IdGuildNavigation.CrestBorderColor,
+                BackgroundColor = ad.IdGuildNavigation.CrestBackgroundColor,
+                Faction = null
+            } : null,
             ServerName = ad.IdServerNavigation != null ? ad.IdServerNavigation.Entitled : null,
             DirectionName = ad.IdDirectionNavigation != null ? ad.IdDirectionNavigation.Entitled : null,
         });
@@ -247,6 +256,7 @@ public class LfgAdsService(
                     GuildPublicId = dto.GuildPublicId,
                     GuildName = dto.GuildName,
                     GuildDiscriminator = dto.GuildDiscriminator,
+                    GuildCrest = dto.GuildCrest,
                     CreationDate = dto.CreationDate,
                 },
             },
