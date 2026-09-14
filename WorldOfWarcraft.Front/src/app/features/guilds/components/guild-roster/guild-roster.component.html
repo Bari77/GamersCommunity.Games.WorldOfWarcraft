@@ -74,15 +74,13 @@
                         }
                     </ul>
 
-                    @if (member.isContactable()) {
-                        <a
-                            class="member-card__handle"
-                            [routerLink]="['/users', member.platformUserPublicId]"
-                            [title]="contactTitle"
-                        >
-                            {{ member.handleLabel() }}
-                        </a>
-                    }
+                    <a
+                        class="member-card__handle"
+                        [routerLink]="['/world-of-warcraft/players', member.playerPublicId]"
+                        [title]="contactTitle"
+                    >
+                        {{ member.handleLabel() }}
+                    </a>
 
                     @if (hasActions(member)) {
                         <footer class="member-card__actions">
