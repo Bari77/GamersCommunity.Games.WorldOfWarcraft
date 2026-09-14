@@ -17,6 +17,7 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
     : GenericDataService<WorldOfWarcraftDbContext, Character>(context, "Characters")
 {
     private const int MaxCharactersPerPlayer = 50;
+    private const int MaxSearchTake = 50;
 
     private int MaxLevel => settings.Value.MaxCharacterLevel;
     private int MaxIlvl => settings.Value.MaxItemLevel;
@@ -50,6 +51,41 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
         GuildName = c.GuildMembers.Select(m => m.IdGuildNavigation.Entitled).FirstOrDefault(),
         GuildDiscriminator = c.GuildMembers.Select(m => m.IdGuildNavigation.Discriminator).FirstOrDefault(),
         GuildRank = c.GuildMembers.Select(m => m.IdGuildRankNavigation.Entitled).FirstOrDefault(),
+        GuildCrest = c.GuildMembers
+            .Select(m => new GuildCrestDto
+            {
+                Emblem = m.IdGuildNavigation.CrestEmblem,
+                EmblemColor = m.IdGuildNavigation.CrestEmblemColor,
+                Border = m.IdGuildNavigation.CrestBorder,
+                BorderColor = m.IdGuildNavigation.CrestBorderColor,
+                BackgroundColor = m.IdGuildNavigation.CrestBackgroundColor,
+                Faction = m.IdGuildNavigation.IdLeaderNavigation.IdAlignmentNavigation != null
+                    ? m.IdGuildNavigation.IdLeaderNavigation.IdAlignmentNavigation.Entitled
+                    : null,
+            })
+            .FirstOrDefault(),
+    };
+
+    private static readonly Expression<Func<Character, CharacterSummaryDto>> SummaryProjection = c => new CharacterSummaryDto
+    {
+        PublicId = c.PublicId,
+        Pseudo = c.Pseudo,
+        Level = c.Level,
+        Ilvl = c.Ilvl,
+        Main = c.Main,
+        CreationDate = c.CreationDate,
+        PlayerPublicId = c.IdPlayerNavigation.PublicId,
+        ServerName = c.IdServerNavigation.Entitled,
+        RaceName = c.IdRaceNavigation.Entitled,
+        ClassName = c.IdMainSpecializationClassNavigation == null
+            ? null
+            : c.IdMainSpecializationClassNavigation.IdClassNavigation.Entitled,
+        MainSpecializationName = c.IdMainSpecializationClassNavigation == null
+            ? null
+            : c.IdMainSpecializationClassNavigation.IdSpecializationNavigation.Entitled,
+        GuildPublicId = c.GuildMembers.Select(m => (Guid?)m.IdGuildNavigation.PublicId).FirstOrDefault(),
+        GuildName = c.GuildMembers.Select(m => m.IdGuildNavigation.Entitled).FirstOrDefault(),
+        GuildDiscriminator = c.GuildMembers.Select(m => m.IdGuildNavigation.Discriminator).FirstOrDefault(),
     };
 
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
@@ -58,6 +94,9 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
         {
             case "LIST":
                 return JsonSafe.Serialize(await ListAsync(message, ct));
+
+            case "SEARCH":
+                return JsonSafe.Serialize(await SearchAsync(message, ct));
 
             case "GET":
                 return JsonSafe.Serialize(await GetAsync(message, ct));
@@ -94,6 +133,60 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
             .ThenBy(c => c.Pseudo)
             .Select(Projection)
             .ToListAsync(ct);
+    }
+
+    private async Task<CharacterSearchResultDto> SearchAsync(BusMessage message, CancellationToken ct)
+    {
+        var request = string.IsNullOrWhiteSpace(message.Data)
+            ? new CharacterSearchRequest()
+            : ConsumerParamParser.ToObject<CharacterSearchRequest>(message.Data);
+
+        var take = request.Take is > 0 and <= MaxSearchTake ? request.Take : 20;
+        var query = Context.Characters.AsNoTracking();
+
+        if (!string.IsNullOrWhiteSpace(request.Query))
+        {
+            var name = request.Query.Trim();
+            query = query.Where(c => c.Pseudo.Contains(name));
+        }
+
+        if (request.IdServer is { } idServer)
+            query = query.Where(c => c.IdServer == idServer);
+
+        if (request.IdAlignment is { } idAlignment)
+            query = query.Where(c => c.IdAlignment == idAlignment);
+
+        if (request.IdDirection is { } idDirection)
+            query = query.Where(c => c.IdDirection == idDirection);
+
+        if (request.IdClass is { } idClass)
+            query = query.Where(c =>
+                c.IdMainSpecializationClassNavigation != null
+                && c.IdMainSpecializationClassNavigation.IdClass == idClass);
+
+        if (request.MinLevel is { } minLevel)
+            query = query.Where(c => c.Level >= minLevel);
+
+        if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
+        {
+            query = query.Where(c =>
+                c.CreationDate < beforeDate
+                || (c.CreationDate == beforeDate && c.PublicId.CompareTo(beforePublicId) < 0));
+        }
+
+        // One extra row tells the client whether another page exists, without a second count query.
+        var rows = await query
+            .OrderByDescending(c => c.CreationDate)
+            .ThenByDescending(c => c.PublicId)
+            .Take(take + 1)
+            .Select(SummaryProjection)
+            .ToListAsync(ct);
+
+        var hasMore = rows.Count > take;
+        if (hasMore)
+            rows.RemoveAt(rows.Count - 1);
+
+        return new CharacterSearchResultDto { Items = rows, HasMore = hasMore };
     }
 
     private async Task<CharacterDto> GetAsync(BusMessage message, CancellationToken ct)

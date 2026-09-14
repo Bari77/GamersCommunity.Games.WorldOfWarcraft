@@ -13,4 +13,6 @@ public static class GuildRankCodes
     /// Ranks allowed to publish an announcement on behalf of the guild.
     /// </summary>
     public static readonly string[] CanPostAsGuild = [Leader, Officer];
+
+    public static readonly string[] All = [Leader, Officer, Member];
 }

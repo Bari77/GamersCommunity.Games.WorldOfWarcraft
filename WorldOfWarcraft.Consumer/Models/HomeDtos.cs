@@ -77,6 +77,8 @@ public sealed class GuildSummaryDto
     // Filled on the guild directory, where cards need more than a handle to be worth browsing.
     public string? Sentence { get; init; }
     public string? AlignmentName { get; init; }
+    public string? OrientationName { get; init; }
+    public GuildCrestDto? Crest { get; init; }
 }
 
 public sealed class ListLfgRecentRequest

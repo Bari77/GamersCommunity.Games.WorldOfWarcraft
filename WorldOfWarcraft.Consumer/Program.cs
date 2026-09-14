@@ -70,6 +70,7 @@ namespace WorldOfWarcraft.Consumer
                         services.AddSingleton<Serilog.ILogger>(sp => Log.Logger);
                         services.AddSingleton<IRealtimeEventPublisher, RealtimeEventPublisher>();
                         services.AddSingleton<IPlatformSanctionsClient, PlatformSanctionsClient>();
+                        services.AddSingleton<IPlatformFriendsClient, PlatformFriendsClient>();
 
                         services.Scan(scan => scan
                             .FromAssembliesOf(typeof(AppSettings))

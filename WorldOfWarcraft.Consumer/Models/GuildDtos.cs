@@ -7,10 +7,20 @@ public sealed class GuildSheetDto
     public string Discriminator { get; init; } = "";
     public int Level { get; init; }
     public string? Sentence { get; init; }
-    public string? LinkDiscord { get; init; }
-    public string? LinkForum { get; init; }
+
+    /// <summary>
+    /// Widget workspace of the page, arranged by the leader. Null falls back to the layout the
+    /// front end ships with.
+    /// </summary>
+    public string? LayoutJson { get; init; }
+
     public string ServerName { get; init; } = "";
-    public string DirectionName { get; init; } = "";
+
+    /// <summary>What the guild plays. See <see cref="WorldOfWarcraft.Database.Models.GuildOrientationCodes"/>.</summary>
+    public string OrientationName { get; init; } = "";
+
+    public GuildCrestDto Crest { get; init; } = new();
+
     public DateTime CreationDate { get; init; }
     public int MemberCount { get; init; }
     public IReadOnlyList<GuildMemberDto> Members { get; init; } = [];
@@ -37,6 +47,22 @@ public sealed class GuildSheetDto
 }
 
 /// <summary>
+/// Crest of a guild, layered the way the game builds a tabard: a coloured cloth, a border shape
+/// and an emblem. <see cref="Faction"/> tells the front end which faction ring to draw around it.
+/// </summary>
+public sealed class GuildCrestDto
+{
+    public int Emblem { get; init; }
+    public string EmblemColor { get; init; } = "";
+    public int Border { get; init; }
+    public string BorderColor { get; init; } = "";
+    public string BackgroundColor { get; init; } = "";
+
+    /// <summary>Faction of the leader character; null while they have no alignment set.</summary>
+    public string? Faction { get; init; }
+}
+
+/// <summary>
 /// A guild member, exposed with the Platform identity of the owning player so visitors can reach
 /// out. <see cref="PlatformUserPublicId"/> is empty when the player has no Platform account linked.
 /// </summary>
@@ -45,8 +71,14 @@ public sealed class GuildMemberDto
     public Guid CharacterPublicId { get; init; }
     public string Pseudo { get; init; } = "";
     public int Level { get; init; }
+    public int Ilvl { get; init; }
     public string ClassName { get; init; } = "";
+    public string? MainSpecializationName { get; init; }
     public string RaceName { get; init; } = "";
+
+    /// <summary>Role the character signed up for. See <see cref="WorldOfWarcraft.Database.Models.Direction"/>.</summary>
+    public string DirectionName { get; init; } = "";
+
     public string Rank { get; init; } = "";
     public Guid PlayerPublicId { get; init; }
     public Guid PlatformUserPublicId { get; init; }
@@ -92,15 +124,35 @@ public sealed class GuildCreateRequest
     public Guid FounderCharacterPublicId { get; init; }
 
     public string? Sentence { get; init; }
-    public string? LinkDiscord { get; init; }
-    public string? LinkForum { get; init; }
+
+    /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GuildOrientationCodes"/>. Defaults to pve.</summary>
+    public string? Orientation { get; init; }
 }
 
 public sealed class GuildUpdateRequest
 {
     public string? Sentence { get; init; }
-    public string? LinkDiscord { get; init; }
-    public string? LinkForum { get; init; }
+
+    /// <summary>Guild progression, which officers keep in step with the game.</summary>
+    public int? Level { get; init; }
+
+    /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GuildOrientationCodes"/>.</summary>
+    public string? Orientation { get; init; }
+
+    /// <summary>Crest parts, saved as a whole because the editor composes them together.</summary>
+    public GuildCrestUpdate? Crest { get; init; }
+
+    /// <summary>Widget workspace of the page, which only the leader may rearrange.</summary>
+    public string? LayoutJson { get; init; }
+}
+
+public sealed class GuildCrestUpdate
+{
+    public int Emblem { get; init; }
+    public string EmblemColor { get; init; } = "";
+    public int Border { get; init; }
+    public string BorderColor { get; init; } = "";
+    public string BackgroundColor { get; init; } = "";
 }
 
 public sealed class GuildMemberTargetRequest

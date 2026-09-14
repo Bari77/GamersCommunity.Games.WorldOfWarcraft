@@ -38,6 +38,8 @@ public partial class WorldOfWarcraftDbContext : DbContext
 
     public virtual DbSet<GuildMember> GuildMembers { get; set; }
 
+    public virtual DbSet<GuildOrientation> GuildOrientations { get; set; }
+
     public virtual DbSet<GuildRank> GuildRanks { get; set; }
 
     public virtual DbSet<GuildApplication> GuildApplications { get; set; }
@@ -293,6 +295,10 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasForeignKey(d => d.IdStatus)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_GamePost_Status");
+
+            entity.HasOne(d => d.IdMinimumRankNavigation).WithMany()
+                .HasForeignKey(d => d.IdMinimumRank)
+                .HasConstraintName("FK_GamePost_MinimumRank");
         });
 
         modelBuilder.Entity<GamePostStatus>(entity =>
@@ -349,26 +355,42 @@ public partial class WorldOfWarcraftDbContext : DbContext
             entity.Property(e => e.Entitled).HasMaxLength(50);
             entity.Property(e => e.Discriminator).HasMaxLength(4);
             entity.HasIndex(e => new { e.Entitled, e.Discriminator }, "UQ_Guild_Handle").IsUnique();
-            entity.Property(e => e.LinkDiscord)
-                .HasMaxLength(255)
-                .IsUnicode(false);
-            entity.Property(e => e.LinkForum)
-                .HasMaxLength(255)
-                .IsUnicode(false);
+            entity.Property(e => e.LayoutJson).HasColumnType("nvarchar(max)");
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Sentence).HasColumnType("text");
+
+            // Every guild wears a crest, so the parts default to a neutral tabard instead of
+            // being nullable.
+            entity.Property(e => e.CrestEmblem).HasDefaultValue(GuildCrestDefaults.Emblem);
+            entity.Property(e => e.CrestBorder).HasDefaultValue(GuildCrestDefaults.Border);
+            entity.Property(e => e.CrestEmblemColor).HasMaxLength(7).HasDefaultValue(GuildCrestDefaults.EmblemColor);
+            entity.Property(e => e.CrestBorderColor).HasMaxLength(7).HasDefaultValue(GuildCrestDefaults.BorderColor);
+            entity.Property(e => e.CrestBackgroundColor).HasMaxLength(7).HasDefaultValue(GuildCrestDefaults.BackgroundColor);
 
             entity.HasOne(d => d.IdLeaderNavigation).WithMany(p => p.Guilds)
                 .HasForeignKey(d => d.IdLeader)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Guilds_Characters");
 
-            entity.HasOne(d => d.IdMainDirectionNavigation).WithMany(p => p.Guilds)
-                .HasForeignKey(d => d.IdMainDirection)
+            entity.HasOne(d => d.IdOrientationNavigation).WithMany(p => p.Guilds)
+                .HasForeignKey(d => d.IdOrientation)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK_Guilds_Directions");
+                .HasConstraintName("FK_Guilds_GuildOrientations");
+        });
+
+        modelBuilder.Entity<GuildOrientation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("PK_GuildOrientation");
+
+            entity.Property(e => e.CreationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
+            entity.Property(e => e.Entitled).HasMaxLength(50);
+            entity.Property(e => e.ModificationDate)
+                .HasDefaultValueSql("(getdate())")
+                .HasColumnType("datetime");
         });
 
         modelBuilder.Entity<GuildRank>(entity =>
@@ -420,8 +442,10 @@ public partial class WorldOfWarcraftDbContext : DbContext
             entity.Property(e => e.CreationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
-            entity.Property(e => e.Icon).HasColumnType("text");
-            entity.Property(e => e.Link).HasColumnType("text");
+            entity.Property(e => e.Icon).HasMaxLength(30);
+            entity.Property(e => e.Url).HasColumnType("text");
+            entity.Property(e => e.Label).HasMaxLength(50).HasDefaultValue("");
+            entity.Property(e => e.Position).HasDefaultValue(0);
             entity.Property(e => e.ModificationDate)
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");

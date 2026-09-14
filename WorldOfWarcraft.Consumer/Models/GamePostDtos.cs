@@ -13,6 +13,12 @@ public sealed class GamePostDto
     /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GamePostStatusCodes"/>.</summary>
     public string Status { get; init; } = "";
 
+    /// <summary>
+    /// Audience of the post: <c>public</c>, or the lowest guild rank allowed to read it.
+    /// See <see cref="WorldOfWarcraft.Database.Models.GamePostVisibilityCodes"/>.
+    /// </summary>
+    public string Visibility { get; init; } = "";
+
     public DateTime CreationDate { get; init; }
 
     public Guid AuthorPlayerPublicId { get; init; }
@@ -48,6 +54,19 @@ public sealed class GamePostCreateRequest
     public string Body { get; init; } = "";
     public string? MediaUrl { get; init; }
     public string? MediaKind { get; init; }
+
+    /// <summary>Defaults to members only, so nothing leaks outside the guild by accident.</summary>
+    public string? Visibility { get; init; }
+}
+
+/// <summary>Reserved to the author: officers moderate, they do not rewrite.</summary>
+public sealed class GamePostUpdateRequest
+{
+    public Guid PublicId { get; init; }
+    public string Body { get; init; } = "";
+    public string? MediaUrl { get; init; }
+    public string? MediaKind { get; init; }
+    public string? Visibility { get; init; }
 }
 
 public sealed class GamePostModerateRequest

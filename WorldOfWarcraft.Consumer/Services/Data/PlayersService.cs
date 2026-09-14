@@ -4,17 +4,28 @@ using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
+using WorldOfWarcraft.Consumer.Workspace;
 using WorldOfWarcraft.Database.Context;
 using WorldOfWarcraft.Database.Models;
 
 namespace WorldOfWarcraft.Consumer.Services.Data;
 
-public class PlayersService(WorldOfWarcraftDbContext context)
+public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsClient friendsClient)
     : GenericDataService<WorldOfWarcraftDbContext, Player>(context, "Players")
 {
     private const int MaxLayoutLength = 32000;
+    private const int MaxSearchTake = 50;
+
+    /// <summary>Ceilings loose enough for any expansion, tight enough to reject a typo.</summary>
+    private const int MaxMounts = 2000;
+
+    private const int MaxSuccessPoints = 200000;
+
+    /// <summary>Presentation fields are free text, capped so a sheet stays readable.</summary>
+    private const int MaxPresentationLength = 4000;
 
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
@@ -25,6 +36,9 @@ public class PlayersService(WorldOfWarcraftDbContext context)
 
             case "Resolve":
                 return JsonSafe.Serialize(await ResolveByPlatformUserAsync(message, ct));
+
+            case "Search":
+                return JsonSafe.Serialize(await SearchAsync(message, ct));
 
             case "Get":
                 return JsonSafe.Serialize(await GetSheetAsync(message, ct));
@@ -91,10 +105,112 @@ public class PlayersService(WorldOfWarcraftDbContext context)
         };
     }
 
+    /// <summary>
+    /// Searches players by their Platform nickname. The nickname lives in the local snapshot table,
+    /// so the query never leaves the microservice.
+    /// </summary>
+    private async Task<PlayerSearchResultDto> SearchAsync(BusMessage message, CancellationToken ct)
+    {
+        var request = string.IsNullOrWhiteSpace(message.Data)
+            ? new PlayerSearchRequest()
+            : ConsumerParamParser.ToObject<PlayerSearchRequest>(message.Data);
+
+        var take = request.Take is > 0 and <= MaxSearchTake ? request.Take : 20;
+
+        // A player without a Platform identity has no name to match and no sheet worth linking to.
+        var query = Context.Players.AsNoTracking().Where(p => p.PlatformUserPublicId != null);
+
+        if (!string.IsNullOrWhiteSpace(request.Query))
+        {
+            var (name, discriminator) = SearchHandle.Split(request.Query);
+
+            query = discriminator is null
+                ? query.Where(p => Context.PlatformUserSnapshots.Any(s =>
+                    s.PlatformUserPublicId == p.PlatformUserPublicId && s.Nickname.Contains(name)))
+                : query.Where(p => Context.PlatformUserSnapshots.Any(s =>
+                    s.PlatformUserPublicId == p.PlatformUserPublicId
+                    && s.Nickname.Contains(name)
+                    && s.Discriminator == discriminator));
+        }
+
+        if (request.IdServer is { } idServer)
+            query = query.Where(p => p.Characters.Any(c => c.IdServer == idServer));
+
+        if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
+        {
+            query = query.Where(p =>
+                p.CreationDate < beforeDate
+                || (p.CreationDate == beforeDate && p.PublicId.CompareTo(beforePublicId) < 0));
+        }
+
+        // One extra row tells the client whether another page exists, without a second count query.
+        var rows = await query
+            .OrderByDescending(p => p.CreationDate)
+            .ThenByDescending(p => p.PublicId)
+            .Take(take + 1)
+            .Select(p => new PlayerSummaryDto
+            {
+                PublicId = p.PublicId,
+                PlatformUserPublicId = p.PlatformUserPublicId ?? Guid.Empty,
+                Nickname = Context.PlatformUserSnapshots
+                    .Where(s => s.PlatformUserPublicId == p.PlatformUserPublicId)
+                    .Select(s => s.Nickname)
+                    .FirstOrDefault() ?? "Player",
+                Discriminator = Context.PlatformUserSnapshots
+                    .Where(s => s.PlatformUserPublicId == p.PlatformUserPublicId)
+                    .Select(s => s.Discriminator)
+                    .FirstOrDefault() ?? "0000",
+                AvatarUrl = Context.PlatformUserSnapshots
+                    .Where(s => s.PlatformUserPublicId == p.PlatformUserPublicId)
+                    .Select(s => s.AvatarUrl)
+                    .FirstOrDefault() ?? "",
+                PresentationIrl = p.PresentationIrl,
+                CreationDate = p.CreationDate,
+                CharacterCount = p.Characters.Count,
+            })
+            .ToListAsync(ct);
+
+        var hasMore = rows.Count > take;
+        if (hasMore)
+            rows.RemoveAt(rows.Count - 1);
+
+        return new PlayerSearchResultDto { Items = rows, HasMore = hasMore };
+    }
+
     private async Task<PlayerSheetDto> GetSheetAsync(BusMessage message, CancellationToken ct)
     {
         var player = await ResolvePlayerAsync(message, ct);
-        return await ToSheetDtoAsync(player.Id, ct);
+        var sheet = await ToSheetDtoAsync(player.Id, ct);
+
+        var callerId = await CallerAuth.FindPlayerIdAsync(Context, message, ct);
+        if (callerId == player.Id)
+            return sheet;
+
+        return sheet with { LayoutJson = await FilterPagesAsync(sheet, message, ct) };
+    }
+
+    /// <summary>
+    /// Drops the pages the visitor is not part of the audience of. The owner keeps them all, a
+    /// friend keeps the friends-only ones, and everybody else only sees the public ones.
+    /// </summary>
+    private async Task<string?> FilterPagesAsync(PlayerSheetDto sheet, BusMessage message, CancellationToken ct)
+    {
+        var friends = false;
+        if (WorkspaceVisibility.Mentions(sheet.LayoutJson, PageVisibilityCodes.Friends))
+        {
+            var visitor = await CallerAuth.FindPlatformUserPublicIdAsync(Context, message, ct);
+            if (visitor is { } visitorPublicId)
+                friends = await friendsClient.AreFriendsAsync(visitorPublicId, sheet.PlatformUserPublicId, ct);
+        }
+
+        return WorkspaceVisibility.Filter(
+            sheet.LayoutJson,
+            visibility => visibility switch
+            {
+                PageVisibilityCodes.Friends => friends,
+                PageVisibilityCodes.Private => false,
+                _ => true,
+            });
     }
 
     private async Task<PlayerSheetDto> UpdateSheetAsync(BusMessage message, CancellationToken ct)
@@ -103,6 +219,7 @@ public class PlayersService(WorldOfWarcraftDbContext context)
             throw new BadRequestException("DATA_MANDATORY", "Data mandatory");
 
         var request = ConsumerParamParser.ToObject<PlayerUpdateRequest>(message.Data);
+        var sent = RequestPayload.SentFields(message.Data);
         var caller = await CallerAuth.RequirePlayerAsync(Context, message, ct);
         var target = await Context.Players
             .FirstOrDefaultAsync(p => message.PublicId != null && p.PublicId == message.PublicId, ct)
@@ -111,12 +228,19 @@ public class PlayersService(WorldOfWarcraftDbContext context)
         if (caller.Id != target.Id)
             throw new ForbiddenException("FORBIDDEN", "Cannot update another player's sheet");
 
-        if (request.PresentationIrl is not null)
-            target.PresentationIrl = request.PresentationIrl;
-        if (request.PresentationIg is not null)
-            target.PresentationIg = request.PresentationIg;
-        if (request.LayoutJson is not null)
-            target.LayoutJson = NormalizeLayout(request.LayoutJson);
+        // Widgets edit one field at a time, and an empty value sent on purpose clears it.
+        if (sent.Contains(nameof(PlayerUpdateRequest.PresentationIrl)))
+            target.PresentationIrl = Normalize(request.PresentationIrl);
+        if (sent.Contains(nameof(PlayerUpdateRequest.PresentationIg)))
+            target.PresentationIg = Normalize(request.PresentationIg);
+        if (sent.Contains(nameof(PlayerUpdateRequest.NbMount)))
+            target.NbMount = ValidateCount(request.NbMount, MaxMounts, "Mount count");
+        if (sent.Contains(nameof(PlayerUpdateRequest.SuccessPoints)))
+            target.SuccessPoints = request.SuccessPoints is null
+                ? null
+                : ValidateCount(request.SuccessPoints, MaxSuccessPoints, "Achievement points");
+        if (sent.Contains(nameof(PlayerUpdateRequest.LayoutJson)))
+            target.LayoutJson = NormalizeLayout(request.LayoutJson ?? "");
 
         target.ModificationDate = DateTime.UtcNow;
         await Context.SaveChangesAsync(ct);
@@ -151,6 +275,26 @@ public class PlayersService(WorldOfWarcraftDbContext context)
         return layoutJson;
     }
 
+    private static string? Normalize(string? value)
+    {
+        if (string.IsNullOrWhiteSpace(value))
+            return null;
+
+        var text = value.Trim();
+        if (text.Length > MaxPresentationLength)
+            throw new BadRequestException("VALIDATION", $"Text must be at most {MaxPresentationLength} characters");
+
+        return text;
+    }
+
+    private static int ValidateCount(int? value, int max, string label)
+    {
+        if (value is not { } count || count < 0 || count > max)
+            throw new BadRequestException("VALIDATION", $"{label} must be between 0 and {max}");
+
+        return count;
+    }
+
     private async Task<Player> ResolvePlayerAsync(BusMessage message, CancellationToken ct)
     {
         if (message.PublicId is Guid publicId)
@@ -181,6 +325,30 @@ public class PlayersService(WorldOfWarcraftDbContext context)
                 p.CreationDate,
                 p.LayoutJson,
                 CharacterCount = p.Characters.Count,
+                // The sheet wears the crest of the guild the player mains in.
+                Guild = p.Characters
+                    .OrderByDescending(c => c.Main)
+                    .ThenByDescending(c => c.Level)
+                    .SelectMany(c => c.GuildMembers)
+                    .Select(m => new PlayerGuildDto
+                    {
+                        PublicId = m.IdGuildNavigation.PublicId,
+                        Entitled = m.IdGuildNavigation.Entitled,
+                        Discriminator = m.IdGuildNavigation.Discriminator,
+                        Rank = m.IdGuildRankNavigation.Entitled,
+                        Crest = new GuildCrestDto
+                        {
+                            Emblem = m.IdGuildNavigation.CrestEmblem,
+                            EmblemColor = m.IdGuildNavigation.CrestEmblemColor,
+                            Border = m.IdGuildNavigation.CrestBorder,
+                            BorderColor = m.IdGuildNavigation.CrestBorderColor,
+                            BackgroundColor = m.IdGuildNavigation.CrestBackgroundColor,
+                            Faction = m.IdGuildNavigation.IdLeaderNavigation.IdAlignmentNavigation != null
+                                ? m.IdGuildNavigation.IdLeaderNavigation.IdAlignmentNavigation.Entitled
+                                : null,
+                        },
+                    })
+                    .FirstOrDefault(),
                 Snapshot = Context.PlatformUserSnapshots
                     .Where(s => s.PlatformUserPublicId == p.PlatformUserPublicId)
                     .Select(s => new { s.Nickname, s.Discriminator, s.AvatarUrl })
@@ -202,6 +370,7 @@ public class PlayersService(WorldOfWarcraftDbContext context)
             CreationDate = player.CreationDate,
             CharacterCount = player.CharacterCount,
             LayoutJson = player.LayoutJson,
+            Guild = player.Guild,
         };
     }
 }

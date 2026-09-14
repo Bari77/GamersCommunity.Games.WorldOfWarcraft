@@ -105,6 +105,7 @@ public class HomeFeedService(WorldOfWarcraftDbContext context) : IBusService
                     .FirstOrDefault() ?? "",
                 PresentationIrl = p.PresentationIrl,
                 CreationDate = p.CreationDate,
+                CharacterCount = p.Characters.Count,
             })
             .ToListAsync(ct);
 

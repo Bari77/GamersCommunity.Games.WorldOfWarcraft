@@ -259,7 +259,7 @@ public class LfgAdsService(
     /// Server and role stamped on the ad so the board can filter without walking back to the author:
     /// taken from the guild leader for a recruitment ad, from the author's main character otherwise.
     /// Both stay null when the author has no character yet, which only hides the ad from filtered
-    /// searches.
+    /// searches. A recruitment ad carries no role: a guild recruits every role at once.
     /// </summary>
     private async Task<(int? IdServer, int? IdDirection)> ResolveScopeAsync(
         int idPlayer,
@@ -273,7 +273,7 @@ public class LfgAdsService(
                 .Select(c => new { c.IdServer })
                 .FirstOrDefaultAsync(ct);
 
-            return (leader?.IdServer, guild.IdMainDirection);
+            return (leader?.IdServer, null);
         }
 
         var character = await _context.Characters.AsNoTracking()

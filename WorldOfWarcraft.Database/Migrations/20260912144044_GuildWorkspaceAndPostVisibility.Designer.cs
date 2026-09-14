@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WorldOfWarcraft.Database.Context;
 
@@ -11,9 +12,11 @@ using WorldOfWarcraft.Database.Context;
 namespace WorldOfWarcraft.Database.Migrations
 {
     [DbContext(typeof(WorldOfWarcraftDbContext))]
-    partial class WorldOfWarcraftDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260912144044_GuildWorkspaceAndPostVisibility")]
+    partial class GuildWorkspaceAndPostVisibility
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -511,37 +514,6 @@ namespace WorldOfWarcraft.Database.Migrations
                         .HasColumnType("datetime")
                         .HasDefaultValueSql("(getdate())");
 
-                    b.Property<string>("CrestBackgroundColor")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)")
-                        .HasDefaultValue("#1e2a4a");
-
-                    b.Property<int>("CrestBorder")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("CrestBorderColor")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)")
-                        .HasDefaultValue("#c8a95a");
-
-                    b.Property<int>("CrestEmblem")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasDefaultValue(0);
-
-                    b.Property<string>("CrestEmblemColor")
-                        .IsRequired()
-                        .ValueGeneratedOnAdd()
-                        .HasMaxLength(7)
-                        .HasColumnType("nvarchar(7)")
-                        .HasDefaultValue("#f0e6c8");
-
                     b.Property<string>("Discriminator")
                         .IsRequired()
                         .HasMaxLength(4)
@@ -555,7 +527,7 @@ namespace WorldOfWarcraft.Database.Migrations
                     b.Property<int>("IdLeader")
                         .HasColumnType("int");
 
-                    b.Property<int>("IdOrientation")
+                    b.Property<int>("IdMainDirection")
                         .HasColumnType("int");
 
                     b.Property<string>("LayoutJson")
@@ -581,7 +553,7 @@ namespace WorldOfWarcraft.Database.Migrations
 
                     b.HasIndex("IdLeader");
 
-                    b.HasIndex("IdOrientation");
+                    b.HasIndex("IdMainDirection");
 
                     b.HasIndex("PublicId")
                         .IsUnique();
@@ -782,35 +754,6 @@ namespace WorldOfWarcraft.Database.Migrations
                         .IsUnique();
 
                     b.ToTable("GuildMember", (string)null);
-                });
-
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildOrientation", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.Property<string>("Entitled")
-                        .IsRequired()
-                        .HasMaxLength(50)
-                        .HasColumnType("nvarchar(50)");
-
-                    b.Property<DateTime>("ModificationDate")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("datetime")
-                        .HasDefaultValueSql("(getdate())");
-
-                    b.HasKey("Id")
-                        .HasName("PK_GuildOrientation");
-
-                    b.ToTable("GuildOrientations");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildRank", b =>
@@ -1788,15 +1731,15 @@ namespace WorldOfWarcraft.Database.Migrations
                         .IsRequired()
                         .HasConstraintName("FK_Guilds_Characters");
 
-                    b.HasOne("WorldOfWarcraft.Database.Models.GuildOrientation", "IdOrientationNavigation")
+                    b.HasOne("WorldOfWarcraft.Database.Models.Direction", "IdMainDirectionNavigation")
                         .WithMany("Guilds")
-                        .HasForeignKey("IdOrientation")
+                        .HasForeignKey("IdMainDirection")
                         .IsRequired()
-                        .HasConstraintName("FK_Guilds_GuildOrientations");
+                        .HasConstraintName("FK_Guilds_Directions");
 
                     b.Navigation("IdLeaderNavigation");
 
-                    b.Navigation("IdOrientationNavigation");
+                    b.Navigation("IdMainDirectionNavigation");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildApplication", b =>
@@ -2099,6 +2042,8 @@ namespace WorldOfWarcraft.Database.Migrations
                 {
                     b.Navigation("Characters");
 
+                    b.Navigation("Guilds");
+
                     b.Navigation("Rosters");
                 });
 
@@ -2137,11 +2082,6 @@ namespace WorldOfWarcraft.Database.Migrations
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildApplicationStatus", b =>
                 {
                     b.Navigation("GuildApplications");
-                });
-
-            modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildOrientation", b =>
-                {
-                    b.Navigation("Guilds");
                 });
 
             modelBuilder.Entity("WorldOfWarcraft.Database.Models.GuildRank", b =>

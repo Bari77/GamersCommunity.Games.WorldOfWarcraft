@@ -4,8 +4,10 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
+using System.Text.Json;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
+using WorldOfWarcraft.Consumer.Workspace;
 using WorldOfWarcraft.Database.Context;
 using WorldOfWarcraft.Database.Models;
 
@@ -14,7 +16,17 @@ namespace WorldOfWarcraft.Consumer.Services.Data;
 public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
 {
     private const int MaxSearchTake = 50;
-    private const int MaxLinkLength = 255;
+
+    /// <summary>Cap of the in-game guild progression, kept loose so an expansion needs no release.</summary>
+    private const int MaxGuildLevel = 100;
+
+    private const int MaxLayoutLength = 32000;
+
+    /// <summary>Highest crest part shipped in <c>public/wow-crests</c>.</summary>
+    private const int MaxCrestEmblem = 195;
+
+    private const int MaxCrestBorder = 6;
+
     private readonly WorldOfWarcraftDbContext _context = context;
 
     BusServiceTypeEnum IBusService.Type => BusServiceTypeEnum.DATA;
@@ -72,10 +84,20 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
                 g.Discriminator,
                 g.Level,
                 g.Sentence,
-                g.LinkDiscord,
-                g.LinkForum,
+                g.LayoutJson,
                 ServerName = g.IdLeaderNavigation.IdServerNavigation.Entitled,
-                DirectionName = g.IdMainDirectionNavigation.Entitled,
+                OrientationName = g.IdOrientationNavigation.Entitled,
+                Crest = new GuildCrestDto
+                {
+                    Emblem = g.CrestEmblem,
+                    EmblemColor = g.CrestEmblemColor,
+                    Border = g.CrestBorder,
+                    BorderColor = g.CrestBorderColor,
+                    BackgroundColor = g.CrestBackgroundColor,
+                    Faction = g.IdLeaderNavigation.IdAlignmentNavigation != null
+                        ? g.IdLeaderNavigation.IdAlignmentNavigation.Entitled
+                        : null,
+                },
                 g.CreationDate,
                 MemberCount = g.GuildMembers.Count,
             })
@@ -83,7 +105,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             ?? throw new NotFoundException("GUILD_NOT_FOUND", "Guild not found");
 
         // The sheet is public, so an anonymous visitor simply gets no viewer-specific section.
-        var viewer = await FindViewerPlayerIdAsync(message, ct);
+        var viewer = await CallerAuth.FindPlayerIdAsync(_context, message, ct);
         var standing = viewer is { } playerId
             ? await GuildAuth.FindStandingAsync(_context, guild.Id, playerId, ct)
             : null;
@@ -105,10 +127,10 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             Discriminator = guild.Discriminator,
             Level = guild.Level,
             Sentence = guild.Sentence,
-            LinkDiscord = guild.LinkDiscord,
-            LinkForum = guild.LinkForum,
+            LayoutJson = FilterPages(guild.LayoutJson, standing?.Rank),
             ServerName = guild.ServerName,
-            DirectionName = guild.DirectionName,
+            OrientationName = guild.OrientationName,
+            Crest = guild.Crest,
             CreationDate = guild.CreationDate,
             MemberCount = guild.MemberCount,
             Members = await ListMembersAsync(guild.Id, ct),
@@ -130,6 +152,21 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         };
     }
 
+    /// <summary>
+    /// Drops the pages the visitor's rank does not reach. A page without a visibility, or marked
+    /// public, is open to everyone; the others name the lowest rank allowed to open them.
+    /// </summary>
+    private static string? FilterPages(string? layoutJson, string? viewerRank)
+    {
+        var weight = GuildAuth.Weight(viewerRank);
+
+        return WorkspaceVisibility.Filter(
+            layoutJson,
+            visibility => visibility is null
+                          || visibility == GamePostVisibilityCodes.Public
+                          || weight >= GuildAuth.Weight(visibility));
+    }
+
     private async Task<List<GuildMemberDto>> ListMembersAsync(int guildId, CancellationToken ct) =>
         await _context.GuildMembers.AsNoTracking()
             .Where(m => m.IdGuild == guildId)
@@ -140,10 +177,15 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
                 CharacterPublicId = m.IdCharacterNavigation.PublicId,
                 Pseudo = m.IdCharacterNavigation.Pseudo,
                 Level = m.IdCharacterNavigation.Level,
+                Ilvl = m.IdCharacterNavigation.Ilvl,
                 ClassName = m.IdCharacterNavigation.IdMainSpecializationClassNavigation != null
                     ? m.IdCharacterNavigation.IdMainSpecializationClassNavigation.IdClassNavigation.Entitled
                     : "",
+                MainSpecializationName = m.IdCharacterNavigation.IdMainSpecializationClassNavigation != null
+                    ? m.IdCharacterNavigation.IdMainSpecializationClassNavigation.IdSpecializationNavigation.Entitled
+                    : null,
                 RaceName = m.IdCharacterNavigation.IdRaceNavigation.Entitled,
+                DirectionName = m.IdCharacterNavigation.IdDirectionNavigation.Entitled,
                 Rank = m.IdGuildRankNavigation.Entitled,
                 PlayerPublicId = m.IdCharacterNavigation.IdPlayerNavigation.PublicId,
                 PlatformUserPublicId = m.IdCharacterNavigation.IdPlayerNavigation.PlatformUserPublicId ?? Guid.Empty,
@@ -178,7 +220,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
 
         if (!string.IsNullOrWhiteSpace(request.Query))
         {
-            var (name, discriminator) = SplitHandle(request.Query);
+            var (name, discriminator) = SearchHandle.Split(request.Query);
             query = query.Where(g => g.Entitled.Contains(name));
             if (discriminator is not null)
                 query = query.Where(g => g.Discriminator == discriminator);
@@ -215,6 +257,18 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
                 AlignmentName = g.IdLeaderNavigation.IdAlignmentNavigation != null
                     ? g.IdLeaderNavigation.IdAlignmentNavigation.Entitled
                     : null,
+                OrientationName = g.IdOrientationNavigation.Entitled,
+                Crest = new GuildCrestDto
+                {
+                    Emblem = g.CrestEmblem,
+                    EmblemColor = g.CrestEmblemColor,
+                    Border = g.CrestBorder,
+                    BorderColor = g.CrestBorderColor,
+                    BackgroundColor = g.CrestBackgroundColor,
+                    Faction = g.IdLeaderNavigation.IdAlignmentNavigation != null
+                        ? g.IdLeaderNavigation.IdAlignmentNavigation.Entitled
+                        : null,
+                },
             })
             .ToListAsync(ct);
 
@@ -279,11 +333,13 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             Discriminator = await AllocateDiscriminatorAsync(entitled, ct),
             Level = 1,
             Sentence = Normalize(request.Sentence),
-            LinkDiscord = NormalizeLink(request.LinkDiscord),
-            LinkForum = NormalizeLink(request.LinkForum),
             IdLeader = founder.Id,
-            // The guild inherits the founder's role focus; there is no separate guild-wide setting.
-            IdMainDirection = founder.IdDirection,
+            IdOrientation = await ResolveOrientationIdAsync(request.Orientation ?? GuildOrientationCodes.Default, ct),
+            CrestEmblem = GuildCrestDefaults.Emblem,
+            CrestEmblemColor = GuildCrestDefaults.EmblemColor,
+            CrestBorder = GuildCrestDefaults.Border,
+            CrestBorderColor = GuildCrestDefaults.BorderColor,
+            CrestBackgroundColor = GuildCrestDefaults.BackgroundColor,
             CreationDate = now,
             ModificationDate = now,
         };
@@ -324,10 +380,19 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         // "erase this" apart from "the client did not send it".
         if (sent.Contains(nameof(GuildUpdateRequest.Sentence)))
             guild.Sentence = Normalize(request.Sentence);
-        if (sent.Contains(nameof(GuildUpdateRequest.LinkDiscord)))
-            guild.LinkDiscord = NormalizeLink(request.LinkDiscord);
-        if (sent.Contains(nameof(GuildUpdateRequest.LinkForum)))
-            guild.LinkForum = NormalizeLink(request.LinkForum);
+        if (sent.Contains(nameof(GuildUpdateRequest.Level)))
+            guild.Level = ValidateLevel(request.Level);
+        if (sent.Contains(nameof(GuildUpdateRequest.Orientation)))
+            guild.IdOrientation = await ResolveOrientationIdAsync(request.Orientation, ct);
+        if (sent.Contains(nameof(GuildUpdateRequest.Crest)))
+            ApplyCrest(guild, request.Crest);
+
+        // The page is the leader's own: officers stop at the settings above.
+        if (sent.Contains(nameof(GuildUpdateRequest.LayoutJson)))
+        {
+            await GuildAuth.RequireStandingAsync(_context, guild.Id, caller.Id, GuildRankCodes.Leader, ct);
+            guild.LayoutJson = NormalizeLayout(request.LayoutJson);
+        }
 
         guild.ModificationDate = DateTime.UtcNow;
         await _context.SaveChangesAsync(ct);
@@ -510,21 +575,6 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
     }
 
     /// <summary>
-    /// Player id of the caller when they have a WoW sheet, null for anonymous visitors. Used by the
-    /// public sheet, which must not fail just because nobody is logged in.
-    /// </summary>
-    private async Task<int?> FindViewerPlayerIdAsync(BusMessage message, CancellationToken ct)
-    {
-        if (message.Caller?.Subject is not { } subject || !Guid.TryParse(subject, out var idKeycloak))
-            return null;
-
-        return await _context.Players.AsNoTracking()
-            .Where(p => p.IdKeycloak == idKeycloak)
-            .Select(p => (int?)p.Id)
-            .FirstOrDefaultAsync(ct);
-    }
-
-    /// <summary>
     /// Four random digits, retried on collision: the handle only has to be unique per guild name, so
     /// the 10 000 slots are never realistically exhausted.
     /// </summary>
@@ -545,16 +595,6 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         } while (taken.Contains(candidate));
 
         return candidate;
-    }
-
-    private static (string Name, string? Discriminator) SplitHandle(string query)
-    {
-        var trimmed = query.Trim();
-        var separator = trimmed.LastIndexOf('#');
-        if (separator <= 0 || separator == trimmed.Length - 1)
-            return (trimmed, null);
-
-        return (trimmed[..separator], trimmed[(separator + 1)..]);
     }
 
     /// <summary>
@@ -588,18 +628,90 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();
 
-    private static string? NormalizeLink(string? value)
+    private static int ValidateLevel(int? level)
     {
-        var link = Normalize(value);
-        if (link is null)
+        if (level is not { } value || value < 1 || value > MaxGuildLevel)
+            throw new BadRequestException("INVALID_LEVEL", $"Guild level must be between 1 and {MaxGuildLevel}");
+
+        return value;
+    }
+
+    private async Task<int> ResolveOrientationIdAsync(string? code, CancellationToken ct)
+    {
+        var entitled = (code ?? "").Trim().ToLowerInvariant();
+        if (!GuildOrientationCodes.All.Contains(entitled))
+            throw new BadRequestException("INVALID_ORIENTATION", "Orientation must be 'pve', 'pvp' or 'pvpe'");
+
+        var id = await _context.GuildOrientations.AsNoTracking()
+            .Where(o => o.Entitled == entitled)
+            .Select(o => o.Id)
+            .FirstOrDefaultAsync(ct);
+
+        return id != 0
+            ? id
+            : throw new InternalServerErrorException("ORIENTATION_MISSING", $"Orientation {entitled} is not seeded");
+    }
+
+    /// <summary>
+    /// The editor always posts the whole crest, so the parts are validated and applied together
+    /// rather than one field at a time.
+    /// </summary>
+    private static void ApplyCrest(Guild guild, GuildCrestUpdate? crest)
+    {
+        if (crest is null)
+            throw new BadRequestException("VALIDATION", "Crest is required");
+
+        guild.CrestEmblem = ValidateCrestPart(crest.Emblem, MaxCrestEmblem, "emblem");
+        guild.CrestBorder = ValidateCrestPart(crest.Border, MaxCrestBorder, "border");
+        guild.CrestEmblemColor = ValidateColor(crest.EmblemColor);
+        guild.CrestBorderColor = ValidateColor(crest.BorderColor);
+        guild.CrestBackgroundColor = ValidateColor(crest.BackgroundColor);
+    }
+
+    private static int ValidateCrestPart(int index, int max, string part)
+    {
+        if (index < 0 || index > max)
+            throw new BadRequestException("INVALID_CREST", $"Crest {part} must be between 0 and {max}");
+
+        return index;
+    }
+
+    /// <summary>
+    /// Colours travel as <c>#rrggbb</c> so they can be dropped straight into a stylesheet; anything
+    /// else is refused rather than escaped.
+    /// </summary>
+    private static string ValidateColor(string? value)
+    {
+        var color = (value ?? "").Trim().ToLowerInvariant();
+        if (color.Length != 7 || color[0] != '#' || !color[1..].All(Uri.IsHexDigit))
+            throw new BadRequestException("INVALID_CREST", "Crest colours must look like #rrggbb");
+
+        return color;
+    }
+
+    /// <summary>
+    /// Same contract as the player sheet: the layout is opaque to the back end, which only checks
+    /// that it is JSON of a sane size so a corrupt payload cannot break every visitor's page.
+    /// </summary>
+    private static string? NormalizeLayout(string? layoutJson)
+    {
+        if (string.IsNullOrWhiteSpace(layoutJson))
             return null;
 
-        if (link.Length > MaxLinkLength)
-            throw new BadRequestException("LINK_TOO_LONG", $"Links cannot exceed {MaxLinkLength} characters");
+        if (layoutJson.Length > MaxLayoutLength)
+            throw new BadRequestException("LAYOUT_TOO_LARGE", "Layout payload is too large");
 
-        if (!Uri.TryCreate(link, UriKind.Absolute, out var uri) || (uri.Scheme != Uri.UriSchemeHttp && uri.Scheme != Uri.UriSchemeHttps))
-            throw new BadRequestException("INVALID_LINK", "Links must be absolute http(s) URLs");
+        try
+        {
+            using var document = JsonDocument.Parse(layoutJson);
+            if (document.RootElement.ValueKind is not (JsonValueKind.Object or JsonValueKind.Array))
+                throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON object or array");
+        }
+        catch (JsonException)
+        {
+            throw new BadRequestException("LAYOUT_INVALID", "Layout must be a JSON object or array");
+        }
 
-        return link;
+        return layoutJson;
     }
 }

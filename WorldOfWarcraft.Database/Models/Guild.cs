@@ -23,13 +23,32 @@ public partial class Guild : IKeyTable
 
     public string? Sentence { get; set; }
 
-    public string? LinkDiscord { get; set; }
+    /// <summary>
+    /// Widget workspace of the guild page, serialized by the front end. Null until the leader
+    /// arranges it, in which case the default layout shipped with the game applies.
+    /// </summary>
+    public string? LayoutJson { get; set; }
 
-    public string? LinkForum { get; set; }
+    /// <summary>
+    /// Index of the emblem silhouette drawn at the centre of the crest, as named in
+    /// <c>public/wow-crests/emblems</c>.
+    /// </summary>
+    public int CrestEmblem { get; set; }
+
+    public string CrestEmblemColor { get; set; } = null!;
+
+    /// <summary>
+    /// Index of the border shape framing the crest, as named in <c>public/wow-crests/borders</c>.
+    /// </summary>
+    public int CrestBorder { get; set; }
+
+    public string CrestBorderColor { get; set; } = null!;
+
+    public string CrestBackgroundColor { get; set; } = null!;
 
     public int IdLeader { get; set; }
 
-    public int IdMainDirection { get; set; }
+    public int IdOrientation { get; set; }
 
     public virtual ICollection<GuildLink> GuildLinks { get; set; } = new List<GuildLink>();
 
@@ -45,7 +64,7 @@ public partial class Guild : IKeyTable
 
     public virtual Character IdLeaderNavigation { get; set; } = null!;
 
-    public virtual Direction IdMainDirectionNavigation { get; set; } = null!;
+    public virtual GuildOrientation IdOrientationNavigation { get; set; } = null!;
 
     public virtual ICollection<Roster> Rosters { get; set; } = new List<Roster>();
 }

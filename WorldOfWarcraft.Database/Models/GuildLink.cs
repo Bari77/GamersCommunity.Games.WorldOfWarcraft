@@ -12,9 +12,19 @@ public partial class GuildLink : IKeyTable
 
     public DateTime ModificationDate { get; set; }
 
-    public string Link { get; set; } = null!;
+    public string Url { get; set; } = null!;
 
+    public string Label { get; set; } = null!;
+
+    /// <summary>
+    /// Social network key backing the card icon, such as <c>discord</c> or <c>youtube</c>.
+    /// Kept free-form so a new network only needs a front-end release, and null when the
+    /// guild wants the generic link icon.
+    /// </summary>
     public string? Icon { get; set; }
+
+    /// <summary>Rank inside the guild's list; ties are broken by creation date.</summary>
+    public int Position { get; set; }
 
     public int IdGuild { get; set; }
 

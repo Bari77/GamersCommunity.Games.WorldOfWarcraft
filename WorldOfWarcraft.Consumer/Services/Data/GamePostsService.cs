@@ -41,6 +41,9 @@ public class GamePostsService(
             case "Create":
                 return JsonSafe.Serialize(await CreateAsync(message, ct));
 
+            case "Update":
+                return JsonSafe.Serialize(await UpdateAsync(message, ct));
+
             case "Moderate":
                 return JsonSafe.Serialize(await ModerateAsync(message, ct));
 
@@ -60,9 +63,18 @@ public class GamePostsService(
         var guildId = await RequireGuildIdAsync(request.GuildPublicId, ct);
         var take = request.Take is > 0 and <= MaxTake ? request.Take : 20;
 
+        // The wall is public, so an anonymous visitor simply reads the public part of it.
+        var viewer = await CallerAuth.FindPlayerIdAsync(_context, message, ct);
+        var standing = viewer is { } playerId
+            ? await GuildAuth.FindStandingAsync(_context, guildId, playerId, ct)
+            : null;
+        var audience = VisibleRanks(standing?.Rank);
+
         var query = _context.GamePosts.AsNoTracking()
             .Where(p => p.IdGuild == guildId
-                        && p.IdStatusNavigation.Entitled == GamePostStatusCodes.Approved);
+                        && p.IdStatusNavigation.Entitled == GamePostStatusCodes.Approved
+                        && (p.IdMinimumRank == null
+                            || audience.Contains(p.IdMinimumRankNavigation!.Entitled)));
 
         if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
         {
@@ -127,6 +139,7 @@ public class GamePostsService(
             MediaUrl = NormalizeMediaUrl(request.MediaUrl),
             MediaKind = Normalize(request.MediaKind),
             IdStatus = await RequireStatusIdAsync(status, ct),
+            IdMinimumRank = await ResolveMinimumRankAsync(request.Visibility, ct),
             CreationDate = now,
             ModificationDate = now,
         };
@@ -138,6 +151,61 @@ public class GamePostsService(
         }
 
         await _context.GamePosts.AddAsync(post, ct);
+        await _context.SaveChangesAsync(ct);
+
+        return await ToDtoAsync(post.Id, ct);
+    }
+
+    /// <summary>
+    /// Rewrites a post in place. Reserved to its author: officers moderate what they are shown and
+    /// have no business editing someone else's words.
+    /// </summary>
+    private async Task<GamePostDto> UpdateAsync(BusMessage message, CancellationToken ct)
+    {
+        if (string.IsNullOrWhiteSpace(message.Data))
+            throw new BadRequestException("DATA_MANDATORY", "Data mandatory");
+
+        var request = ConsumerParamParser.ToObject<GamePostUpdateRequest>(message.Data);
+        var post = await RequirePostAsync(request.PublicId, ct);
+        var caller = await CallerAuth.RequirePlayerAsync(_context, message, ct);
+
+        if (post.IdPlayer != caller.Id)
+            throw new ForbiddenException("FORBIDDEN", "Only the author can edit this post");
+
+        await sanctions.EnsureCanPublishAsync(message, ct);
+
+        var body = (request.Body ?? "").Trim();
+        if (body.Length == 0)
+            throw new BadRequestException("VALIDATION", "Post body is required");
+        if (body.Length > MaxBodyLength)
+            throw new BadRequestException("BODY_TOO_LONG", $"Post cannot exceed {MaxBodyLength} characters");
+
+        // The edit form carries the whole post, so every field is replaced rather than patched.
+        post.Body = body;
+        post.MediaUrl = NormalizeMediaUrl(request.MediaUrl);
+        post.MediaKind = Normalize(request.MediaKind);
+
+        var now = DateTime.UtcNow;
+
+        if (post.IdGuild is { } guildId)
+        {
+            var standing = await GuildAuth.RequireStandingAsync(
+                _context, guildId, caller.Id, GuildRankCodes.Member, ct);
+
+            post.IdMinimumRank = await ResolveMinimumRankAsync(request.Visibility, ct);
+
+            // The reviewed text is gone, so the decision that cleared it no longer applies: members
+            // queue up again, officers clear themselves as they do when publishing.
+            var moderates = GuildAuth.CanModerate(standing.Rank);
+            post.IdStatus = await RequireStatusIdAsync(
+                moderates ? GamePostStatusCodes.Approved : GamePostStatusCodes.Pending,
+                ct);
+            post.IdModerator = moderates ? standing.ActingCharacterId : null;
+            post.ModeratedAt = moderates ? now : null;
+            post.ModerationReason = null;
+        }
+
+        post.ModificationDate = now;
         await _context.SaveChangesAsync(ct);
 
         return await ToDtoAsync(post.Id, ct);
@@ -237,6 +305,29 @@ public class GamePostsService(
             ?? throw new NotFoundException("POST_NOT_FOUND", "Post not found");
     }
 
+    /// <summary>
+    /// Guild ranks a viewer of that standing may read, public posts aside. Empty for visitors and
+    /// non-members, who only ever see the public part of a wall.
+    /// </summary>
+    private static string[] VisibleRanks(string? viewerRank) =>
+        [.. GuildRankCodes.All.Where(rank => GuildAuth.Weight(viewerRank) >= GuildAuth.Weight(rank))];
+
+    /// <summary>
+    /// Turns the requested audience into the post's minimum rank, null meaning "everyone".
+    /// Defaults to members so an omitted field never widens the audience.
+    /// </summary>
+    private async Task<int?> ResolveMinimumRankAsync(string? visibility, CancellationToken ct)
+    {
+        var code = Normalize(visibility)?.ToLowerInvariant() ?? GamePostVisibilityCodes.Default;
+
+        if (!GamePostVisibilityCodes.All.Contains(code))
+            throw new BadRequestException("INVALID_VISIBILITY", $"Unknown visibility '{code}'");
+
+        return code == GamePostVisibilityCodes.Public
+            ? null
+            : await GuildAuth.RequireRankIdAsync(_context, code, ct);
+    }
+
     private async Task<int> RequireStatusIdAsync(string code, CancellationToken ct) =>
         await _context.GamePostStatuses.AsNoTracking()
             .Where(s => s.Entitled == code)
@@ -256,6 +347,9 @@ public class GamePostsService(
             MediaUrl = p.MediaUrl,
             MediaKind = p.MediaKind,
             Status = p.IdStatusNavigation.Entitled,
+            Visibility = p.IdMinimumRankNavigation != null
+                ? p.IdMinimumRankNavigation.Entitled
+                : GamePostVisibilityCodes.Public,
             CreationDate = p.CreationDate,
             AuthorPlayerPublicId = p.IdPlayerNavigation.PublicId,
             AuthorPlatformUserPublicId = p.IdPlayerNavigation.PlatformUserPublicId ?? Guid.Empty,

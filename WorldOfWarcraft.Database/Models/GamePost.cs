@@ -25,6 +25,12 @@ public partial class GamePost : IKeyTable
     public int IdStatus { get; set; }
 
     /// <summary>
+    /// Lowest guild rank allowed to read the post. Null publishes it to every visitor, which is
+    /// what <see cref="GamePostVisibilityCodes.Public"/> means on the wire.
+    /// </summary>
+    public int? IdMinimumRank { get; set; }
+
+    /// <summary>
     /// Character of the officer who approved or rejected the post.
     /// </summary>
     public int? IdModerator { get; set; }
@@ -40,4 +46,6 @@ public partial class GamePost : IKeyTable
     public virtual Character? IdModeratorNavigation { get; set; }
 
     public virtual GamePostStatus IdStatusNavigation { get; set; } = null!;
+
+    public virtual GuildRank? IdMinimumRankNavigation { get; set; }
 }

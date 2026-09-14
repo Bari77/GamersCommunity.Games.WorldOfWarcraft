@@ -39,11 +39,44 @@ public sealed class CharacterDto
 
     /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GuildRankCodes"/>. Null when unguilded.</summary>
     public string? GuildRank { get; init; }
+
+    /// <summary>Crest of that guild, so a character card can wear it. Null when unguilded.</summary>
+    public GuildCrestDto? GuildCrest { get; init; }
 }
 
 public sealed class CharacterListRequest
 {
     public Guid PlayerPublicId { get; init; }
+}
+
+public sealed class CharacterSearchRequest
+{
+    /// <summary>
+    /// Matches the character name. Characters carry no discriminator, so a <c>#</c> in the term is
+    /// matched literally rather than split off.
+    /// </summary>
+    public string? Query { get; init; }
+
+    public int? IdServer { get; init; }
+    public int? IdAlignment { get; init; }
+    public int? IdDirection { get; init; }
+
+    /// <summary>Class of the main specialization, which is what carries the class on a character.</summary>
+    public int? IdClass { get; init; }
+
+    public int? MinLevel { get; init; }
+
+    // Cursor, both parts required together: creation date alone is not unique.
+    public DateTime? BeforeCreationDate { get; init; }
+    public Guid? BeforePublicId { get; init; }
+
+    public int Take { get; init; } = 20;
+}
+
+public sealed class CharacterSearchResultDto
+{
+    public IReadOnlyList<CharacterSummaryDto> Items { get; init; } = [];
+    public bool HasMore { get; init; }
 }
 
 public sealed class CharacterCreateRequest
