@@ -117,14 +117,14 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 3,
+          "rows": 5,
           "settings": {}
         },
         {
           "id": "w-applications",
           "type": "guild-applications",
           "x": 0,
-          "y": 3,
+          "y": 5,
           "cols": 12,
           "rows": 3,
           "settings": {}
