@@ -177,6 +177,8 @@
     "wow.guild.directory.loadMore": "Charger plus",
     "wow.guild.notFound": "Guilde introuvable.",
     "wow.guild.hero.kicker": "Fiche de guilde",
+    "wow.guild.hero.edit": "Modifier",
+    "wow.guild.hero.close": "Fermer",
     "wow.guild.level": "Niveau",
     "wow.guild.since": "Créée le",
     "wow.guild.members": "Membres",
@@ -357,6 +359,18 @@
     "wow.player.page.visibility": "Qui peut voir cette page",
     "wow.player.page.visibility.public": "Tout le monde",
     "wow.player.page.visibility.friends": "Mes amis",
-    "wow.player.page.visibility.private": "Moi uniquement"
+    "wow.player.page.visibility.private": "Moi uniquement",
+    "wow.playground.user.title": "Profil communauté",
+    "wow.playground.user.hint": " En production cette page vit sur la Platform. Le playground ne fait que la simuler pour que les liens du jeu restent cliquables. ",
+    "wow.playground.user.sheet": "Ouvrir la fiche de jeu",
+    "wow.playground.session.title": "Session playground",
+    "wow.playground.session.body": " Vous êtes connecté en tant que Aelindra#0042. Le playground simule Authentik au lieu de vous envoyer vers le vrai login. ",
+    "wow.playground.session.back": "Retour au jeu",
+    "wow.playground.breadcrumb.home": "Accueil",
+    "wow.playground.breadcrumb.game": "World of Warcraft",
+    "wow.playground.nav.sheet": "Mon profil",
+    "wow.playground.nav.guilds": "Guildes",
+    "wow.playground.nav.sections": "Sections du jeu",
+    "wow.playground.search": "Rechercher un personnage, un joueur ou une guilde"
   }
 }

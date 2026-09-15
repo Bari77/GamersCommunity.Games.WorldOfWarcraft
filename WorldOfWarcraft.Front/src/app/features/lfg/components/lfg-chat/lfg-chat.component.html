@@ -48,12 +48,18 @@
                         class="lfg-chat__bubble"
                         [class.is-mine]="message.isMine(store.session()?.publicId, store.playerPublicId())"
                     >
-                        @if (message.isGuildAd() && message.guildCrest) {
-                            <wow-guild-crest
-                                class="lfg-chat__bubble-avatar"
-                                [crest]="message.guildCrest"
-                                [size]="32"
-                            />
+                        @if (message.isGuildAd()) {
+                            @if (message.guildCrest) {
+                                <wow-guild-crest
+                                    class="lfg-chat__bubble-crest"
+                                    [crest]="message.guildCrest"
+                                    [size]="32"
+                                />
+                            } @else {
+                                <span class="lfg-chat__bubble-avatar lfg-chat__bubble-avatar--fallback" aria-hidden="true">
+                                    {{ message.initial() }}
+                                </span>
+                            }
                         } @else if (messageAvatar(message); as avatarUrl) {
                             <img class="lfg-chat__bubble-avatar" [src]="avatarUrl" alt="" />
                         } @else {

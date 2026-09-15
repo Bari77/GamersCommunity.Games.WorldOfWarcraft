@@ -8,11 +8,11 @@
     position: relative;
     display: grid;
     grid-template-columns: auto 1fr;
-    // Stretched so the main column owns the full card height and can sink the date to the bottom.
+    // Stretched so the main column fills the fixed card height.
     align-items: stretch;
     gap: 0.6rem;
-    // Shared floor across the three home rails so their columns line up.
-    min-height: 6.25rem;
+    // Shared height across the three home rails so their columns line up.
+    height: 7.25rem;
     padding: 0.7rem 0.8rem 0.7rem 1.1rem;
     border-radius: 0.75rem;
     border: 1px solid rgb(255 255 255 / 7%);
@@ -55,6 +55,8 @@
     display: flex;
     flex-direction: column;
     gap: 0.3rem;
+    // Leave the absolutely positioned date clear of the badges.
+    padding-bottom: 1rem;
 }
 
 .entity-row__head {
@@ -134,12 +136,15 @@
 }
 
 .entity-row__date {
-    margin-top: auto;
-    align-self: flex-end;
+    position: absolute;
+    right: 0.8rem;
+    bottom: 0.45rem;
     color: rgb(150 162 195 / 72%);
     font-size: 0.72rem;
     font-weight: 500;
+    line-height: 1;
     white-space: nowrap;
+    pointer-events: none;
 }
 
 .entity-row__description {
@@ -159,8 +164,9 @@
 
 .entity-row__facts {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: 0.3rem 0.4rem;
+    overflow: hidden;
 
     .entity-row__fact {
         display: flex;

@@ -58,9 +58,9 @@
                 }
             </span>
         }
-
-        @if (date(); as created) {
-            <time class="entity-row__date">{{ created | date: "mediumDate" }}</time>
-        }
     </span>
+
+    @if (date(); as created) {
+        <time class="entity-row__date">{{ created | date: "mediumDate" }}</time>
+    }
 </a>

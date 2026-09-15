@@ -25,7 +25,10 @@ export class HomeLatestCharactersComponent {
             return this.noSpecLabel;
         }
 
-        return character.mainSpecializationName ? gameTerm(character.mainSpecializationName) : null;
+        const classLabel = gameTerm(character.className);
+        return character.mainSpecializationName
+            ? `${classLabel} ${gameTerm(character.mainSpecializationName)}`
+            : classLabel;
     }
 
     protected subtitleIcons(character: CharacterSummary): EntityRowIcon[] {

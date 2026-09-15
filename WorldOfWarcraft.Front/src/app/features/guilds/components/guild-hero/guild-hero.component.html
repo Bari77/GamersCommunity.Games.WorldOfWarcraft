@@ -23,7 +23,32 @@
         </div>
     </div>
 
-    @if (sheet.viewerRank) {
-        <p class="guild-hero__badge">{{ sheet.viewerRank | gameTerm }}</p>
+    @if (sheet.viewerRank || canModerate()) {
+        <div class="guild-hero__aside">
+            @if (sheet.viewerRank) {
+                <p class="guild-hero__badge">{{ sheet.viewerRank | gameTerm }}</p>
+            }
+
+            @if (canModerate()) {
+                <button
+                    class="guild-hero__edit"
+                    nbButton
+                    ghost
+                    size="small"
+                    status="basic"
+                    type="button"
+                    [attr.aria-expanded]="settingsOpen()"
+                    aria-controls="guild-settings"
+                    (click)="settingsOpen.set(!settingsOpen())"
+                >
+                    <nb-icon [icon]="settingsOpen() ? 'close-outline' : 'edit-2-outline'"></nb-icon>
+                    @if (settingsOpen()) {
+                        <span i18n="@@wow.guild.hero.close">Close</span>
+                    } @else {
+                        <span i18n="@@wow.guild.hero.edit">Edit</span>
+                    }
+                </button>
+            }
+        </div>
     }
 </header>

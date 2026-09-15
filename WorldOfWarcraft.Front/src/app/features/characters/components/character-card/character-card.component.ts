@@ -1,3 +1,4 @@
+import { DatePipe } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Character } from "@features/characters/models/character.model";
@@ -10,7 +11,7 @@ import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component
 @Component({
     standalone: true,
     selector: "wow-character-card",
-    imports: [GameTermPipe, GuildCrestComponent, NbButtonModule, NbIconModule, RouterLink, WowIconComponent],
+    imports: [DatePipe, GameTermPipe, GuildCrestComponent, NbButtonModule, NbIconModule, RouterLink, WowIconComponent],
     templateUrl: "./character-card.component.html",
     styleUrl: "./character-card.component.scss",
 })

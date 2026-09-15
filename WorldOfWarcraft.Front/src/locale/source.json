@@ -98,6 +98,8 @@
     "wow.guild.crest.emblemOption": "Emblem",
     "wow.guild.crest.borderOption": "Border",
     "wow.guild.hero.kicker": "Guild sheet",
+    "wow.guild.hero.edit": "Edit",
+    "wow.guild.hero.close": "Close",
     "wow.guild.level": "Level",
     "wow.guild.since": "Created",
     "wow.links.field.label": "Label",
@@ -348,6 +350,18 @@
     "wow.breadcrumb.player": "Player",
     "wow.breadcrumb.search": "Search",
     "wow.breadcrumb.guilds": "Guilds",
-    "wow.breadcrumb.guild": "Guild"
+    "wow.breadcrumb.guild": "Guild",
+    "wow.playground.user.title": "Community profile",
+    "wow.playground.user.hint": " In production this page lives on the Platform. The playground only stubs it so game links keep working. ",
+    "wow.playground.user.sheet": "Open the game sheet",
+    "wow.playground.session.title": "Playground session",
+    "wow.playground.session.body": " You are signed in as Aelindra#0042. The playground mocks Authentik instead of sending you to the real login. ",
+    "wow.playground.session.back": "Back to the game",
+    "wow.playground.breadcrumb.home": "Home",
+    "wow.playground.breadcrumb.game": "World of Warcraft",
+    "wow.playground.nav.sheet": "My profile",
+    "wow.playground.nav.guilds": "Guilds",
+    "wow.playground.nav.sections": "Game sections",
+    "wow.playground.search": "Search a character, a player or a guild"
   }
 }

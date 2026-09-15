@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     gap: 0.6rem;
-    padding: 1rem 1rem 1rem 1.4rem;
+    padding: 1rem 1rem 1.65rem 1.4rem;
     border-radius: 0.75rem;
     background: var(--gc-surface-2, rgba(255, 255, 255, 0.04));
     border: 1px solid rgba(255, 255, 255, 0.07);
@@ -88,6 +88,18 @@
     font-weight: 700;
     line-height: 1.5rem;
     opacity: 0.55;
+}
+
+.character-card__date {
+    position: absolute;
+    right: 1rem;
+    bottom: 0.5rem;
+    color: rgb(150 162 195 / 72%);
+    font-size: 0.72rem;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    pointer-events: none;
 }
 
 .character-card__spec {
@@ -233,5 +245,6 @@
     gap: 0.25rem;
     margin-top: 0.15rem;
     padding-top: 0.6rem;
+    padding-right: 6.5rem;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
 }

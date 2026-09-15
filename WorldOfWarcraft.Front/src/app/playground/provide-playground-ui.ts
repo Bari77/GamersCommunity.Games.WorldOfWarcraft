@@ -4,7 +4,9 @@ import { NbEvaIconsModule } from "@nebular/eva-icons";
 import {
     NbButtonModule,
     NbCardModule,
+    NbFormFieldModule,
     NbIconModule,
+    NbInputModule,
     NbLayoutModule,
     NbSpinnerModule,
     NbThemeModule,
@@ -22,6 +24,8 @@ export function providePlaygroundUi(themeName = "cosmic"): EnvironmentProviders 
             NbSpinnerModule,
             NbButtonModule,
             NbIconModule,
+            NbFormFieldModule,
+            NbInputModule,
         ),
     ]);
 }

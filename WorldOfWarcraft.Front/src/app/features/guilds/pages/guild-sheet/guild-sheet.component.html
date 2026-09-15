@@ -6,7 +6,18 @@
             </nb-card-body>
         </nb-card>
     } @else if (store.sheet(); as guild) {
-        <wow-guild-hero [guild]="guild" />
+        <wow-guild-hero [guild]="guild" [canModerate]="store.canModerate()" [(settingsOpen)]="settingsOpen" />
+
+        @if (store.canModerate() && settingsOpen()) {
+            <wow-guild-admin
+                id="guild-settings"
+                [sheet]="guild"
+                [saving]="store.saving()"
+                [errorCode]="store.errorCode()"
+                (save)="onSave($event)"
+                (disband)="onDisband($event)"
+            />
+        }
 
         @if (saveFailed()) {
             <p class="guild-sheet__error" role="alert" i18n="@@wow.guild.layout.saveFailed">
@@ -82,15 +93,6 @@
             />
         </gc-widget-workspace>
 
-        @if (store.canModerate()) {
-            <wow-guild-admin
-                [sheet]="guild"
-                [saving]="store.saving()"
-                [errorCode]="store.errorCode()"
-                (save)="onSave($event)"
-                (disband)="onDisband($event)"
-            />
-        }
     } @else {
         <header class="guild-hero guild-hero--skeleton" aria-busy="true">
             <div class="guild-hero__game">

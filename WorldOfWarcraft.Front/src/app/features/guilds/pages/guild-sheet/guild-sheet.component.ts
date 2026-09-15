@@ -60,6 +60,7 @@ export class GuildSheetComponent implements OnInit {
     protected readonly canEditLayout = computed(() => this.store.isLeader());
 
     protected readonly editing = signal(false);
+    protected readonly settingsOpen = signal(false);
     protected readonly saveFailed = signal(false);
 
     /** A saved layout comes back on the refreshed sheet, so the server stays the single source. */
@@ -102,6 +103,7 @@ export class GuildSheetComponent implements OnInit {
             this.publicId();
             untracked(() => {
                 this.editing.set(false);
+                this.settingsOpen.set(false);
                 this.saveFailed.set(false);
             });
         });

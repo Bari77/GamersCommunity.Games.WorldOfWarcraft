@@ -119,6 +119,11 @@
     flex-shrink: 0;
 }
 
+.lfg-chat__bubble-crest {
+    flex-shrink: 0;
+    filter: drop-shadow(0 1px 2px rgb(0 0 0 / 45%));
+}
+
 .lfg-chat__bubble-avatar--fallback {
     display: grid;
     place-items: center;

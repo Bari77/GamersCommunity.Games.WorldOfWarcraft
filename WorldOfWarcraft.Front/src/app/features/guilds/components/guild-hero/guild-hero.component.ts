@@ -1,23 +1,28 @@
 import { DatePipe } from "@angular/common";
-import { Component, computed, inject, input, resource } from "@angular/core";
+import { Component, computed, inject, input, model, resource } from "@angular/core";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlatformGamesService } from "@core/services/platform-games.service";
 import { guildOrientationLabel } from "@features/guilds/models/guild-orientation";
 import { GuildSheet } from "@features/guilds/models/guild.model";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
+import { NbButtonModule, NbIconModule } from "@nebular/theme";
 import { firstValueFrom } from "rxjs";
 
 /** Fixed identity band above the guild workspace, mirroring the player sheet's hero. */
 @Component({
     standalone: true,
     selector: "wow-guild-hero",
-    imports: [DatePipe, GameTermPipe, GuildCrestComponent],
+    imports: [DatePipe, GameTermPipe, GuildCrestComponent, NbButtonModule, NbIconModule],
     templateUrl: "./guild-hero.component.html",
     styleUrl: "./guild-hero.component.scss",
 })
 export class GuildHeroComponent {
     public readonly guild = input.required<GuildSheet>();
+
+    /** Officers open guild settings from the header instead of a buried card. */
+    public readonly canModerate = input(false);
+    public readonly settingsOpen = model(false);
 
     protected readonly orientationLabel = computed(() => guildOrientationLabel(this.guild().orientationName));
 

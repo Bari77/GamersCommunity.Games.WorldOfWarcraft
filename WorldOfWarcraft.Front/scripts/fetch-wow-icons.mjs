@@ -43,6 +43,7 @@ const races = {
     pandaren: "race_pandaren_male",
     vulpera: "race_vulpera_male",
     dracthyr: "race_dracthyr_male",
+    void_elf: "race_voidelf_male",
 };
 
 const specs = {
