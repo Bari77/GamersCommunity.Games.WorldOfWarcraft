@@ -13,12 +13,21 @@ namespace WorldOfWarcraft.Consumer.Integration;
 /// Keeps the local <see cref="PlatformUserSnapshot"/> read model in sync with the identities
 /// broadcast by the Platform microservice.
 /// </summary>
-public sealed class PlatformEventsSubscriber(
-    IOptions<RabbitMQSettings> opts,
-    IServiceScopeFactory scopeFactory,
-    ILogger logger) : IntegrationEventSubscriber(opts, logger)
+public sealed class PlatformEventsSubscriber : IntegrationEventSubscriber
 {
     public const string MicroserviceId = "worldofwarcraft";
+
+    private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILogger _logger;
+
+    public PlatformEventsSubscriber(
+        IOptions<RabbitMQSettings> opts,
+        IServiceScopeFactory scopeFactory,
+        ILogger logger) : base(opts, logger)
+    {
+        _scopeFactory = scopeFactory;
+        _logger = logger;
+    }
 
     protected override string Exchange => IntegrationExchanges.PlatformEvents;
 
@@ -29,18 +38,18 @@ public sealed class PlatformEventsSubscriber(
         if (!string.Equals(type, IntegrationEventTypes.UserIdentityChanged, StringComparison.OrdinalIgnoreCase))
         {
             // Unknown events are ignored so Platform can introduce new ones without breaking us.
-            logger.Debug("Ignoring integration event '{Type}'.", type);
+            _logger.Debug("Ignoring integration event '{Type}'.", type);
             return;
         }
 
         var evt = IntegrationEventSerializer.Deserialize<UserIdentityChangedEvent>(json);
         if (evt is null || evt.UserPublicId == Guid.Empty)
         {
-            logger.Warning("Invalid '{Type}' payload.", type);
+            _logger.Warning("Invalid '{Type}' payload.", type);
             return;
         }
 
-        using var scope = scopeFactory.CreateScope();
+        using var scope = _scopeFactory.CreateScope();
         var context = scope.ServiceProvider.GetRequiredService<WorldOfWarcraftDbContext>();
 
         var snapshot = await context.PlatformUserSnapshots
