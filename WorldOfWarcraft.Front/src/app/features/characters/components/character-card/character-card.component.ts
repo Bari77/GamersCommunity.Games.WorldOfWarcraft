@@ -5,7 +5,7 @@ import { roleLabel, specKey, specRole } from "@features/characters/models/spec-r
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
-import { WowIconComponent, WowIconKind } from "@shared/components/wow-icon/wow-icon.component";
+import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 
 @Component({
     standalone: true,
@@ -24,12 +24,6 @@ export class CharacterCardComponent {
     public readonly specKey = computed(() =>
         specKey(this.character().className, this.character().mainSpecializationName),
     );
-
-    /** Specless characters still deserve a crest, so fall back to the class emblem. */
-    public readonly emblem = computed<{ kind: WowIconKind; slug: string | null }>(() => {
-        const key = this.specKey();
-        return key ? { kind: "spec", slug: key } : { kind: "class", slug: this.character().className };
-    });
 
     public readonly role = computed(() => specRole(this.specKey()));
     public readonly roleName = computed(() => {

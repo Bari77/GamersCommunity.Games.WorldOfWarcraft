@@ -5,8 +5,8 @@
         <div class="character-card__identity">
             <wow-icon
                 class="character-card__emblem"
-                [kind]="emblem().kind"
-                [slug]="emblem().slug"
+                kind="class"
+                [slug]="item.className"
                 [label]="item.className | gameTerm"
                 [size]="34"
             />
@@ -28,6 +28,14 @@
     <p class="character-card__spec">
         @if (item.className) {
             <wow-icon kind="role" [slug]="role()" [label]="roleName()" [size]="18" />
+            @if (specKey()) {
+                <wow-icon
+                    kind="spec"
+                    [slug]="specKey()"
+                    [label]="item.mainSpecializationName | gameTerm"
+                    [size]="18"
+                />
+            }
             {{ item.className | gameTerm }} {{ item.mainSpecializationName | gameTerm }}
         } @else {
             <span class="character-card__spec--empty" i18n="@@wow.character.noSpec">No specialization</span>

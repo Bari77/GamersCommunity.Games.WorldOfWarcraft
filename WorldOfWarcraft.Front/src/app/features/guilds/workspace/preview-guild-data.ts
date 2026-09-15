@@ -40,7 +40,7 @@ export const WORKSPACE_PREVIEW_GUILD_MEMBERS: GuildMember[] = [
         80,
         625,
         'druid',
-        'nightelf',
+        'night_elf',
         'restoration',
         'alliance',
         GUILD_RANK_OFFICER,
@@ -91,8 +91,8 @@ export const WORKSPACE_PREVIEW_GUILD_MEMBERS: GuildMember[] = [
         80,
         605,
         'hunter',
-        'nightelf',
-        'beastmastery',
+        'night_elf',
+        'beast_mastery',
         'alliance',
         GUILD_RANK_MEMBER,
         '00000000-0000-0000-0000-000000000105',
@@ -107,7 +107,7 @@ export const WORKSPACE_PREVIEW_GUILD_MEMBERS: GuildMember[] = [
         'Morvek',
         70,
         540,
-        'deathknight',
+        'death_knight',
         'human',
         'unholy',
         'alliance',
@@ -202,6 +202,15 @@ export interface WorkspacePreviewApplication {
     date: Date;
 }
 
+export const WORKSPACE_PREVIEW_PENDING_POSTS: WorkspacePreviewWallPost[] = [
+    {
+        author: 'Applicant#4242',
+        date: new Date('2026-09-11T08:30:00Z'),
+        body: 'Selling my mount collection, DM me.',
+        audience: 'Members',
+    },
+];
+
 export const WORKSPACE_PREVIEW_WALL_POSTS: WorkspacePreviewWallPost[] = [
     {
         author: 'PreviewLeader#0001',
@@ -218,6 +227,11 @@ export const WORKSPACE_PREVIEW_WALL_POSTS: WorkspacePreviewWallPost[] = [
         author: 'PreviewMember#0004',
         date: new Date('2026-09-05T09:15:00Z'),
         body: 'Great run yesterday, thanks everyone. I posted the logs in Discord for review.',
+    },
+    {
+        author: 'PreviewOfficer2#0003',
+        date: new Date('2026-09-03T21:10:00Z'),
+        body: 'Keys starting at 21:00. We have a tank, looking for a healer and two DPS. Reply here or ping in Discord.',
     },
 ];
 
@@ -239,6 +253,15 @@ export const WORKSPACE_PREVIEW_APPLICATIONS: WorkspacePreviewApplication[] = [
         player: 'HealerOne#1337',
         message: 'Returning player, former mythic healer. Happy to trial on normal/heroic first.',
         date: new Date('2026-09-09T11:40:00Z'),
+    },
+    {
+        character: 'Korrath',
+        spec: 'Warrior · Protection',
+        level: 80,
+        server: 'Hyjal',
+        player: 'OffTank#0901',
+        message: 'Off-tank looking for a stable heroic roster. Available Wednesday and Sunday evenings.',
+        date: new Date('2026-09-08T19:05:00Z'),
     },
 ];
 

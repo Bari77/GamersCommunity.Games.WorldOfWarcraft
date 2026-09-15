@@ -1,0 +1,35 @@
+<section class="preview-apply">
+    <h3 class="preview-chrome__title" i18n="@@wow.guild.apply.title">Apply to this guild</h3>
+
+    <form class="guild-apply" (submit)="$event.preventDefault()">
+        <div class="preview-chrome__field guild-apply__field">
+            <span i18n="@@wow.guild.apply.character">Applying character</span>
+            <select class="preview-chrome__control" tabindex="-1">
+                @for (character of candidates; track character.publicId) {
+                    <option [value]="character.publicId">
+                        {{ character.pseudo }} · {{ character.serverName | gameTerm }}
+                    </option>
+                }
+            </select>
+        </div>
+
+        <div class="preview-chrome__field guild-apply__field">
+            <label for="workspace-preview-apply-message" i18n="@@wow.guild.apply.message">Message</label>
+            <textarea
+                id="workspace-preview-apply-message"
+                class="preview-chrome__control"
+                rows="3"
+                tabindex="-1"
+                readonly
+                i18n-placeholder="@@wow.workspace.preview.apply.message"
+                placeholder="Hello, I would like to trial with my main."
+            ></textarea>
+        </div>
+
+        <footer class="guild-apply__actions preview-chrome__actions">
+            <button class="preview-chrome__action preview-chrome__action--primary" type="button" tabindex="-1">
+                <span i18n="@@wow.guild.apply.submit">Send application</span>
+            </button>
+        </footer>
+    </form>
+</section>

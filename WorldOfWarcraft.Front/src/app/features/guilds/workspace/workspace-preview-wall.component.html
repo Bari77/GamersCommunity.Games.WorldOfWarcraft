@@ -1,36 +1,80 @@
-<nb-card>
-    <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
-    <nb-card-body>
-        <div class="guild-wall__composer">
-            <p class="guild-wall__notice" i18n="@@wow.workspace.preview.wall.composer">
-                Sample composer area for layout sizing.
-            </p>
-        </div>
+<section class="preview-wall">
+    <header class="preview-chrome__header">
+        <h3 class="preview-chrome__title" i18n="@@wow.guild.wall.queue">Awaiting review</h3>
+        <span class="guild-wall__badge">{{ pending.length }}</span>
+    </header>
 
-        <ul class="guild-posts">
-            @for (post of posts; track post.author) {
-                <li class="guild-post">
-                    <header class="guild-post__head">
-                        <span class="guild-post__author">{{ post.author }}</span>
-                        <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
-                    </header>
-                    <p class="guild-post__body">{{ post.body }}</p>
-                    @if (post.audience) {
-                        <p class="guild-post__audience">
-                            <span i18n="@@wow.guild.wall.audience">Readable from</span>
-                            <strong>{{ post.audience }}</strong>
-                        </p>
-                    }
-                    <footer class="guild-post__actions">
-                        <button nbButton ghost size="small" status="basic" type="button" tabindex="-1">
-                            <span i18n="@@wow.guild.wall.edit">Edit</span>
-                        </button>
-                        <button nbButton ghost size="small" status="danger" type="button" tabindex="-1">
-                            <span i18n="@@wow.guild.wall.delete">Delete</span>
-                        </button>
-                    </footer>
-                </li>
-            }
-        </ul>
-    </nb-card-body>
-</nb-card>
+    <ul class="guild-posts">
+        @for (post of pending; track post.author) {
+            <li class="guild-post guild-post--pending">
+                <header class="guild-post__head">
+                    <span class="guild-post__author">{{ post.author }}</span>
+                    <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
+                </header>
+                <p class="guild-post__body">{{ post.body }}</p>
+                @if (post.audience) {
+                    <p class="guild-post__audience">
+                        <span i18n="@@wow.guild.wall.audience">Readable from</span>
+                        <strong>{{ post.audience }}</strong>
+                    </p>
+                }
+                <footer class="guild-post__actions">
+                    <button class="preview-chrome__action preview-chrome__action--success" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.wall.approve">Approve</span>
+                    </button>
+                    <button class="preview-chrome__action preview-chrome__action--danger" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.wall.reject">Reject</span>
+                    </button>
+                </footer>
+            </li>
+        }
+    </ul>
+</section>
+
+<section class="preview-wall">
+    <h3 class="preview-chrome__title" i18n="@@wow.guild.wall.title">Guild wall</h3>
+
+    <div class="guild-wall__composer">
+        <div class="preview-chrome__field">
+            <textarea
+                class="preview-chrome__control"
+                rows="3"
+                tabindex="-1"
+                readonly
+                i18n-placeholder="@@wow.guild.wall.body"
+                placeholder="Write a post for the guild…"
+            ></textarea>
+        </div>
+        <footer class="preview-chrome__actions">
+            <button class="preview-chrome__action preview-chrome__action--primary" type="button" tabindex="-1">
+                <span i18n="@@wow.guild.wall.publish">Publish</span>
+            </button>
+        </footer>
+    </div>
+
+    <ul class="guild-posts">
+        @for (post of posts; track post.author) {
+            <li class="guild-post">
+                <header class="guild-post__head">
+                    <span class="guild-post__author">{{ post.author }}</span>
+                    <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
+                </header>
+                <p class="guild-post__body">{{ post.body }}</p>
+                @if (post.audience) {
+                    <p class="guild-post__audience">
+                        <span i18n="@@wow.guild.wall.audience">Readable from</span>
+                        <strong>{{ post.audience }}</strong>
+                    </p>
+                }
+                <footer class="guild-post__actions">
+                    <button class="preview-chrome__action" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.wall.edit">Edit</span>
+                    </button>
+                    <button class="preview-chrome__action preview-chrome__action--danger" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.wall.delete">Delete</span>
+                    </button>
+                </footer>
+            </li>
+        }
+    </ul>
+</section>

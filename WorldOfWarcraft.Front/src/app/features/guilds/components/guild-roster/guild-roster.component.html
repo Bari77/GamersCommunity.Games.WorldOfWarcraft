@@ -25,8 +25,8 @@
                     <header class="member-card__head">
                         <wow-icon
                             class="member-card__emblem"
-                            [kind]="member.emblem().kind"
-                            [slug]="member.emblem().slug"
+                            kind="class"
+                            [slug]="member.className"
                             [label]="member.className | gameTerm"
                             [size]="34"
                         />
@@ -45,6 +45,14 @@
                     <p class="member-card__spec">
                         @if (member.className) {
                             <wow-icon kind="role" [slug]="member.role()" [label]="member.roleName()" [size]="18" />
+                            @if (member.specKey()) {
+                                <wow-icon
+                                    kind="spec"
+                                    [slug]="member.specKey()"
+                                    [label]="member.mainSpecializationName | gameTerm"
+                                    [size]="18"
+                                />
+                            }
                             {{ member.className | gameTerm }} {{ member.mainSpecializationName | gameTerm }}
                         } @else {
                             <span class="member-card__spec--empty" i18n="@@wow.character.noSpec">
@@ -74,22 +82,24 @@
                         }
                     </ul>
 
-                    <a
-                        class="member-card__handle"
-                        [routerLink]="['/world-of-warcraft/players', member.playerPublicId]"
-                        [title]="contactTitle"
-                    >
-                        {{ member.handleLabel() }}
-                    </a>
+                    @if (navigable()) {
+                        <a
+                            class="member-card__handle"
+                            [routerLink]="['/world-of-warcraft/players', member.playerPublicId]"
+                            [title]="contactTitle"
+                        >
+                            {{ member.handleLabel() }}
+                        </a>
+                    } @else {
+                        <span class="member-card__handle">{{ member.handleLabel() }}</span>
+                    }
 
                     @if (hasActions(member)) {
                         <footer class="member-card__actions">
                             @if (canPromote(member)) {
                                 <button
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="info"
+                                    type="button"
+                                    class="member-card__action member-card__action--info"
                                     [disabled]="busy()"
                                     (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankOfficer })"
                                 >
@@ -99,10 +109,8 @@
 
                             @if (canDemote(member)) {
                                 <button
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="basic"
+                                    type="button"
+                                    class="member-card__action"
                                     [disabled]="busy()"
                                     (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankMember })"
                                 >
@@ -112,10 +120,8 @@
 
                             @if (canTransfer(member)) {
                                 <button
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="warning"
+                                    type="button"
+                                    class="member-card__action member-card__action--warning"
                                     [disabled]="busy()"
                                     (click)="transfer.emit(member.characterPublicId)"
                                 >
@@ -125,10 +131,8 @@
 
                             @if (canKick(member)) {
                                 <button
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="danger"
+                                    type="button"
+                                    class="member-card__action member-card__action--danger"
                                     [disabled]="busy()"
                                     (click)="kick.emit(member.characterPublicId)"
                                 >
@@ -138,10 +142,8 @@
 
                             @if (canLeave(member)) {
                                 <button
-                                    nbButton
-                                    ghost
-                                    size="small"
-                                    status="danger"
+                                    type="button"
+                                    class="member-card__action member-card__action--danger"
                                     [disabled]="busy()"
                                     (click)="leave.emit(member.characterPublicId)"
                                 >

@@ -27,7 +27,7 @@
 
 <ng-template gcWidget="guild-roster">
     @if (preview()) {
-        <wow-guild-roster [members]="view().members" [viewerRank]="view().viewerRank" [busy]="true" />
+        <wow-guild-roster [members]="previewMembers" [viewerRank]="previewViewerRank" [navigable]="false" />
     } @else {
         <wow-guild-roster
             [members]="view().members"
@@ -70,7 +70,7 @@
 
 <ng-template gcWidget="guild-recruitment">
     @if (preview()) {
-        <wow-guild-apply-form [candidates]="previewApplyCandidates" />
+        <wow-workspace-preview-apply />
     } @else if (needsSheet()) {
         <wow-create-sheet-wall [message]="sheetWallMessage" />
     } @else {

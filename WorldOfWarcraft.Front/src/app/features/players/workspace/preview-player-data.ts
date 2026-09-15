@@ -46,7 +46,7 @@ export const WORKSPACE_PREVIEW_CHARACTERS: Character[] = [
         main: false,
         creationDate: '2023-08-04T10:30:00Z',
         idRace: 2,
-        raceName: 'nightelf',
+        raceName: 'night_elf',
         idServer: 1,
         serverName: 'hyjal',
         idDirection: 1,

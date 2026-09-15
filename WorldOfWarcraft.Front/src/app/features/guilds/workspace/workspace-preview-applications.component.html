@@ -1,42 +1,40 @@
-<nb-card>
-    <nb-card-header class="guild-applications__header">
-        <span i18n="@@wow.guild.applications.title">Applications</span>
+<section class="preview-applications">
+    <header class="preview-chrome__header guild-applications__header">
+        <h3 class="preview-chrome__title" i18n="@@wow.guild.applications.title">Applications</h3>
         <span class="guild-applications__badge">{{ applications.length }}</span>
-    </nb-card-header>
+    </header>
 
-    <nb-card-body>
-        <ul class="guild-applications">
-            @for (application of applications; track application.character) {
-                <li class="guild-application">
-                    <div class="guild-application__avatar-wrap" aria-hidden="true">
-                        <span class="guild-application__avatar guild-application__avatar--fallback">
-                            {{ application.character.slice(0, 1) }}
+    <ul class="guild-applications">
+        @for (application of applications; track application.character) {
+            <li class="guild-application">
+                <div class="guild-application__avatar-wrap" aria-hidden="true">
+                    <span class="guild-application__avatar guild-application__avatar--fallback">
+                        {{ application.character.slice(0, 1) }}
+                    </span>
+                </div>
+
+                <div class="guild-application__main">
+                    <div class="guild-application__head">
+                        <strong>{{ application.character }}</strong>
+                        <span class="guild-application__spec">
+                            {{ application.spec }} · {{ application.level }} · {{ application.server }}
                         </span>
                     </div>
 
-                    <div class="guild-application__main">
-                        <div class="guild-application__head">
-                            <strong>{{ application.character }}</strong>
-                            <span class="guild-application__spec">
-                                {{ application.spec }} · {{ application.level }} · {{ application.server }}
-                            </span>
-                        </div>
+                    <span class="guild-application__player">{{ application.player }}</span>
+                    <p class="guild-application__message">{{ application.message }}</p>
+                    <time class="guild-application__date">{{ application.date | date: 'short' }}</time>
+                </div>
 
-                        <span class="guild-application__player">{{ application.player }}</span>
-                        <p class="guild-application__message">{{ application.message }}</p>
-                        <time class="guild-application__date">{{ application.date | date: 'short' }}</time>
-                    </div>
-
-                    <div class="guild-application__actions">
-                        <button nbButton ghost size="small" status="success" type="button" tabindex="-1">
-                            <span i18n="@@wow.guild.applications.accept">Accept</span>
-                        </button>
-                        <button nbButton ghost size="small" status="danger" type="button" tabindex="-1">
-                            <span i18n="@@wow.guild.applications.reject">Reject</span>
-                        </button>
-                    </div>
-                </li>
-            }
-        </ul>
-    </nb-card-body>
-</nb-card>
+                <div class="guild-application__actions">
+                    <button class="preview-chrome__action preview-chrome__action--success" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.applications.accept">Accept</span>
+                    </button>
+                    <button class="preview-chrome__action preview-chrome__action--danger" type="button" tabindex="-1">
+                        <span i18n="@@wow.guild.applications.reject">Reject</span>
+                    </button>
+                </div>
+            </li>
+        }
+    </ul>
+</section>

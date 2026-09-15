@@ -134,10 +134,8 @@ export class CharacterSummary {
         return this.guildName ? `${this.guildName}#${this.guildDiscriminator}` : null;
     }
 
-    /** Specless characters still deserve a crest, so fall back to the class emblem. */
     public emblem(): { kind: WowIconKind; slug: string | null } {
-        const key = this.specKey();
-        return key ? { kind: "spec", slug: key } : { kind: "class", slug: this.className };
+        return { kind: "class", slug: this.className };
     }
 
     public specKey(): string | null {

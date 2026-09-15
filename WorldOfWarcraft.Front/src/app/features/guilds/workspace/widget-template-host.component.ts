@@ -22,12 +22,13 @@ import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/c
 import { GuildSheet } from "@features/guilds/models/guild.model";
 import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guild";
 import {
-    WORKSPACE_PREVIEW_APPLY_CANDIDATES,
     WORKSPACE_PREVIEW_GUILD_LINKS,
+    WORKSPACE_PREVIEW_GUILD_MEMBERS,
     WORKSPACE_PREVIEW_GUILD_PHOTOS,
     WORKSPACE_PREVIEW_GUILD_VIDEOS,
 } from "@features/guilds/workspace/preview-guild-data";
 import { WorkspacePreviewApplicationsComponent } from "@features/guilds/workspace/workspace-preview-applications.component";
+import { WorkspacePreviewApplyComponent } from "@features/guilds/workspace/workspace-preview-apply.component";
 import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/workspace-preview-wall.component";
 
 /** Declares every WoW widget template for the guild page and the workspace editor. */
@@ -48,6 +49,7 @@ import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/worksp
         WidgetDefDirective,
         WidgetSettingsDefDirective,
         WorkspacePreviewApplicationsComponent,
+        WorkspacePreviewApplyComponent,
         WorkspacePreviewWallComponent,
     ],
     templateUrl: "./widget-template-host.component.html",
@@ -55,7 +57,7 @@ import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/worksp
 })
 export class WowGuildWidgetTemplateHostComponent {
     public readonly preview = input(false);
-    public readonly guild = input.required<GuildSheet>();
+    public readonly guild = input<GuildSheet | null>(null);
     public readonly editing = input(false);
 
     /** The visitor's own player, which the wall needs to tell their posts from the others. */
@@ -82,11 +84,12 @@ export class WowGuildWidgetTemplateHostComponent {
     /** Anything that changed the roster: a review, a moderation decision, a departure. */
     public readonly rosterChanged = output<void>();
 
-    protected readonly view = computed(() => (this.preview() ? WORKSPACE_PREVIEW_GUILD : this.guild()));
+    protected readonly view = computed(() => this.preview() ? WORKSPACE_PREVIEW_GUILD : this.guild()!);
 
     protected readonly emptyGalleryLabel = $localize`:@@wow.guild.widget.media.empty:Nothing here yet.`;
     protected readonly sheetWallMessage = $localize`:@@wow.guild.sheetWall:Create your player profile to apply to this guild.`;
-    protected readonly previewApplyCandidates = WORKSPACE_PREVIEW_APPLY_CANDIDATES;
+    protected readonly previewMembers = WORKSPACE_PREVIEW_GUILD_MEMBERS;
+    protected readonly previewViewerRank = WORKSPACE_PREVIEW_GUILD.viewerRank;
     protected readonly previewLinks = WORKSPACE_PREVIEW_GUILD_LINKS;
     protected readonly previewLinksEmpty = $localize`:@@wow.links.empty:No link shared yet.`;
     protected readonly previewPhotos = WORKSPACE_PREVIEW_GUILD_PHOTOS;

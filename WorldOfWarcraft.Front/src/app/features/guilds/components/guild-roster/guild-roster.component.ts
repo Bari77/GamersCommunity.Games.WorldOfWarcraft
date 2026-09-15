@@ -8,7 +8,6 @@ import {
     GuildMember,
     guildRankWeight,
 } from "@features/guilds/models/guild.model";
-import { NbButtonModule } from "@nebular/theme";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 
@@ -20,7 +19,7 @@ export interface RankChange {
 @Component({
     standalone: true,
     selector: "wow-guild-roster",
-    imports: [RouterLink, GameTermPipe, NbButtonModule, SkeletonComponent, WowIconComponent],
+    imports: [RouterLink, GameTermPipe, SkeletonComponent, WowIconComponent],
     templateUrl: "./guild-roster.component.html",
     styleUrl: "./guild-roster.component.scss",
 })
@@ -29,6 +28,12 @@ export class GuildRosterComponent {
     public readonly viewerRank = input<string | null>(null);
     public readonly loading = input(false);
     public readonly busy = input(false);
+
+    /**
+     * The layout editor has no router. Turning this off keeps the handle visible without
+     * exploding the card on a missing `Router` provider.
+     */
+    public readonly navigable = input(true);
 
     /** Public ids of the visitor's own characters, the ones they may make leave the guild. */
     public readonly myCharacterPublicIds = input<string[]>([]);
