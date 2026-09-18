@@ -1,4 +1,5 @@
 using GamersCommunity.Core.Exceptions;
+using GamersCommunity.Core.Html;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
@@ -230,9 +231,9 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
 
         // Widgets edit one field at a time, and an empty value sent on purpose clears it.
         if (sent.Contains(nameof(PlayerUpdateRequest.PresentationIrl)))
-            target.PresentationIrl = Normalize(request.PresentationIrl);
+            target.PresentationIrl = NormalizePresentation(request.PresentationIrl);
         if (sent.Contains(nameof(PlayerUpdateRequest.PresentationIg)))
-            target.PresentationIg = Normalize(request.PresentationIg);
+            target.PresentationIg = NormalizePresentation(request.PresentationIg);
         if (sent.Contains(nameof(PlayerUpdateRequest.NbMount)))
             target.NbMount = ValidateCount(request.NbMount, MaxMounts, "Mount count");
         if (sent.Contains(nameof(PlayerUpdateRequest.SuccessPoints)))
@@ -275,16 +276,13 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
         return layoutJson;
     }
 
-    private static string? Normalize(string? value)
+    private static string? NormalizePresentation(string? value)
     {
-        if (string.IsNullOrWhiteSpace(value))
-            return null;
-
-        var text = value.Trim();
-        if (text.Length > MaxPresentationLength)
+        var html = RichHtml.SanitizeOptional(value);
+        if (html != null && html.Length > MaxPresentationLength)
             throw new BadRequestException("VALIDATION", $"Text must be at most {MaxPresentationLength} characters");
 
-        return text;
+        return html;
     }
 
     private static int ValidateCount(int? value, int max, string label)

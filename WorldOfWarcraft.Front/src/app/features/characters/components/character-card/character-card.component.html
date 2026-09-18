@@ -93,7 +93,7 @@
     }
 
     @if (item.sentence) {
-        <p class="character-card__sentence">{{ item.sentence }}</p>
+        <gc-rich-content class="character-card__sentence" [html]="item.sentence" />
     }
 
     @if (editable()) {

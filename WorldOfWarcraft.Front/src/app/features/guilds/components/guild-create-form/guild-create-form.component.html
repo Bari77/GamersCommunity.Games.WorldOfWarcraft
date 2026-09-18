@@ -57,16 +57,14 @@
 
     <div class="guild-create__field">
         <label for="guild-sentence" i18n="@@wow.guild.form.sentence">Catchphrase</label>
-        <textarea
+        <gc-rich-editor
             id="guild-sentence"
-            nbInput
-            fullWidth
-            rows="2"
-            maxlength="255"
-            [ngModel]="sentence()"
-            (ngModelChange)="sentence.set($event)"
-            [ngModelOptions]="{ standalone: true }"
-        ></textarea>
+            [compact]="true"
+            [maxLength]="255"
+            [placeholder]="sentencePlaceholder"
+            [value]="sentence()"
+            (valueChange)="sentence.set($event)"
+        />
     </div>
 
     <p class="guild-create__hint" i18n="@@wow.guild.form.linksLater">

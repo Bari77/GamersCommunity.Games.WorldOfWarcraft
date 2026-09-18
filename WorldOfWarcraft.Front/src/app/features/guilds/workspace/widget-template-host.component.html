@@ -1,6 +1,6 @@
 <ng-template gcWidget="guild-presentation">
     @if (view().sentence) {
-        <p class="widget-host__sentence">{{ view().sentence }}</p>
+        <gc-rich-content class="widget-host__sentence" [html]="view().sentence" />
     } @else {
         <p class="widget-host__empty" i18n="@@wow.guild.noSentence">
             This guild has not written a presentation yet.

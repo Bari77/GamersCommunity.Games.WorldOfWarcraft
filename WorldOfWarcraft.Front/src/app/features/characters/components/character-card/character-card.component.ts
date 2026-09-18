@@ -3,6 +3,7 @@ import { Component, computed, input, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { Character } from "@features/characters/models/character.model";
 import { roleLabel, specKey, specRole } from "@features/characters/models/spec-roles";
+import { RichContentComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
@@ -11,7 +12,16 @@ import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component
 @Component({
     standalone: true,
     selector: "wow-character-card",
-    imports: [DatePipe, GameTermPipe, GuildCrestComponent, NbButtonModule, NbIconModule, RouterLink, WowIconComponent],
+    imports: [
+        DatePipe,
+        GameTermPipe,
+        GuildCrestComponent,
+        RichContentComponent,
+        NbButtonModule,
+        NbIconModule,
+        RouterLink,
+        WowIconComponent,
+    ],
     templateUrl: "./character-card.component.html",
     styleUrl: "./character-card.component.scss",
 })

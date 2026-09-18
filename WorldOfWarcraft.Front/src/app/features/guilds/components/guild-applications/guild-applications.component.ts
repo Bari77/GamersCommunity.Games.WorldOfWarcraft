@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, inject, input, OnInit, output } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { RichContentComponent, SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { GuildApplicationsStore } from "@features/guilds/stores/guild-applications.store";
 import { NbButtonModule, NbCardModule } from "@nebular/theme";
@@ -18,6 +18,7 @@ import { GameTermPipe } from "@shared/pipes/game-term.pipe";
         NbCardModule,
         SkeletonComponent,
         SkeletonTextComponent,
+        RichContentComponent,
     ],
     providers: [GuildApplicationsStore],
     templateUrl: "./guild-applications.component.html",

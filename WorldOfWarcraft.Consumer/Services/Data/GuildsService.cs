@@ -1,5 +1,6 @@
 using GamersCommunity.Core.Enums;
 using GamersCommunity.Core.Exceptions;
+using GamersCommunity.Core.Html;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
@@ -625,8 +626,16 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         throw new BadRequestException("VALIDATION", "Guild public id is required");
     }
 
-    private static string? Normalize(string? value) =>
-        string.IsNullOrWhiteSpace(value) ? null : value.Trim();
+    private const int MaxSentenceLength = 255;
+
+    private static string? Normalize(string? value)
+    {
+        var html = RichHtml.SanitizeOptional(value);
+        if (html != null && html.Length > MaxSentenceLength)
+            throw new BadRequestException("VALIDATION", $"Catchphrase must be at most {MaxSentenceLength} characters");
+
+        return html;
+    }
 
     private static int ValidateLevel(int? level)
     {

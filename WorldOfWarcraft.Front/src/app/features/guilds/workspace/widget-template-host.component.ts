@@ -1,5 +1,6 @@
 import { DatePipe } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
+import { RichContentComponent } from "@bari77/gc-ui";
 import {
     GcGalleryItem,
     LinkListComponent,
@@ -46,6 +47,7 @@ import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/worksp
         GuildWallComponent,
         LinkListComponent,
         MediaGalleryComponent,
+        RichContentComponent,
         WidgetDefDirective,
         WidgetSettingsDefDirective,
         WorkspacePreviewApplicationsComponent,

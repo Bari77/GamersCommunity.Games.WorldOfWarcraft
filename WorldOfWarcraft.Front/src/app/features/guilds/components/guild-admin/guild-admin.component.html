@@ -4,16 +4,14 @@
         <form class="guild-admin" (ngSubmit)="submit()">
             <div class="guild-admin__field">
                 <label for="guild-admin-sentence" i18n="@@wow.guild.form.sentence">Catchphrase</label>
-                <textarea
+                <gc-rich-editor
                     id="guild-admin-sentence"
-                    nbInput
-                    fullWidth
-                    rows="2"
-                    maxlength="255"
-                    [ngModel]="sentence()"
-                    (ngModelChange)="sentence.set($event)"
-                    [ngModelOptions]="{ standalone: true }"
-                ></textarea>
+                    [compact]="true"
+                    [maxLength]="255"
+                    [placeholder]="sentencePlaceholder"
+                    [value]="sentence()"
+                    (valueChange)="sentence.set($event)"
+                />
             </div>
 
             <div class="guild-admin__grid">

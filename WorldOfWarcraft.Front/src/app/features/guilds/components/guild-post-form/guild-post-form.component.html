@@ -1,14 +1,10 @@
 <form class="guild-post-form" (ngSubmit)="submit()">
-    <textarea
-        nbInput
-        fullWidth
-        rows="3"
-        maxlength="2000"
+    <gc-rich-editor
+        [value]="body()"
+        (valueChange)="body.set($event)"
         [placeholder]="bodyPlaceholder"
-        [ngModel]="body()"
-        (ngModelChange)="body.set($event)"
-        [ngModelOptions]="{ standalone: true }"
-    ></textarea>
+        [maxLength]="4000"
+    />
 
     <input
         nbInput
@@ -78,11 +74,11 @@
             <button nbButton ghost status="basic" type="button" [disabled]="saving()" (click)="cancel.emit()">
                 <span i18n="@@wow.guild.form.cancel">Cancel</span>
             </button>
-            <button nbButton status="primary" type="submit" [disabled]="saving() || !body().trim()">
+            <button nbButton status="primary" type="submit" [disabled]="saving() || isBodyBlank()">
                 <span i18n="@@wow.guild.wall.saveEdit">Save changes</span>
             </button>
         } @else {
-            <button nbButton status="primary" type="submit" [disabled]="saving() || !body().trim()">
+            <button nbButton status="primary" type="submit" [disabled]="saving() || isBodyBlank()">
                 <span i18n="@@wow.guild.wall.publish">Publish</span>
             </button>
         }

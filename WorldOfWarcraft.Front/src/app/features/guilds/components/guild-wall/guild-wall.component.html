@@ -36,7 +36,7 @@
                                     (cancel)="cancelEdit()"
                                 />
                             } @else {
-                                <p class="guild-post__body">{{ post.body }}</p>
+                                <gc-rich-content class="guild-post__body" [html]="post.body" />
                                 @if (post.mediaUrl) {
                                     <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
                                 }
@@ -128,7 +128,7 @@
                                 (cancel)="cancelEdit()"
                             />
                         } @else {
-                            <p class="guild-post__body">{{ post.body }}</p>
+                            <gc-rich-content class="guild-post__body" [html]="post.body" />
                             @if (post.mediaUrl) {
                                 <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
                             }

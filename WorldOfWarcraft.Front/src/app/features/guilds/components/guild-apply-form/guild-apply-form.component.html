@@ -37,16 +37,14 @@
 
                 <div class="guild-apply__field">
                     <label for="guild-apply-message" i18n="@@wow.guild.apply.message">Message</label>
-                    <textarea
+                    <gc-rich-editor
                         id="guild-apply-message"
-                        nbInput
-                        fullWidth
-                        rows="3"
-                        maxlength="1000"
-                        [ngModel]="message()"
-                        (ngModelChange)="message.set($event)"
-                        [ngModelOptions]="{ standalone: true }"
-                    ></textarea>
+                        [compact]="true"
+                        [maxLength]="1000"
+                        [placeholder]="messagePlaceholder"
+                        [value]="message()"
+                        (valueChange)="message.set($event)"
+                    />
                 </div>
 
                 @if (errorCode(); as code) {

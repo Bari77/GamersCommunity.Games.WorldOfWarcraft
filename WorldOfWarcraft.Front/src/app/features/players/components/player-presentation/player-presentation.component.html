@@ -1,14 +1,11 @@
 @if (editing()) {
     <div class="presentation__form">
-        <textarea
-            nbInput
-            fullWidth
-            rows="5"
-            maxlength="4000"
-            [ngModel]="draft()"
-            (ngModelChange)="draft.set($event)"
-            [ngModelOptions]="{ standalone: true }"
-        ></textarea>
+        <gc-rich-editor
+            [value]="draft()"
+            (valueChange)="draft.set($event)"
+            [maxLength]="4000"
+            [placeholder]="editorPlaceholder"
+        />
         <div class="presentation__actions">
             <button nbButton ghost size="small" status="basic" (click)="editing.set(false)">
                 <span i18n="@@wow.player.presentation.cancel">Cancel</span>
@@ -20,7 +17,7 @@
     </div>
 } @else {
     @if (text()) {
-        <p class="presentation__text">{{ text() }}</p>
+        <gc-rich-content class="presentation__text" [html]="text()" />
     } @else {
         <p class="presentation__empty" i18n="@@wow.player.noPresentation">
             This player has not written a presentation yet.

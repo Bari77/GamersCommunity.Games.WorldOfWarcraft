@@ -2,6 +2,7 @@ import { Component, computed, effect, input, output, signal, untracked } from "@
 import { FormsModule } from "@angular/forms";
 import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
 import { Character, CharacterOptions } from "@features/characters/models/character.model";
+import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbCheckboxModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
@@ -33,6 +34,7 @@ function changedFields<T extends object>(filled: T, stored: T): Partial<T> {
         NbInputModule,
         NbSelectModule,
         WowIconComponent,
+        RichEditorComponent,
     ],
     templateUrl: "./character-form.component.html",
     styleUrl: "./character-form.component.scss",
@@ -58,6 +60,8 @@ export class CharacterFormComponent {
     public readonly level = signal<number | null>(1);
     public readonly ilvl = signal<number | null>(0);
     public readonly achievement = signal<number | null>(0);
+    protected readonly sentencePlaceholder = $localize`:@@wow.character.form.sentencePlaceholder:Character catchphrase…`;
+
     public readonly sentence = signal("");
     public readonly main = signal(false);
 
@@ -133,7 +137,7 @@ export class CharacterFormComponent {
             level: this.level() ?? 1,
             ilvl: this.ilvl() ?? 0,
             achievement: this.achievement() ?? 0,
-            sentence: this.sentence().trim() || null,
+            sentence: isRichHtmlBlank(this.sentence()) ? null : this.sentence(),
             main: this.main(),
             idRace: this.idRace()!,
             idServer: this.idServer()!,

@@ -1,5 +1,6 @@
 using GamersCommunity.Core.Enums;
 using GamersCommunity.Core.Exceptions;
+using GamersCommunity.Core.Html;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
@@ -54,8 +55,8 @@ public class GuildApplicationsService(
         var caller = await CallerAuth.RequirePlayerAsync(_context, message, ct);
         await sanctions.EnsureCanPublishAsync(message, ct);
 
-        var text = (request.Message ?? "").Trim();
-        if (text.Length == 0)
+        var text = RichHtml.SanitizeRequired(request.Message);
+        if (text is null)
             throw new BadRequestException("VALIDATION", "An application message is required");
         if (text.Length > MaxMessageLength)
             throw new BadRequestException("MESSAGE_TOO_LONG", $"Message cannot exceed {MaxMessageLength} characters");

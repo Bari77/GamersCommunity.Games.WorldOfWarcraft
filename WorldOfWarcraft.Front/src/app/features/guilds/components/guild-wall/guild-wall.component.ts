@@ -1,7 +1,7 @@
 import { DatePipe } from "@angular/common";
 import { Component, inject, input, OnInit, output, signal, viewChild } from "@angular/core";
 import { RouterLink } from "@angular/router";
-import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { RichContentComponent, SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
 import { GuildPostFormComponent } from "@features/guilds/components/guild-post-form/guild-post-form.component";
 import { GamePost } from "@features/guilds/models/game-post.model";
 import { postVisibilityLabel } from "@features/guilds/models/post-visibility";
@@ -19,6 +19,7 @@ import { NbButtonModule, NbCardModule } from "@nebular/theme";
         NbCardModule,
         SkeletonComponent,
         SkeletonTextComponent,
+        RichContentComponent,
     ],
     providers: [GuildWallStore],
     templateUrl: "./guild-wall.component.html",

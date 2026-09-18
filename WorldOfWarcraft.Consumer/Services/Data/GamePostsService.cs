@@ -1,5 +1,6 @@
 using GamersCommunity.Core.Enums;
 using GamersCommunity.Core.Exceptions;
+using GamersCommunity.Core.Html;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
@@ -114,11 +115,7 @@ public class GamePostsService(
         var caller = await CallerAuth.RequirePlayerAsync(_context, message, ct);
         await sanctions.EnsureCanPublishAsync(message, ct);
 
-        var body = (request.Body ?? "").Trim();
-        if (body.Length == 0)
-            throw new BadRequestException("VALIDATION", "Post body is required");
-        if (body.Length > MaxBodyLength)
-            throw new BadRequestException("BODY_TOO_LONG", $"Post cannot exceed {MaxBodyLength} characters");
+        var body = NormalizePostBody(request.Body);
 
         var guildId = await RequireGuildIdAsync(request.GuildPublicId, ct);
         var standing = await GuildAuth.RequireStandingAsync(
@@ -174,11 +171,7 @@ public class GamePostsService(
 
         await sanctions.EnsureCanPublishAsync(message, ct);
 
-        var body = (request.Body ?? "").Trim();
-        if (body.Length == 0)
-            throw new BadRequestException("VALIDATION", "Post body is required");
-        if (body.Length > MaxBodyLength)
-            throw new BadRequestException("BODY_TOO_LONG", $"Post cannot exceed {MaxBodyLength} characters");
+        var body = NormalizePostBody(request.Body);
 
         // The edit form carries the whole post, so every field is replaced rather than patched.
         post.Body = body;
@@ -371,6 +364,17 @@ public class GamePostsService(
 
     private async Task<GamePostDto> ToDtoAsync(int postId, CancellationToken ct) =>
         await Project(_context.GamePosts.AsNoTracking().Where(p => p.Id == postId)).FirstAsync(ct);
+
+    private static string NormalizePostBody(string? raw)
+    {
+        var body = RichHtml.SanitizeRequired(raw);
+        if (body is null)
+            throw new BadRequestException("VALIDATION", "Post body is required");
+        if (body.Length > MaxBodyLength)
+            throw new BadRequestException("BODY_TOO_LONG", $"Post cannot exceed {MaxBodyLength} characters");
+
+        return body;
+    }
 
     private static string? Normalize(string? value) =>
         string.IsNullOrWhiteSpace(value) ? null : value.Trim();

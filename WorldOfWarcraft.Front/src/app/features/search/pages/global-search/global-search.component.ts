@@ -2,7 +2,7 @@ import { Component, computed, DestroyRef, inject, OnInit, resource, signal } fro
 import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, ParamMap, Router, RouterLink } from "@angular/router";
-import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { SkeletonComponent, SkeletonTextComponent, stripRichHtmlPlainText } from "@bari77/gc-ui";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { CharacterOptions } from "@features/characters/models/character.model";
 import { CharactersService } from "@features/characters/services/characters.service";
@@ -150,6 +150,14 @@ export class GlobalSearchComponent implements OnInit {
             idClass: readNumber(params.get("class")),
             minLevel: readNumber(params.get("level")),
         };
+    }
+
+    protected plainText(value: string | null | undefined): string {
+        return stripRichHtmlPlainText(value ?? "");
+    }
+
+    protected plainPresentation(value: string | null | undefined): string {
+        return this.plainText(value);
     }
 
     private patchCriteria(patch: Record<string, string | number | null>): void {

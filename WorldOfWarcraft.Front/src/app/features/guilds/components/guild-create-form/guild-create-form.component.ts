@@ -3,13 +3,14 @@ import { FormsModule } from "@angular/forms";
 import { Character } from "@features/characters/models/character.model";
 import { GuildCreateRequestDto } from "@features/guilds/dto/guild.dto";
 import { GUILD_ORIENTATION_OPTIONS, GUILD_ORIENTATION_PVE } from "@features/guilds/models/guild-orientation";
+import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 
 @Component({
     standalone: true,
     selector: "wow-guild-create-form",
-    imports: [FormsModule, GameTermPipe, NbButtonModule, NbInputModule, NbSelectModule],
+    imports: [FormsModule, GameTermPipe, RichEditorComponent, NbButtonModule, NbInputModule, NbSelectModule],
     templateUrl: "./guild-create-form.component.html",
     styleUrl: "./guild-create-form.component.scss",
 })
@@ -25,6 +26,8 @@ export class GuildCreateFormComponent {
 
     public readonly create = output<GuildCreateRequestDto>();
     public readonly cancel = output<void>();
+
+    protected readonly sentencePlaceholder = $localize`:@@wow.guild.form.sentencePlaceholder:Guild catchphrase…`;
 
     protected readonly entitled = signal("");
     protected readonly founderPublicId = signal<string | null>(null);
@@ -65,7 +68,7 @@ export class GuildCreateFormComponent {
         this.create.emit({
             entitled: this.entitled().trim(),
             founderCharacterPublicId: this.founderPublicId()!,
-            sentence: this.sentence().trim() || null,
+            sentence: isRichHtmlBlank(this.sentence()) ? null : this.sentence(),
             orientation: this.orientation(),
         });
     }

@@ -56,7 +56,7 @@
                             }
 
                             @if (application.message) {
-                                <p class="guild-application__message">{{ application.message }}</p>
+                                <gc-rich-content class="guild-application__message" [html]="application.message" />
                             }
 
                             <time class="guild-application__date">{{ application.creationDate | date: "short" }}</time>

@@ -191,15 +191,14 @@
 
     <div class="character-form__field character-form__field--wide">
         <label for="character-sentence" i18n="@@wow.character.form.sentence">Catchphrase</label>
-        <textarea
+        <gc-rich-editor
             id="character-sentence"
-            nbInput
-            fullWidth
-            rows="2"
-            [ngModel]="sentence()"
-            (ngModelChange)="sentence.set($event)"
-            [ngModelOptions]="{ standalone: true }"
-        ></textarea>
+            [compact]="true"
+            [maxLength]="500"
+            [placeholder]="sentencePlaceholder"
+            [value]="sentence()"
+            (valueChange)="sentence.set($event)"
+        />
     </div>
 
     <nb-checkbox [checked]="main()" (checkedChange)="main.set($event)">

@@ -4,6 +4,7 @@ import { GuildCrestEditorComponent } from "@features/guilds/components/guild-cre
 import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
 import { GUILD_ORIENTATION_OPTIONS, GUILD_ORIENTATION_PVE } from "@features/guilds/models/guild-orientation";
 import { GuildSheet } from "@features/guilds/models/guild.model";
+import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbCardModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GuildCrest } from "@shared/models/guild-crest";
 
@@ -17,6 +18,7 @@ import { GuildCrest } from "@shared/models/guild-crest";
         NbCardModule,
         NbInputModule,
         NbSelectModule,
+        RichEditorComponent,
     ],
     templateUrl: "./guild-admin.component.html",
     styleUrl: "./guild-admin.component.scss",
@@ -28,6 +30,8 @@ export class GuildAdminComponent {
 
     public readonly save = output<GuildUpdateRequestDto>();
     public readonly disband = output<string>();
+
+    protected readonly sentencePlaceholder = $localize`:@@wow.guild.form.sentencePlaceholder:Guild catchphrase…`;
 
     protected readonly sentence = signal("");
     protected readonly level = signal(1);
@@ -66,7 +70,7 @@ export class GuildAdminComponent {
         const sheet = this.sheet();
         const request: GuildUpdateRequestDto = {};
 
-        const sentence = this.sentence().trim() || null;
+        const sentence = isRichHtmlBlank(this.sentence()) ? null : this.sentence();
         if (sentence !== sheet.sentence) {
             request.sentence = sentence;
         }

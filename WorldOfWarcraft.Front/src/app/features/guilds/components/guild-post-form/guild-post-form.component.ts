@@ -4,13 +4,14 @@ import { GamePost } from "@features/guilds/models/game-post.model";
 import { GUILD_RANK_MEMBER } from "@features/guilds/models/guild.model";
 import { POST_VISIBILITY_OPTIONS } from "@features/guilds/models/post-visibility";
 import { GamePostDraft } from "@features/guilds/stores/guild-wall.store";
+import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 
 /** The three fields of a wall post, used both to publish a new one and to rewrite an existing one. */
 @Component({
     standalone: true,
     selector: "wow-guild-post-form",
-    imports: [FormsModule, NbButtonModule, NbInputModule, NbSelectModule],
+    imports: [FormsModule, RichEditorComponent, NbButtonModule, NbInputModule, NbSelectModule],
     templateUrl: "./guild-post-form.component.html",
     styleUrl: "./guild-post-form.component.scss",
 })
@@ -54,9 +55,13 @@ export class GuildPostFormComponent {
         this.visibility.set(GUILD_RANK_MEMBER);
     }
 
+    protected isBodyBlank(): boolean {
+        return isRichHtmlBlank(this.body());
+    }
+
     protected submit(): void {
-        const body = this.body().trim();
-        if (!body || this.saving()) {
+        const body = this.body();
+        if (isRichHtmlBlank(body) || this.saving()) {
             return;
         }
 

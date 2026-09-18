@@ -2,7 +2,8 @@ import { Component, computed, effect, input, output, signal, untracked } from "@
 import { FormsModule } from "@angular/forms";
 import { Character } from "@features/characters/models/character.model";
 import { APPLICATION_PENDING } from "@features/guilds/models/guild-application.model";
-import { NbButtonModule, NbCardModule, NbInputModule, NbSelectModule } from "@nebular/theme";
+import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
+import { NbButtonModule, NbCardModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 
 export interface GuildApplicationDraft {
@@ -13,7 +14,7 @@ export interface GuildApplicationDraft {
 @Component({
     standalone: true,
     selector: "wow-guild-apply-form",
-    imports: [FormsModule, GameTermPipe, NbButtonModule, NbCardModule, NbInputModule, NbSelectModule],
+    imports: [FormsModule, GameTermPipe, RichEditorComponent, NbButtonModule, NbCardModule, NbSelectModule],
     templateUrl: "./guild-apply-form.component.html",
     styleUrl: "./guild-apply-form.component.scss",
 })
@@ -35,7 +36,11 @@ export class GuildApplyFormComponent {
     protected readonly characterPublicId = signal<string | null>(null);
     protected readonly message = signal("");
 
-    protected readonly canApply = computed(() => !this.saving() && this.characterPublicId() !== null);
+    protected readonly messagePlaceholder = $localize`:@@wow.guild.apply.messagePlaceholder:Introduce yourself to the officers…`;
+
+    protected readonly canApply = computed(
+        () => !this.saving() && this.characterPublicId() !== null && !isRichHtmlBlank(this.message()),
+    );
 
     public constructor() {
         effect(() => {
@@ -57,7 +62,7 @@ export class GuildApplyFormComponent {
 
         this.apply.emit({
             characterPublicId: this.characterPublicId()!,
-            message: this.message().trim(),
+            message: this.message(),
         });
     }
 }

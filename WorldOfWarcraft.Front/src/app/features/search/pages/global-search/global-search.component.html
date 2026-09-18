@@ -164,7 +164,7 @@
                                 <span i18n="@@wow.search.memberCount">members</span>
                             </p>
                             @if (guild.sentence) {
-                                <p class="search-hit__sentence">{{ guild.sentence }}</p>
+                                <p class="search-hit__sentence">{{ plainText(guild.sentence) }}</p>
                             }
                         </li>
                     }
@@ -237,7 +237,7 @@
                                 <span i18n="@@wow.search.characterCount">characters</span>
                             </p>
                             @if (player.presentationIrl) {
-                                <p class="search-hit__sentence">{{ player.presentationIrl }}</p>
+                                <p class="search-hit__sentence">{{ plainPresentation(player.presentationIrl) }}</p>
                             }
                         </li>
                     }
