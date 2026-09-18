@@ -1,4 +1,5 @@
-﻿using GamersCommunity.Core.Exceptions;
+﻿using GamersCommunity.Core.Database;
+using GamersCommunity.Core.Exceptions;
 using GamersCommunity.Core.Logging;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Services;
@@ -63,7 +64,7 @@ namespace WorldOfWarcraft.Consumer
                         {
                             var connectionString = context.Configuration.GetConnectionString("Database")
                                 ?? throw new InvalidOperationException("Connection string 'Database' is missing.");
-                            options.UseSqlServer(connectionString);
+                            options.UseGamersCommunitySqlServer(connectionString);
                         });
 
                         // Register application services
@@ -88,7 +89,12 @@ namespace WorldOfWarcraft.Consumer
 
                 var host = builder.Build();
 
-                await ApplyDatabaseMigrationsAsync(host.Services);
+                await host.Services.ApplyMigrationsWithRetryAsync<WorldOfWarcraftDbContext>(
+                    afterMigrate: async (db, sp, _) =>
+                    {
+                        var seedLogger = sp.GetRequiredService<ILoggerFactory>().CreateLogger("ReferenceDataSeed");
+                        await ReferenceDataSeed.EnsureAsync(db, seedLogger);
+                    });
 
                 var environment = host.Services.GetRequiredService<IHostEnvironment>();
 
@@ -108,18 +114,6 @@ namespace WorldOfWarcraft.Consumer
             {
                 Log.Information("Stopped ...");
             }
-        }
-
-        private static async Task ApplyDatabaseMigrationsAsync(IServiceProvider services)
-        {
-            using var scope = services.CreateScope();
-            var dbContext = scope.ServiceProvider.GetRequiredService<WorldOfWarcraftDbContext>();
-            await dbContext.Database.MigrateAsync();
-            Log.Information("Database migrations applied.");
-            var seedLogger = scope.ServiceProvider
-                .GetRequiredService<Microsoft.Extensions.Logging.ILoggerFactory>()
-                .CreateLogger("ReferenceDataSeed");
-            await ReferenceDataSeed.EnsureAsync(dbContext, seedLogger);
         }
     }
 }
