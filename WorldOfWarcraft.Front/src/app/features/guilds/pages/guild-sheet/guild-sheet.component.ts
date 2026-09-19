@@ -56,7 +56,7 @@ export class GuildSheetComponent implements OnInit {
     protected readonly store = inject(GuildSheetStore);
     protected readonly membership = inject(GameMembershipStore);
 
-    /** The page belongs to the leader; officers keep the settings and the moderation. */
+    /** The page belongs to the leader; officers still get the pencil and the gear. */
     protected readonly canEditLayout = computed(() => this.store.isLeader());
 
     protected readonly editing = signal(false);
