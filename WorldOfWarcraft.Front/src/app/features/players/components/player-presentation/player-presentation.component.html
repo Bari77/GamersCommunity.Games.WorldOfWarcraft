@@ -7,7 +7,7 @@
             [placeholder]="editorPlaceholder"
         />
         <div class="presentation__actions">
-            <button nbButton ghost size="small" status="basic" (click)="editing.set(false)">
+            <button nbButton ghost size="small" status="basic" (click)="cancel.emit()">
                 <span i18n="@@wow.player.presentation.cancel">Cancel</span>
             </button>
             <button nbButton size="small" status="primary" [disabled]="saving()" (click)="submit()">
@@ -15,19 +15,10 @@
             </button>
         </div>
     </div>
+} @else if (text()) {
+    <gc-rich-content class="presentation__text" [html]="text()" />
 } @else {
-    @if (text()) {
-        <gc-rich-content class="presentation__text" [html]="text()" />
-    } @else {
-        <p class="presentation__empty" i18n="@@wow.player.noPresentation">
-            This player has not written a presentation yet.
-        </p>
-    }
-
-    @if (canEdit()) {
-        <button class="presentation__edit" nbButton ghost size="small" status="basic" (click)="open()">
-            <nb-icon icon="edit-2-outline"></nb-icon>
-            <span i18n="@@wow.player.presentation.edit">Edit</span>
-        </button>
-    }
+    <p class="presentation__empty" i18n="@@wow.player.noPresentation">
+        This player has not written a presentation yet.
+    </p>
 }

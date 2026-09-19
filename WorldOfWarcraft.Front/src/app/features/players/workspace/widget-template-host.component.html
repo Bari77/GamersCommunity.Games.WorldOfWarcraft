@@ -16,30 +16,33 @@
     }
 </ng-template>
 
-<ng-template gcWidget="presentation-irl">
+<ng-template gcWidget="presentation-irl" gcWidgetEditable let-editingData="editingData" let-stopDataEdit="stopDataEdit">
     <wow-player-presentation
         [text]="view().presentationIrl"
-        [canEdit]="canEditFields()"
+        [editing]="canEditFields() && !!editingData"
         [saving]="savingField()"
         (save)="saveField.emit({ presentationIrl: $event })"
+        (cancel)="stopDataEdit?.()"
     />
 </ng-template>
 
-<ng-template gcWidget="presentation-ig">
+<ng-template gcWidget="presentation-ig" gcWidgetEditable let-editingData="editingData" let-stopDataEdit="stopDataEdit">
     <wow-player-presentation
         [text]="view().presentationIg"
-        [canEdit]="canEditFields()"
+        [editing]="canEditFields() && !!editingData"
         [saving]="savingField()"
         (save)="saveField.emit({ presentationIg: $event })"
+        (cancel)="stopDataEdit?.()"
     />
 </ng-template>
 
-<ng-template gcWidget="stats">
+<ng-template gcWidget="stats" gcWidgetEditable let-editingData="editingData" let-stopDataEdit="stopDataEdit">
     <wow-player-stats
         [sheet]="view()"
-        [canEdit]="canEditFields()"
+        [editing]="canEditFields() && !!editingData"
         [saving]="savingField()"
         (save)="saveField.emit($event)"
+        (cancel)="stopDataEdit?.()"
     />
 </ng-template>
 

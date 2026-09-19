@@ -34,7 +34,7 @@
         </div>
 
         <div class="stats__actions">
-            <button nbButton ghost size="small" status="basic" (click)="editing.set(false)">
+            <button nbButton ghost size="small" status="basic" (click)="cancel.emit()">
                 <span i18n="@@wow.player.presentation.cancel">Cancel</span>
             </button>
             <button nbButton size="small" status="primary" [disabled]="saving()" (click)="submit()">
@@ -59,11 +59,4 @@
             </li>
         }
     </ul>
-
-    @if (canEdit()) {
-        <button class="stats__edit" nbButton ghost size="small" status="basic" (click)="open()">
-            <nb-icon icon="edit-2-outline"></nb-icon>
-            <span i18n="@@wow.player.presentation.edit">Edit</span>
-        </button>
-    }
 }
