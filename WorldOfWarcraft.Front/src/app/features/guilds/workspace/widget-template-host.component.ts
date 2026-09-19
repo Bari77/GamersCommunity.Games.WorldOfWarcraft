@@ -7,7 +7,6 @@ import {
     MediaGalleryComponent,
     WidgetDefDirective,
     WidgetSettings,
-    WidgetSettingsDefDirective,
 } from "@bari77/gc-widgets";
 import { Character } from "@features/characters/models/character.model";
 import { GuildApplicationsComponent } from "@features/guilds/components/guild-applications/guild-applications.component";
@@ -49,7 +48,6 @@ import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/worksp
         MediaGalleryComponent,
         RichContentComponent,
         WidgetDefDirective,
-        WidgetSettingsDefDirective,
         WorkspacePreviewApplicationsComponent,
         WorkspacePreviewApplyComponent,
         WorkspacePreviewWallComponent,

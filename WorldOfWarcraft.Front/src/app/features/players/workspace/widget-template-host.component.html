@@ -62,23 +62,37 @@
     }
 </ng-template>
 
-<ng-template gcWidget="photos">
+<ng-template gcWidget="gc-links" gcWidgetEditable let-editingData="editingData">
+    @if (preview()) {
+        <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
+    } @else if (canEditFields() && editingData) {
+        <wow-link-admin [playerPublicId]="view().publicId" />
+    } @else {
+        <wow-link-board [playerPublicId]="view().publicId" />
+    }
+</ng-template>
+
+<ng-template gcWidget="photos" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <gc-media-gallery kind="photo" [items]="previewPhotos" [emptyLabel]="previewPhotosEmpty" />
+    } @else if (canEditFields() && editingData) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="photo" />
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="photo" />
     }
 </ng-template>
 
-<ng-template gcWidget="videos">
+<ng-template gcWidget="videos" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <gc-media-gallery kind="video" [items]="previewVideos" [emptyLabel]="previewVideosEmpty" />
+    } @else if (canEditFields() && editingData) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="video" />
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="video" />
     }
 </ng-template>
 
-<ng-template gcWidget="streams">
+<ng-template gcWidget="streams" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <div class="widget-host__streams">
             @for (stream of previewStreams; track stream.url) {
@@ -90,39 +104,9 @@
                 </figure>
             }
         </div>
+    } @else if (canEditFields() && editingData) {
+        <wow-media-admin [playerPublicId]="view().publicId" kind="stream" />
     } @else {
         <wow-media-manager [playerPublicId]="view().publicId" kind="stream" />
-    }
-</ng-template>
-
-<ng-template gcWidget="gc-links">
-    @if (preview()) {
-        <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
-    } @else {
-        <wow-link-board [playerPublicId]="view().publicId" />
-    }
-</ng-template>
-
-<ng-template gcWidgetSettings="gc-links">
-    @if (!preview()) {
-        <wow-link-admin [playerPublicId]="view().publicId" />
-    }
-</ng-template>
-
-<ng-template gcWidgetSettings="photos">
-    @if (!preview()) {
-        <wow-media-admin [playerPublicId]="view().publicId" kind="photo" />
-    }
-</ng-template>
-
-<ng-template gcWidgetSettings="videos">
-    @if (!preview()) {
-        <wow-media-admin [playerPublicId]="view().publicId" kind="video" />
-    }
-</ng-template>
-
-<ng-template gcWidgetSettings="streams">
-    @if (!preview()) {
-        <wow-media-admin [playerPublicId]="view().publicId" kind="stream" />
     }
 </ng-template>

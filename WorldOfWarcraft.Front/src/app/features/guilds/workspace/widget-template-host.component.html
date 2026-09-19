@@ -94,16 +94,12 @@
     <gc-media-gallery kind="video" [items]="videoItems(settings)" [emptyLabel]="emptyGalleryLabel" />
 </ng-template>
 
-<ng-template gcWidget="gc-links">
+<ng-template gcWidget="gc-links" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
+    } @else if (editingData) {
+        <wow-guild-link-admin [guildPublicId]="view().publicId" />
     } @else {
         <wow-guild-link-board [guildPublicId]="view().publicId" />
-    }
-</ng-template>
-
-<ng-template gcWidgetSettings="gc-links">
-    @if (!preview()) {
-        <wow-guild-link-admin [guildPublicId]="view().publicId" />
     }
 </ng-template>

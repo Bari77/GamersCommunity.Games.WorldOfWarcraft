@@ -11,17 +11,17 @@
           "type": "guild-stats",
           "x": 0,
           "y": 0,
-          "cols": 4,
-          "rows": 6,
+          "cols": 12,
+          "rows": 2,
           "settings": {}
         },
         {
           "id": "w-presentation",
           "type": "guild-presentation",
-          "x": 4,
-          "y": 0,
-          "cols": 8,
-          "rows": 6,
+          "x": 0,
+          "y": 2,
+          "cols": 12,
+          "rows": 5,
           "settings": {
             "title": "Presentation"
           }
@@ -38,7 +38,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 6,
+          "rows": 7,
           "settings": {}
         }
       ]
@@ -50,7 +50,7 @@
         {
           "type": "guild-wall",
           "cols": 12,
-          "rows": 6,
+          "rows": 7,
           "settings": {},
           "id": "w-a999060e",
           "x": 0,
@@ -69,7 +69,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 6,
+          "rows": 7,
           "settings": {}
         }
       ],
@@ -82,7 +82,7 @@
         {
           "type": "guild-photos",
           "cols": 12,
-          "rows": 6,
+          "rows": 7,
           "settings": {},
           "id": "w-5d310f71",
           "x": 0,
@@ -98,7 +98,7 @@
         {
           "type": "gc-links",
           "cols": 12,
-          "rows": 6,
+          "rows": 7,
           "settings": {},
           "id": "w-d98b67a6",
           "x": 0,
@@ -115,18 +115,18 @@
           "id": "w-recruitment",
           "type": "guild-recruitment",
           "x": 0,
-          "y": 0,
+          "y": 5,
           "cols": 12,
-          "rows": 5,
+          "rows": 3,
           "settings": {}
         },
         {
           "id": "w-applications",
           "type": "guild-applications",
           "x": 0,
-          "y": 5,
+          "y": 0,
           "cols": 12,
-          "rows": 3,
+          "rows": 5,
           "settings": {}
         }
       ]

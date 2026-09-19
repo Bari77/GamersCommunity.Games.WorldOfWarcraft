@@ -1,7 +1,7 @@
 import { DatePipe } from '@angular/common';
 import { Component, computed, input, output } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { LinkListComponent, MediaGalleryComponent, TwitchEmbedComponent, WidgetDefDirective, WidgetSettingsDefDirective } from '@bari77/gc-widgets';
+import { LinkListComponent, MediaGalleryComponent, TwitchEmbedComponent, WidgetDefDirective } from '@bari77/gc-widgets';
 import { CharacterCardComponent } from '@features/characters/components/character-card/character-card.component';
 import { CharacterListComponent } from '@features/characters/components/character-list/character-list.component';
 import { LinkAdminComponent } from '@features/links/components/link-admin/link-admin.component';
@@ -42,7 +42,6 @@ import { NbButtonModule } from '@nebular/theme';
         RouterLink,
         TwitchEmbedComponent,
         WidgetDefDirective,
-        WidgetSettingsDefDirective,
     ],
     templateUrl: './widget-template-host.component.html',
     styleUrl: './widget-template-host.component.scss',

@@ -5,7 +5,7 @@ import { GuildLink } from "@features/guilds/models/guild-link.model";
 import { GuildLinkStore } from "@features/guilds/stores/guild-link.store";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 
-/** Officer-only editor for the guild links widget, rendered inside the widget settings panel. */
+/** Officer-only editor for the guild links widget, rendered in the widget while data editing is on. */
 @Component({
     standalone: true,
     selector: "wow-guild-link-admin",

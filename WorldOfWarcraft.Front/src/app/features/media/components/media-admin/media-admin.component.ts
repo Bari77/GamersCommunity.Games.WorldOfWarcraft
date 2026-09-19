@@ -11,7 +11,7 @@ const PLACEHOLDER: Record<PlayerMediaKind, string> = {
     stream: "https://twitch.tv/your-channel",
 };
 
-/** Owner-only editor for a media widget, rendered inside the widget settings panel. */
+/** Owner-only editor for a media widget, rendered in the widget while data editing is on. */
 @Component({
     standalone: true,
     selector: "wow-media-admin",

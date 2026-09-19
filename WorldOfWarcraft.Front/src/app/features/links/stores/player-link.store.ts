@@ -5,8 +5,8 @@ import { PlayerLinkService } from "@features/links/services/player-link.service"
 import { firstValueFrom } from "rxjs";
 
 /**
- * The links a player pinned on their profile. The card list in the grid and the editor behind
- * the gear are two components reading the same list, so provide this on the page hosting them.
+ * The links a player pinned on their profile. The card list in the grid and the in-place editor
+ * are two components reading the same list, so provide this on the page hosting them.
  */
 @Injectable()
 export class PlayerLinkStore {

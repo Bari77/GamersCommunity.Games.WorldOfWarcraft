@@ -5,7 +5,7 @@ import { GuildLinkService } from "@features/guilds/services/guild-link.service";
 import { firstValueFrom } from "rxjs";
 
 /**
- * The links a guild pinned on its page. The card list in the grid and the editor behind the gear
+ * The links a guild pinned on its page. The card list in the grid and the in-place editor
  * are two components reading the same list, so provide this on the page hosting them.
  */
 @Injectable()

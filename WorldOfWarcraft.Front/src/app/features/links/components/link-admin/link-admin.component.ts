@@ -5,7 +5,7 @@ import { PlayerLink } from "@features/links/models/player-link.model";
 import { PlayerLinkStore } from "@features/links/stores/player-link.store";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 
-/** Owner-only editor for the links widget, rendered inside the widget settings panel. */
+/** Owner-only editor for the links widget, rendered in the widget while data editing is on. */
 @Component({
     standalone: true,
     selector: "wow-link-admin",

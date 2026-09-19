@@ -10,7 +10,7 @@ const EMPTY: Record<PlayerMediaKind, string> = {
     stream: $localize`:@@wow.media.emptyStream:No stream declared yet.`,
 };
 
-/** Read-only view: the owner sees exactly what visitors see, and manages from the widget gear. */
+/** Read-only view: the owner sees exactly what visitors see, and manages from the pencil. */
 @Component({
     standalone: true,
     selector: "wow-media-manager",
