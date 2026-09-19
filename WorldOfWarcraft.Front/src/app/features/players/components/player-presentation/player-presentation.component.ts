@@ -14,6 +14,9 @@ export class PlayerPresentationComponent {
     public readonly text = input<string | null>(null);
     public readonly editing = input(false);
     public readonly saving = input(false);
+    public readonly emptyLabel = input(
+        $localize`:@@wow.player.noPresentation:This player has not written a presentation yet.`,
+    );
 
     /** Empty text is sent as null, the only way to clear the presentation. */
     public readonly save = output<string | null>();

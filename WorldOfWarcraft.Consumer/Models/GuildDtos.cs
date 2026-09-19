@@ -15,6 +15,7 @@ public sealed class GuildSheetDto
     public string? LayoutJson { get; init; }
 
     public string ServerName { get; init; } = "";
+    public int IdServer { get; init; }
 
     /// <summary>What the guild plays. See <see cref="WorldOfWarcraft.Database.Models.GuildOrientationCodes"/>.</summary>
     public string OrientationName { get; init; } = "";
@@ -98,7 +99,7 @@ public sealed class GuildSearchRequest
     /// <summary>Matches the guild name; the discriminator is searchable through <c>Name#1234</c>.</summary>
     public string? Query { get; init; }
 
-    /// <summary>Server and faction are carried by the leader character, as on the guild sheet.</summary>
+    /// <summary>Realm the guild is advertised on, independent of the leader's current character.</summary>
     public int? IdServer { get; init; }
 
     public int? IdAlignment { get; init; }
@@ -131,6 +132,8 @@ public sealed class GuildCreateRequest
 
 public sealed class GuildUpdateRequest
 {
+    public string? Entitled { get; init; }
+
     public string? Sentence { get; init; }
 
     /// <summary>Guild progression, which officers keep in step with the game.</summary>
@@ -138,6 +141,9 @@ public sealed class GuildUpdateRequest
 
     /// <summary>See <see cref="WorldOfWarcraft.Database.Models.GuildOrientationCodes"/>.</summary>
     public string? Orientation { get; init; }
+
+    /// <summary>Realm the guild is advertised on, independent of the leader's current character.</summary>
+    public int? IdServer { get; init; }
 
     /// <summary>Crest parts, saved as a whole because the editor composes them together.</summary>
     public GuildCrestUpdate? Crest { get; init; }

@@ -1,6 +1,24 @@
 /* WoW-specific global overrides (shared skin: @bari77/gc-theme) */
+
+/* `translateY(0)` still creates a containing block for `position: fixed`, so the widget
+   config overlay would sit inside the profile sheet instead of the viewport. */
+@keyframes gc-fade-up {
+    from {
+        opacity: 0;
+        transform: translateY(1rem);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
 gc-widget-grid gridster-item {
     background: transparent;
+}
+
+gc-modal.gc-modal--open {
+    z-index: var(--gc-modal-z-index, 2000);
 }
 .sr-only {
     position: absolute;

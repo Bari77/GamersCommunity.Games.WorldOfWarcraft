@@ -1,28 +1,33 @@
-<ng-template gcWidget="guild-presentation">
-    @if (view().sentence) {
-        <gc-rich-content class="widget-host__sentence" [html]="view().sentence" />
-    } @else {
-        <p class="widget-host__empty" i18n="@@wow.guild.noSentence">
-            This guild has not written a presentation yet.
-        </p>
-    }
+<ng-template
+    gcWidget="guild-presentation"
+    gcWidgetEditable
+    let-editingData="editingData"
+    let-stopDataEdit="stopDataEdit"
+>
+    <wow-player-presentation
+        [text]="view().sentence"
+        [editing]="canEditFields() && !!editingData"
+        [saving]="savingField()"
+        [emptyLabel]="noSentenceLabel"
+        (save)="saveField.emit({ sentence: $event })"
+        (cancel)="stopDataEdit?.()"
+    />
 </ng-template>
 
-<ng-template gcWidget="guild-stats">
-    <ul class="widget-host__stats">
-        <li>
-            <span i18n="@@wow.guild.level">Level</span>
-            <strong>{{ view().level }}</strong>
-        </li>
-        <li>
-            <span i18n="@@wow.guild.members">Members</span>
-            <strong>{{ view().memberCount }}</strong>
-        </li>
-        <li>
-            <span i18n="@@wow.guild.founded">Founded</span>
-            <strong>{{ view().creationDate | date: "mediumDate" }}</strong>
-        </li>
-    </ul>
+<ng-template
+    gcWidget="guild-stats"
+    gcWidgetEditable
+    let-editingData="editingData"
+    let-stopDataEdit="stopDataEdit"
+>
+    <wow-guild-stats
+        [sheet]="view()"
+        [editing]="canEditFields() && !!editingData"
+        [saving]="savingField()"
+        [errorCode]="errorCode()"
+        (save)="saveField.emit($event)"
+        (cancel)="stopDataEdit?.()"
+    />
 </ng-template>
 
 <ng-template gcWidget="guild-roster">
@@ -86,18 +91,56 @@
     }
 </ng-template>
 
-<ng-template gcWidget="guild-photos" let-settings>
-    <gc-media-gallery kind="photo" [items]="galleryItems(settings)" [emptyLabel]="emptyGalleryLabel" />
+<ng-template
+    gcWidget="guild-photos"
+    gcWidgetEditable
+    let-settings
+    let-editingData="editingData"
+    let-stopDataEdit="stopDataEdit"
+    let-updateSettings="updateSettings"
+>
+    <gc-media-gallery
+        kind="photo"
+        [items]="galleryItems(settings)"
+        [emptyLabel]="emptyGalleryLabel"
+        [addLabel]="mediaAddLabel"
+        [saveLabel]="mediaSaveLabel"
+        [cancelLabel]="mediaCancelLabel"
+        [titlePlaceholder]="mediaTitleLabel"
+        [urlPlaceholder]="mediaUrlPlaceholder"
+        [editing]="canEditFields() && !!editingData"
+        (itemsChange)="saveGallery(settings, updateSettings, stopDataEdit, $event)"
+        (cancel)="stopDataEdit?.()"
+    />
 </ng-template>
 
-<ng-template gcWidget="guild-videos" let-settings>
-    <gc-media-gallery kind="video" [items]="videoItems(settings)" [emptyLabel]="emptyGalleryLabel" />
+<ng-template
+    gcWidget="guild-videos"
+    gcWidgetEditable
+    let-settings
+    let-editingData="editingData"
+    let-stopDataEdit="stopDataEdit"
+    let-updateSettings="updateSettings"
+>
+    <gc-media-gallery
+        kind="video"
+        [items]="videoItems(settings)"
+        [emptyLabel]="emptyGalleryLabel"
+        [addLabel]="mediaAddLabel"
+        [saveLabel]="mediaSaveLabel"
+        [cancelLabel]="mediaCancelLabel"
+        [titlePlaceholder]="mediaTitleLabel"
+        [urlPlaceholder]="mediaUrlPlaceholder"
+        [editing]="canEditFields() && !!editingData"
+        (itemsChange)="saveGallery(settings, updateSettings, stopDataEdit, $event)"
+        (cancel)="stopDataEdit?.()"
+    />
 </ng-template>
 
 <ng-template gcWidget="gc-links" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <gc-link-list [links]="previewLinks" [emptyLabel]="previewLinksEmpty" />
-    } @else if (editingData) {
+    } @else if (canEditFields() && editingData) {
         <wow-guild-link-admin [guildPublicId]="view().publicId" />
     } @else {
         <wow-guild-link-board [guildPublicId]="view().publicId" />

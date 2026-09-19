@@ -15,4 +15,6 @@ public partial class Server : IKeyTable
     public int IdLocale { get; set; }
 
     public virtual ICollection<Character> Characters { get; set; } = new List<Character>();
+
+    public virtual ICollection<Guild> Guilds { get; set; } = new List<Guild>();
 }

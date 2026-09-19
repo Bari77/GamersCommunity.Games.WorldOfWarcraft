@@ -1,6 +1,4 @@
-import { DatePipe } from "@angular/common";
 import { Component, computed, input, output } from "@angular/core";
-import { RichContentComponent } from "@bari77/gc-ui";
 import {
     GcGalleryItem,
     LinkListComponent,
@@ -17,7 +15,9 @@ import {
 import { GuildLinkAdminComponent } from "@features/guilds/components/guild-link-admin/guild-link-admin.component";
 import { GuildLinkBoardComponent } from "@features/guilds/components/guild-link-board/guild-link-board.component";
 import { GuildRosterComponent, RankChange } from "@features/guilds/components/guild-roster/guild-roster.component";
+import { GuildStatsComponent } from "@features/guilds/components/guild-stats/guild-stats.component";
 import { GuildWallComponent } from "@features/guilds/components/guild-wall/guild-wall.component";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GuildSheet } from "@features/guilds/models/guild.model";
 import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guild";
@@ -30,6 +30,7 @@ import {
 import { WorkspacePreviewApplicationsComponent } from "@features/guilds/workspace/workspace-preview-applications.component";
 import { WorkspacePreviewApplyComponent } from "@features/guilds/workspace/workspace-preview-apply.component";
 import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/workspace-preview-wall.component";
+import { PlayerPresentationComponent } from "@features/players/components/player-presentation/player-presentation.component";
 
 /** Declares every WoW widget template for the guild page and the workspace editor. */
 @Component({
@@ -37,16 +38,16 @@ import { WorkspacePreviewWallComponent } from "@features/guilds/workspace/worksp
     selector: "wow-guild-widget-template-host",
     imports: [
         CreateSheetWallComponent,
-        DatePipe,
         GuildApplicationsComponent,
         GuildApplyFormComponent,
         GuildLinkAdminComponent,
         GuildLinkBoardComponent,
         GuildRosterComponent,
+        GuildStatsComponent,
         GuildWallComponent,
         LinkListComponent,
         MediaGalleryComponent,
-        RichContentComponent,
+        PlayerPresentationComponent,
         WidgetDefDirective,
         WorkspacePreviewApplicationsComponent,
         WorkspacePreviewApplyComponent,
@@ -59,6 +60,8 @@ export class WowGuildWidgetTemplateHostComponent {
     public readonly preview = input(false);
     public readonly guild = input<GuildSheet | null>(null);
     public readonly editing = input(false);
+    public readonly savingField = input(false);
+    public readonly errorCode = input<string | null>(null);
 
     /** The visitor's own player, which the wall needs to tell their posts from the others. */
     public readonly playerPublicId = input<string | null>(null);
@@ -84,9 +87,18 @@ export class WowGuildWidgetTemplateHostComponent {
     /** Anything that changed the roster: a review, a moderation decision, a departure. */
     public readonly rosterChanged = output<void>();
 
+    /** Patch of the sole fields a widget touched, saved by the page hosting the workspace. */
+    public readonly saveField = output<GuildUpdateRequestDto>();
+
     protected readonly view = computed(() => this.preview() ? WORKSPACE_PREVIEW_GUILD : this.guild()!);
 
     protected readonly emptyGalleryLabel = $localize`:@@wow.guild.widget.media.empty:Nothing here yet.`;
+    protected readonly noSentenceLabel = $localize`:@@wow.guild.noSentence:This guild has not written a presentation yet.`;
+    protected readonly mediaAddLabel = $localize`:@@wow.guild.widget.media.add:Add a media`;
+    protected readonly mediaSaveLabel = $localize`:@@wow.guild.admin.save:Save`;
+    protected readonly mediaCancelLabel = $localize`:@@wow.guild.form.cancel:Cancel`;
+    protected readonly mediaTitleLabel = $localize`:@@wow.guild.widget.media.title:Caption`;
+    protected readonly mediaUrlPlaceholder = "https://…";
     protected readonly sheetWallMessage = $localize`:@@wow.guild.sheetWall:Create your player profile to apply to this guild.`;
     protected readonly previewMembers = WORKSPACE_PREVIEW_GUILD_MEMBERS;
     protected readonly previewViewerRank = WORKSPACE_PREVIEW_GUILD.viewerRank;
@@ -94,6 +106,11 @@ export class WowGuildWidgetTemplateHostComponent {
     protected readonly previewLinksEmpty = $localize`:@@wow.links.empty:No link shared yet.`;
     protected readonly previewPhotos = WORKSPACE_PREVIEW_GUILD_PHOTOS;
     protected readonly previewVideos = WORKSPACE_PREVIEW_GUILD_VIDEOS;
+
+    /** Officers and the leader edit widget data; rearranging the page is a mode of its own. */
+    protected readonly canEditFields = computed(
+        () => !this.editing() && !this.preview() && this.view().canModerate(),
+    );
 
     /**
      * Guild galleries are configured from the widget settings rather than an API, so the leader
@@ -139,5 +156,15 @@ export class WowGuildWidgetTemplateHostComponent {
         }
 
         return this.preview() ? this.previewVideos : [];
+    }
+
+    protected saveGallery(
+        settings: WidgetSettings,
+        updateSettings: ((next: WidgetSettings) => void) | undefined,
+        stopDataEdit: (() => void) | undefined,
+        items: GcGalleryItem[],
+    ): void {
+        updateSettings?.({ ...settings, items });
+        stopDataEdit?.();
     }
 }

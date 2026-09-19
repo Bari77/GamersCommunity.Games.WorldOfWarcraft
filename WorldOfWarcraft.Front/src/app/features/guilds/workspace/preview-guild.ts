@@ -10,6 +10,7 @@ export const WORKSPACE_PREVIEW_GUILD = new GuildSheet(
     12,
     'A friendly CE-oriented guild on Hyjal. Two raid nights, one optional heroic farm, and an active Discord for keys and transmog.',
     null,
+    1,
     'Hyjal',
     'pvpe',
     GuildCrest.fromDto(null),

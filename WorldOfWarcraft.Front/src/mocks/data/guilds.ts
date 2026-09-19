@@ -46,6 +46,7 @@ export const mockGuildSheet: GuildSheetDto = {
     level: 25,
     sentence: "Heroic progress guild, EU evenings.",
     layoutJson: null,
+    idServer: 1,
     serverName: "hyjal",
     orientationName: "pvpe",
     crest: {
@@ -161,6 +162,7 @@ function extraSheet(
         level: summary.level,
         sentence: summary.sentence,
         layoutJson: null,
+        idServer: summary.serverName === "archimonde" ? 4 : summary.serverName === "elune" ? 3 : summary.serverName === "dalaran" ? 2 : 1,
         serverName: summary.serverName,
         orientationName: summary.orientationName ?? "pve",
         crest: summary.crest!,

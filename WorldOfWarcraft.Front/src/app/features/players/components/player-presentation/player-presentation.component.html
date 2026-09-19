@@ -18,7 +18,5 @@
 } @else if (text()) {
     <gc-rich-content class="presentation__text" [html]="text()" />
 } @else {
-    <p class="presentation__empty" i18n="@@wow.player.noPresentation">
-        This player has not written a presentation yet.
-    </p>
+    <p class="presentation__empty">{{ emptyLabel() }}</p>
 }

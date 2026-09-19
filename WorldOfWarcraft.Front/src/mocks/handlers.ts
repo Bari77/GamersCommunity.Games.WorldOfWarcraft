@@ -141,8 +141,20 @@ const guildHandlers = [
         return HttpResponse.json(guildSheet);
     }),
     http.put(`${guildsUrl}/:publicId`, async ({ request }) => {
-        const { orientation, ...body } = (await request.json()) as Partial<GuildSheetDto> & { orientation?: string };
-        guildSheet = { ...guildSheet, ...body, orientationName: orientation ?? guildSheet.orientationName };
+        const { orientation, idServer, ...body } = (await request.json()) as Partial<GuildSheetDto> & {
+            orientation?: string;
+            idServer?: number;
+        };
+        const serverName =
+            idServer != null
+                ? (mockCharacterOptions.servers.find((server) => server.id === idServer)?.entitled ?? guildSheet.serverName)
+                : guildSheet.serverName;
+        guildSheet = {
+            ...guildSheet,
+            ...body,
+            ...(idServer != null ? { idServer, serverName } : {}),
+            orientationName: orientation ?? guildSheet.orientationName,
+        };
         return HttpResponse.json(guildSheet);
     }),
     http.post(`${guildsUrl}/actions/SetRank`, async ({ request }) => {

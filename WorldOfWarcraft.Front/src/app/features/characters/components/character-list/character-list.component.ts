@@ -1,4 +1,4 @@
-import { Component, effect, inject, input, output, signal } from "@angular/core";
+import { Component, effect, inject, input, output, signal, untracked } from "@angular/core";
 import { SkeletonComponent } from "@bari77/gc-ui";
 import { CharacterCardComponent } from "@features/characters/components/character-card/character-card.component";
 import { CharacterFormComponent } from "@features/characters/components/character-form/character-form.component";
@@ -31,6 +31,14 @@ export class CharacterListComponent {
 
     public constructor() {
         effect(() => this.store.setPlayer(this.playerPublicId()));
+        effect(() => {
+            if (!this.editable()) {
+                untracked(() => {
+                    this.closeForm();
+                    this.pendingDelete.set(null);
+                });
+            }
+        });
     }
 
     public openCreate(): void {

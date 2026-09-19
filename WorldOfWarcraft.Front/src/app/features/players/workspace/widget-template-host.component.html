@@ -46,7 +46,7 @@
     />
 </ng-template>
 
-<ng-template gcWidget="characters">
+<ng-template gcWidget="characters" gcWidgetEditable let-editingData="editingData">
     @if (preview()) {
         <div class="widget-host__character-grid">
             @for (character of previewCharacters; track character.publicId) {
@@ -56,7 +56,7 @@
     } @else {
         <wow-character-list
             [playerPublicId]="view().publicId"
-            [editable]="isOwner() && !editing()"
+            [editable]="canEditFields() && !!editingData"
             (changed)="charactersChanged.emit()"
         />
     }

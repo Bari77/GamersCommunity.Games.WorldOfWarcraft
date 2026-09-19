@@ -32,14 +32,14 @@ export const gameWorkspaceRegistry = {
         {
             type: GUILD_WIDGETS.presentation,
             label: $localize`:@@wow.guild.widget.presentation:Presentation`,
-            description: $localize`:@@wow.guild.widget.presentation.desc:The catchphrase officers write in the settings.`,
+            description: $localize`:@@wow.guild.widget.presentation.desc:The catchphrase visitors read, edited from the widget.`,
             cols: 8,
             rows: 3,
         },
         {
             type: GUILD_WIDGETS.stats,
             label: $localize`:@@wow.guild.widget.stats:Stats`,
-            description: $localize`:@@wow.guild.widget.stats.desc:Level, roster size and founding date.`,
+            description: $localize`:@@wow.guild.widget.stats.desc:Level, playstyle, server, roster size and founding date.`,
             cols: 4,
             rows: 3,
             unique: true,
@@ -79,27 +79,6 @@ export const gameWorkspaceRegistry = {
             label: $localize`:@@wow.guild.widget.photos:Photo gallery`,
             cols: 12,
             rows: 6,
-            fields: [
-                {
-                    key: 'items',
-                    type: 'list',
-                    label: $localize`:@@wow.guild.widget.photos.items:Images`,
-                    addLabel: $localize`:@@wow.guild.widget.media.add:Add a media`,
-                    itemFields: [
-                        {
-                            key: 'url',
-                            type: 'url',
-                            label: $localize`:@@wow.guild.widget.media.url:Address`,
-                            placeholder: 'https://…',
-                        },
-                        {
-                            key: 'title',
-                            type: 'text',
-                            label: $localize`:@@wow.guild.widget.media.title:Caption`,
-                        },
-                    ],
-                },
-            ],
         },
         {
             type: GUILD_WIDGETS.videos,
@@ -107,27 +86,6 @@ export const gameWorkspaceRegistry = {
             description: $localize`:@@wow.guild.widget.videos.desc:YouTube, Vimeo, Twitch clips and VODs.`,
             cols: 12,
             rows: 6,
-            fields: [
-                {
-                    key: 'items',
-                    type: 'list',
-                    label: $localize`:@@wow.guild.widget.videos.items:Videos`,
-                    addLabel: $localize`:@@wow.guild.widget.media.add:Add a media`,
-                    itemFields: [
-                        {
-                            key: 'url',
-                            type: 'url',
-                            label: $localize`:@@wow.guild.widget.media.url:Address`,
-                            placeholder: 'https://…',
-                        },
-                        {
-                            key: 'title',
-                            type: 'text',
-                            label: $localize`:@@wow.guild.widget.media.title:Caption`,
-                        },
-                    ],
-                },
-            ],
         },
         {
             type: GUILD_WIDGETS.twitch,

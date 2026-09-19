@@ -77,6 +77,8 @@
             <wow-guild-widget-template-host
                 [guild]="guild"
                 [editing]="editing()"
+                [savingField]="store.saving()"
+                [errorCode]="store.errorCode()"
                 [playerPublicId]="membership.playerPublicId()"
                 [myCharacterPublicIds]="myCharacterPublicIds()"
                 [busy]="store.saving()"
@@ -92,6 +94,7 @@
                 (apply)="onApply($event)"
                 (withdraw)="onWithdraw()"
                 (rosterChanged)="onRosterChanged()"
+                (saveField)="onSave($event)"
             />
         </gc-widget-workspace>
 

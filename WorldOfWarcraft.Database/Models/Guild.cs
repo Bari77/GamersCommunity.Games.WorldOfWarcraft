@@ -50,6 +50,8 @@ public partial class Guild : IKeyTable
 
     public int IdOrientation { get; set; }
 
+    public int IdServer { get; set; }
+
     public virtual ICollection<GuildLink> GuildLinks { get; set; } = new List<GuildLink>();
 
     public virtual ICollection<GuildMember> GuildMembers { get; set; } = new List<GuildMember>();
@@ -65,6 +67,8 @@ public partial class Guild : IKeyTable
     public virtual Character IdLeaderNavigation { get; set; } = null!;
 
     public virtual GuildOrientation IdOrientationNavigation { get; set; } = null!;
+
+    public virtual Server IdServerNavigation { get; set; } = null!;
 
     public virtual ICollection<Roster> Rosters { get; set; } = new List<Roster>();
 }

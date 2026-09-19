@@ -25,6 +25,7 @@ export interface GuildSheetDto {
     level: number;
     sentence?: string | null;
     layoutJson?: string | null;
+    idServer: number;
     serverName: string;
     orientationName: string;
     crest: GuildCrestDto;
@@ -74,9 +75,11 @@ export interface GuildCreateRequestDto {
 }
 
 export interface GuildUpdateRequestDto {
+    entitled?: string;
     sentence?: string | null;
     level?: number;
     orientation?: string;
+    idServer?: number;
     crest?: GuildCrestDto;
 
     /** Only the leader may send this one; officers get a 403. */

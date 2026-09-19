@@ -86,7 +86,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
                 g.Level,
                 g.Sentence,
                 g.LayoutJson,
-                ServerName = g.IdLeaderNavigation.IdServerNavigation.Entitled,
+                IdServer = g.IdServer,
+                ServerName = g.IdServerNavigation.Entitled,
                 OrientationName = g.IdOrientationNavigation.Entitled,
                 Crest = new GuildCrestDto
                 {
@@ -129,6 +130,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             Level = guild.Level,
             Sentence = guild.Sentence,
             LayoutJson = FilterPages(guild.LayoutJson, standing?.Rank),
+            IdServer = guild.IdServer,
             ServerName = guild.ServerName,
             OrientationName = guild.OrientationName,
             Crest = guild.Crest,
@@ -228,7 +230,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         }
 
         if (request.IdServer is { } idServer)
-            query = query.Where(g => g.IdLeaderNavigation.IdServer == idServer);
+            query = query.Where(g => g.IdServer == idServer);
 
         if (request.IdAlignment is { } idAlignment)
             query = query.Where(g => g.IdLeaderNavigation.IdAlignment == idAlignment);
@@ -252,7 +254,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
                 Discriminator = g.Discriminator,
                 Level = g.Level,
                 CreationDate = g.CreationDate,
-                ServerName = g.IdLeaderNavigation.IdServerNavigation.Entitled,
+                ServerName = g.IdServerNavigation.Entitled,
                 MemberCount = g.GuildMembers.Count,
                 Sentence = g.Sentence,
                 AlignmentName = g.IdLeaderNavigation.IdAlignmentNavigation != null
@@ -335,6 +337,7 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             Level = 1,
             Sentence = Normalize(request.Sentence),
             IdLeader = founder.Id,
+            IdServer = founder.IdServer,
             IdOrientation = await ResolveOrientationIdAsync(request.Orientation ?? GuildOrientationCodes.Default, ct),
             CrestEmblem = GuildCrestDefaults.Emblem,
             CrestEmblemColor = GuildCrestDefaults.EmblemColor,
@@ -381,10 +384,14 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         // "erase this" apart from "the client did not send it".
         if (sent.Contains(nameof(GuildUpdateRequest.Sentence)))
             guild.Sentence = Normalize(request.Sentence);
+        if (sent.Contains(nameof(GuildUpdateRequest.Entitled)))
+            await RenameAsync(guild, request.Entitled, ct);
         if (sent.Contains(nameof(GuildUpdateRequest.Level)))
             guild.Level = ValidateLevel(request.Level);
         if (sent.Contains(nameof(GuildUpdateRequest.Orientation)))
             guild.IdOrientation = await ResolveOrientationIdAsync(request.Orientation, ct);
+        if (sent.Contains(nameof(GuildUpdateRequest.IdServer)))
+            guild.IdServer = await ResolveServerIdAsync(request.IdServer, ct);
         if (sent.Contains(nameof(GuildUpdateRequest.Crest)))
             ApplyCrest(guild, request.Crest);
 
@@ -627,6 +634,34 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
     }
 
     private const int MaxSentenceLength = 255;
+
+    private async Task RenameAsync(Guild guild, string? entitled, CancellationToken ct)
+    {
+        var name = (entitled ?? "").Trim();
+        if (name.Length is < 3 or > 50)
+            throw new BadRequestException("VALIDATION", "Guild name must be between 3 and 50 characters");
+
+        if (name == guild.Entitled)
+            return;
+
+        var taken = await _context.Guilds.AnyAsync(
+            g => g.Id != guild.Id && g.Entitled == name && g.Discriminator == guild.Discriminator,
+            ct);
+        guild.Entitled = name;
+        if (taken)
+            guild.Discriminator = await AllocateDiscriminatorAsync(name, ct);
+    }
+
+    private async Task<int> ResolveServerIdAsync(int? idServer, CancellationToken ct)
+    {
+        if (idServer is not { } id || id < 1)
+            throw new BadRequestException("INVALID_SERVER", "A server is required");
+
+        var exists = await _context.Servers.AsNoTracking().AnyAsync(s => s.Id == id, ct);
+        return exists
+            ? id
+            : throw new BadRequestException("INVALID_SERVER", "This server cannot be used");
+    }
 
     private static string? Normalize(string? value)
     {

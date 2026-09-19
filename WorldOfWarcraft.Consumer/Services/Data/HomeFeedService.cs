@@ -119,7 +119,7 @@ public class HomeFeedService(WorldOfWarcraftDbContext context) : IBusService
                 Discriminator = g.Discriminator,
                 Level = g.Level,
                 CreationDate = g.CreationDate,
-                ServerName = g.IdLeaderNavigation.IdServerNavigation.Entitled,
+                ServerName = g.IdServerNavigation.Entitled,
                 MemberCount = g.GuildMembers.Count,
                 Sentence = g.Sentence,
                 AlignmentName = g.IdLeaderNavigation.IdAlignmentNavigation == null ? null : g.IdLeaderNavigation.IdAlignmentNavigation.Entitled,

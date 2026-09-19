@@ -3,48 +3,20 @@
     <nb-card-body>
         <form class="guild-admin" (ngSubmit)="submit()">
             <div class="guild-admin__field">
-                <label for="guild-admin-sentence" i18n="@@wow.guild.form.sentence">Catchphrase</label>
-                <gc-rich-editor
-                    id="guild-admin-sentence"
-                    [maxLength]="255"
-                    [placeholder]="sentencePlaceholder"
-                    [value]="sentence()"
-                    (valueChange)="sentence.set($event)"
+                <label for="guild-admin-entitled" i18n="@@wow.guild.form.name">Guild name</label>
+                <input
+                    id="guild-admin-entitled"
+                    nbInput
+                    fullWidth
+                    type="text"
+                    maxlength="50"
+                    [ngModel]="entitled()"
+                    (ngModelChange)="entitled.set($event)"
+                    [ngModelOptions]="{ standalone: true }"
                 />
-            </div>
-
-            <div class="guild-admin__grid">
-                <div class="guild-admin__field">
-                    <label for="guild-admin-level" i18n="@@wow.guild.form.level">Guild level</label>
-                    <input
-                        id="guild-admin-level"
-                        nbInput
-                        fullWidth
-                        type="number"
-                        min="1"
-                        max="100"
-                        [ngModel]="level()"
-                        (ngModelChange)="level.set($event)"
-                        [ngModelOptions]="{ standalone: true }"
-                    />
-                    <p class="guild-admin__hint" i18n="@@wow.guild.form.levelHint">
-                        Keep it in step with the game; the sheet shows it next to the faction.
-                    </p>
-                </div>
-
-                <div class="guild-admin__field">
-                    <span i18n="@@wow.guild.form.orientation">What the guild plays</span>
-                    <nb-select
-                        fullWidth
-                        [ngModel]="orientation()"
-                        (ngModelChange)="orientation.set($event)"
-                        [ngModelOptions]="{ standalone: true }"
-                    >
-                        @for (option of orientationOptions; track option.value) {
-                            <nb-option [value]="option.value">{{ option.label }}</nb-option>
-                        }
-                    </nb-select>
-                </div>
+                <p class="guild-admin__hint" i18n="@@wow.guild.form.nameHint">
+                    A number is appended to the name to keep the handle unique, like Nightfall#1274.
+                </p>
             </div>
 
             <div class="guild-admin__field">
@@ -55,15 +27,12 @@
             @if (errorCode(); as code) {
                 <p class="guild-admin__error" role="alert">
                     @switch (code) {
-                        @case ("INVALID_LEVEL") {
-                            <span i18n="@@wow.guild.error.invalidLevel">The level must be between 1 and 100.</span>
-                        }
                         @case ("INVALID_CREST") {
                             <span i18n="@@wow.guild.error.invalidCrest">This crest cannot be used.</span>
                         }
-                        @case ("INVALID_ORIENTATION") {
-                            <span i18n="@@wow.guild.error.invalidOrientation">
-                                Pick PvE, PvP or both for the guild.
+                        @case ("VALIDATION") {
+                            <span i18n="@@wow.guild.error.invalidName">
+                                The guild name must be between 3 and 50 characters.
                             </span>
                         }
                         @case ("GUILD_RANK_REQUIRED") {

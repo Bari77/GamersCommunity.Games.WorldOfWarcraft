@@ -3,7 +3,6 @@
     max-width: 72rem;
     margin: 0 auto;
     padding: 1.5rem 1rem 3rem;
-    overflow-x: clip;
 
     --gc-widget-border: rgba(255, 255, 255, 0.1);
     --gc-widget-background: var(--gc-surface-2);
@@ -17,6 +16,10 @@
 .guild-sheet gc-widget-grid {
     display: block;
     width: 100%;
+}
+
+.guild-sheet gc-widget-grid {
+    overflow-x: clip;
 }
 
 .guild-sheet wow-guild-admin {

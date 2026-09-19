@@ -378,6 +378,11 @@ public partial class WorldOfWarcraftDbContext : DbContext
                 .HasForeignKey(d => d.IdOrientation)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK_Guilds_GuildOrientations");
+
+            entity.HasOne(d => d.IdServerNavigation).WithMany(p => p.Guilds)
+                .HasForeignKey(d => d.IdServer)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("FK_Guilds_Servers");
         });
 
         modelBuilder.Entity<GuildOrientation>(entity =>
