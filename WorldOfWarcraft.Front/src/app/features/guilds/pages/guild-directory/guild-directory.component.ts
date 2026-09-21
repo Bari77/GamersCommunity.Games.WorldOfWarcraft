@@ -1,7 +1,7 @@
 import { Component, computed, inject, OnInit, resource, signal } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, Router, RouterLink } from "@angular/router";
-import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import { RichContentComponent, SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { Character, CharacterOptions } from "@features/characters/models/character.model";
@@ -16,6 +16,7 @@ import { GuildDirectoryStore } from "@features/guilds/stores/guild-directory.sto
 import { NbButtonModule, NbCardModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
+import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { ResourceUtils } from "@shared/utils/resource.utils";
 import { firstValueFrom } from "rxjs";
@@ -33,11 +34,13 @@ const NO_OPTIONS = new CharacterOptions([], [], [], [], [], [], [], 0, 0);
         NbCardModule,
         NbInputModule,
         NbSelectModule,
+        RichContentComponent,
         SkeletonComponent,
         SkeletonTextComponent,
         CreateSheetWallComponent,
         GuildCreateFormComponent,
         GuildCrestComponent,
+        WowIconComponent,
     ],
     providers: [GuildDirectoryStore],
     templateUrl: "./guild-directory.component.html",

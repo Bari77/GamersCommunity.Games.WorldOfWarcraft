@@ -50,8 +50,10 @@
             >
                 @for (race of opts.races; track race.id) {
                     <nb-option [value]="race.id">
-                        <wow-icon kind="race" [slug]="race.entitled" [size]="18" />
-                        {{ race.entitled | gameTerm }}
+                        <span class="gc-select-option">
+                            <wow-icon kind="race" [slug]="race.entitled" [size]="18" />
+                            {{ race.entitled | gameTerm }}
+                        </span>
                     </nb-option>
                 }
             </nb-select>
@@ -69,8 +71,10 @@
             >
                 @for (klass of availableClasses(); track klass.id) {
                     <nb-option [value]="klass.id">
-                        <wow-icon kind="class" [slug]="klass.entitled" [size]="18" />
-                        {{ klass.entitled | gameTerm }}
+                        <span class="gc-select-option">
+                            <wow-icon kind="class" [slug]="klass.entitled" [size]="18" />
+                            {{ klass.entitled | gameTerm }}
+                        </span>
                     </nb-option>
                 }
             </nb-select>
@@ -88,8 +92,10 @@
             >
                 @for (spec of availableSpecs(); track spec.id) {
                     <nb-option [value]="spec.id">
-                        <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
-                        {{ spec.specializationEntitled | gameTerm }}
+                        <span class="gc-select-option">
+                            <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
+                            {{ spec.specializationEntitled | gameTerm }}
+                        </span>
                     </nb-option>
                 }
             </nb-select>
@@ -107,8 +113,10 @@
             >
                 @for (spec of secondarySpecs(); track spec.id) {
                     <nb-option [value]="spec.id">
-                        <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
-                        {{ spec.specializationEntitled | gameTerm }}
+                        <span class="gc-select-option">
+                            <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
+                            {{ spec.specializationEntitled | gameTerm }}
+                        </span>
                     </nb-option>
                 }
             </nb-select>
@@ -124,7 +132,12 @@
                 [ngModelOptions]="{ standalone: true }"
             >
                 @for (direction of opts.directions; track direction.id) {
-                    <nb-option [value]="direction.id">{{ direction.entitled | gameTerm }}</nb-option>
+                    <nb-option [value]="direction.id">
+                        <span class="gc-select-option">
+                            <wow-icon kind="role" [slug]="direction.entitled" [size]="18" />
+                            {{ direction.entitled | gameTerm }}
+                        </span>
+                    </nb-option>
                 }
             </nb-select>
         </div>
@@ -139,7 +152,12 @@
                 [ngModelOptions]="{ standalone: true }"
             >
                 @for (alignment of opts.alignments; track alignment.id) {
-                    <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                    <nb-option [value]="alignment.id">
+                        <span class="gc-select-option">
+                            <wow-icon kind="faction" [slug]="alignment.entitled" [size]="18" />
+                            {{ alignment.entitled | gameTerm }}
+                        </span>
+                    </nb-option>
                 }
             </nb-select>
         </div>

@@ -6,6 +6,7 @@ using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Text.Json;
+using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
 using WorldOfWarcraft.Consumer.Workspace;
@@ -14,7 +15,7 @@ using WorldOfWarcraft.Database.Models;
 
 namespace WorldOfWarcraft.Consumer.Services.Data;
 
-public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
+public class GuildsService(WorldOfWarcraftDbContext context, IGuildWhispers whispers) : IBusService
 {
     private const int MaxSearchTake = 50;
 
@@ -121,6 +122,12 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             : null;
 
         var moderates = GuildAuth.CanModerate(standing?.Rank);
+
+        if (standing is not null)
+        {
+            var row = await _context.Guilds.AsNoTracking().FirstAsync(g => g.Id == guild.Id, ct);
+            await whispers.OnUpdatedAsync(row, ct);
+        }
 
         return new GuildSheetDto
         {
@@ -364,6 +371,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
             ct);
         await _context.SaveChangesAsync(ct);
 
+        await whispers.OnCreatedAsync(guild, founder.Id, ct);
+
         return await GetSheetAsync(GuildMessageFor(message, guild.PublicId), ct);
     }
 
@@ -404,6 +413,10 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
 
         guild.ModificationDate = DateTime.UtcNow;
         await _context.SaveChangesAsync(ct);
+
+        if (sent.Contains(nameof(GuildUpdateRequest.Entitled))
+            || sent.Contains(nameof(GuildUpdateRequest.Crest)))
+            await whispers.OnUpdatedAsync(guild, ct);
 
         return await GetSheetAsync(GuildMessageFor(message, guild.PublicId), ct);
     }
@@ -458,6 +471,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         _context.GuildMembers.Remove(membership);
         await _context.SaveChangesAsync(ct);
 
+        await whispers.OnMemberLeftAsync(guild.Id, guild.PublicId, membership.IdCharacter, ct);
+
         return await GetSheetAsync(GuildMessageFor(message, guild.PublicId), ct);
     }
 
@@ -484,6 +499,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
 
         _context.GuildMembers.Remove(membership);
         await _context.SaveChangesAsync(ct);
+
+        await whispers.OnMemberLeftAsync(guild.Id, guild.PublicId, membership.IdCharacter, ct);
 
         return new GuildLeaveResult { GuildPublicId = guild.PublicId, CharacterPublicId = request.CharacterPublicId };
     }
@@ -520,6 +537,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         guild.ModificationDate = now;
         await _context.SaveChangesAsync(ct);
 
+        await whispers.OnUpdatedAsync(guild, ct);
+
         return await GetSheetAsync(GuildMessageFor(message, guild.PublicId), ct);
     }
 
@@ -540,6 +559,8 @@ public class GuildsService(WorldOfWarcraftDbContext context) : IBusService
         var handle = $"{guild.Entitled}#{guild.Discriminator}";
         if (!string.Equals((request.Confirmation ?? "").Trim(), handle, StringComparison.Ordinal))
             throw new BadRequestException("CONFIRMATION_MISMATCH", "Type the guild handle to confirm");
+
+        await whispers.OnDisbandedAsync(guild.PublicId, ct);
 
         var rosters = await _context.Rosters.Where(r => r.IdGuild == guild.Id).Select(r => r.Id).ToListAsync(ct);
 

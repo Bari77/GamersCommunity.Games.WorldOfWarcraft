@@ -31,14 +31,3 @@ gc-modal.gc-modal--open {
     white-space: nowrap;
     border: 0;
 }
-
-/* Icon + label inside playground combos (overlay options are attached to body). */
-nb-option {
-    gap: 0.5rem;
-}
-
-nb-select .select-button {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-}

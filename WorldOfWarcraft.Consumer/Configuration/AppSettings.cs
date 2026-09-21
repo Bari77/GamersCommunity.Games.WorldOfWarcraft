@@ -15,5 +15,11 @@
         /// Highest item level allowed, raised alongside each expansion.
         /// </summary>
         public int MaxItemLevel { get; set; } = 1000;
+
+        /// <summary>
+        /// Public origin of the WoW front, so Platform Whispers can load crest artwork from
+        /// <c>/wow-crests</c>. It must be a URL the browser can reach, not an internal hostname.
+        /// </summary>
+        public string PublicAssetsUrl { get; set; } = "http://localhost:4201";
     }
 }

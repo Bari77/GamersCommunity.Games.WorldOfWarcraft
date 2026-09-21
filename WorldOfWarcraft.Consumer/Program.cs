@@ -72,6 +72,8 @@ namespace WorldOfWarcraft.Consumer
                         services.AddSingleton<IRealtimeEventPublisher, RealtimeEventPublisher>();
                         services.AddSingleton<IPlatformSanctionsClient, PlatformSanctionsClient>();
                         services.AddSingleton<IPlatformFriendsClient, PlatformFriendsClient>();
+                        services.AddSingleton<IPlatformConversationsClient, PlatformConversationsClient>();
+                        services.AddScoped<IGuildWhispers, GuildWhispers>();
 
                         services.Scan(scan => scan
                             .FromAssembliesOf(typeof(AppSettings))

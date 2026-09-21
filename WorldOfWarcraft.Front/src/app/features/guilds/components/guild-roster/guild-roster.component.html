@@ -72,7 +72,10 @@
                             {{ member.raceName | gameTerm }}
                         </li>
                         @if (member.directionName) {
-                            <li>{{ member.directionName | gameTerm }}</li>
+                            <li>
+                                <wow-icon kind="role" [slug]="member.directionName" [size]="16" />
+                                {{ member.directionName | gameTerm }}
+                            </li>
                         }
                         @if (member.ilvl) {
                             <li>

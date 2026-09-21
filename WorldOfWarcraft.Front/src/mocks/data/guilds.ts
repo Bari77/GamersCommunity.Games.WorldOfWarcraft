@@ -80,7 +80,8 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         creationDate: mockGuildSheet.creationDate,
         serverName: "hyjal",
         memberCount: mockGuildSheet.memberCount,
-        sentence: "Heroic progress guild, EU evenings.",
+        sentence:
+            "<p>Heroic progress guild looking for committed raiders who can show up on <em>EU evenings</em>, learn the fights, and keep the mood high even when the wipe count climbs.</p>",
         alignmentName: "alliance",
         orientationName: "pvpe",
         crest: mockGuildSheet.crest,

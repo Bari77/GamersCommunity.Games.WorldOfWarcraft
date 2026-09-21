@@ -1,6 +1,14 @@
 :host {
     display: inline-flex;
     flex: 0 0 auto;
+    align-self: center;
+    vertical-align: middle;
+    margin-right: 3px;
+}
+
+.wow-icon,
+.wow-glyph {
+    display: block;
 }
 
 .wow-icon {
@@ -9,23 +17,35 @@
     object-fit: cover;
 }
 
-.wow-role__plate {
+.wow-glyph__plate {
     fill: #14161c;
     stroke: rgba(0, 0, 0, 0.55);
 }
 
-.wow-role__glyph {
+.wow-glyph__mark {
     fill: currentColor;
 }
 
-.wow-role[data-role="tank"] {
+.wow-glyph__cut {
+    fill: #14161c;
+}
+
+.wow-glyph[data-kind="role"][data-slug="tank"] {
     color: #4a90d9;
 }
 
-.wow-role[data-role="healer"] {
+.wow-glyph[data-kind="role"][data-slug="healer"] {
     color: #3fbf5f;
 }
 
-.wow-role[data-role="dps"] {
+.wow-glyph[data-kind="role"][data-slug="dps"] {
     color: #d94a4a;
+}
+
+.wow-glyph[data-kind="faction"][data-slug="alliance"] {
+    color: #4a7fd9;
+}
+
+.wow-glyph[data-kind="faction"][data-slug="horde"] {
+    color: #c4453c;
 }

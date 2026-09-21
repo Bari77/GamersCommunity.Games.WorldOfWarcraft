@@ -61,7 +61,12 @@
                 >
                     <nb-option [value]="null" i18n="@@wow.guild.directory.allFactions">All factions</nb-option>
                     @for (alignment of options.value().alignments; track alignment.id) {
-                        <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                        <nb-option [value]="alignment.id">
+                            <span class="gc-select-option">
+                                <wow-icon kind="faction" [slug]="alignment.entitled" [size]="18" />
+                                {{ alignment.entitled | gameTerm }}
+                            </span>
+                        </nb-option>
                     }
                 </nb-select>
 
@@ -153,7 +158,7 @@
                             · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }}
                         </p>
                         @if (guild.sentence) {
-                            <p class="guild-card__sentence">{{ guild.sentence }}</p>
+                            <gc-rich-content class="guild-card__sentence" [html]="guild.sentence" />
                         }
                         <p class="guild-card__members">
                             {{ guild.memberCount }}

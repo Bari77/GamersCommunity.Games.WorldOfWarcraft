@@ -133,7 +133,20 @@
 
 .guild-card__sentence {
     margin: 0;
+    min-width: 0;
     font-size: 0.85rem;
+}
+
+/* innerHTML is unscoped, so the clamp has to pierce into gc-rich-content. */
+:host ::ng-deep .guild-card__sentence .gc-rich-content {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+:host ::ng-deep .guild-card__sentence .gc-rich-content > * {
+    display: contents;
 }
 
 .guild-cards__empty {

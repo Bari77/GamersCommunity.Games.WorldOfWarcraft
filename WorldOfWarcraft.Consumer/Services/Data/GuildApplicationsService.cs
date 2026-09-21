@@ -15,7 +15,8 @@ namespace WorldOfWarcraft.Consumer.Services.Data;
 
 public class GuildApplicationsService(
     WorldOfWarcraftDbContext context,
-    IPlatformSanctionsClient sanctions) : IBusService
+    IPlatformSanctionsClient sanctions,
+    IGuildWhispers whispers) : IBusService
 {
     private const int MaxMessageLength = 1000;
     private readonly WorldOfWarcraftDbContext _context = context;
@@ -192,6 +193,13 @@ public class GuildApplicationsService(
         application.ModificationDate = now;
 
         await _context.SaveChangesAsync(ct);
+
+        if (request.Accept)
+        {
+            var guild = await _context.Guilds.AsNoTracking()
+                .FirstAsync(g => g.Id == application.IdGuild, ct);
+            await whispers.OnMemberJoinedAsync(guild, application.IdCharacter, ct);
+        }
 
         return await ToDtoAsync(application.Id, ct);
     }

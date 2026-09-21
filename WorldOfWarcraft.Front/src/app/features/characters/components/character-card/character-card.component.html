@@ -47,10 +47,16 @@
             <wow-icon kind="race" [slug]="item.raceName" [label]="item.raceName | gameTerm" [size]="16" />
             {{ item.raceName | gameTerm }}
         </li>
-        <li>{{ item.directionName | gameTerm }}</li>
+        <li>
+            <wow-icon kind="role" [slug]="item.directionName" [size]="16" />
+            {{ item.directionName | gameTerm }}
+        </li>
         <li>{{ item.serverName | gameTerm }}</li>
         @if (item.alignmentName) {
-            <li>{{ item.alignmentName | gameTerm }}</li>
+            <li>
+                <wow-icon kind="faction" [slug]="item.alignmentName" [size]="16" />
+                {{ item.alignmentName | gameTerm }}
+            </li>
         }
     </ul>
 

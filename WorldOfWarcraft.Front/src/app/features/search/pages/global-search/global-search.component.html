@@ -50,7 +50,12 @@
                     >
                         <nb-option [value]="null" i18n="@@wow.search.allFactions">All factions</nb-option>
                         @for (alignment of options.value().alignments; track alignment.id) {
-                            <nb-option [value]="alignment.id">{{ alignment.entitled | gameTerm }}</nb-option>
+                            <nb-option [value]="alignment.id">
+                                <span class="gc-select-option">
+                                    <wow-icon kind="faction" [slug]="alignment.entitled" [size]="18" />
+                                    {{ alignment.entitled | gameTerm }}
+                                </span>
+                            </nb-option>
                         }
                     </nb-select>
                 }
@@ -66,7 +71,12 @@
                     >
                         <nb-option [value]="null" i18n="@@wow.search.allClasses">All classes</nb-option>
                         @for (gameClass of options.value().classes; track gameClass.id) {
-                            <nb-option [value]="gameClass.id">{{ gameClass.entitled | gameTerm }}</nb-option>
+                            <nb-option [value]="gameClass.id">
+                                <span class="gc-select-option">
+                                    <wow-icon kind="class" [slug]="gameClass.entitled" [size]="18" />
+                                    {{ gameClass.entitled | gameTerm }}
+                                </span>
+                            </nb-option>
                         }
                     </nb-select>
 
