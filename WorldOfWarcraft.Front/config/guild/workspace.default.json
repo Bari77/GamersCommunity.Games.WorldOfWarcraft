@@ -12,16 +12,16 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 2,
+          "rows": 3,
           "settings": {}
         },
         {
           "id": "w-presentation",
           "type": "guild-presentation",
           "x": 0,
-          "y": 2,
+          "y": 3,
           "cols": 12,
-          "rows": 5,
+          "rows": 6,
           "settings": {
             "title": "Presentation"
           }
@@ -38,7 +38,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ]
@@ -50,7 +50,7 @@
         {
           "type": "guild-wall",
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {},
           "id": "w-a999060e",
           "x": 0,
@@ -69,7 +69,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ],
@@ -82,7 +82,7 @@
         {
           "type": "guild-photos",
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {},
           "id": "w-5d310f71",
           "x": 0,
@@ -98,7 +98,7 @@
         {
           "type": "gc-links",
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {},
           "id": "w-d98b67a6",
           "x": 0,
@@ -117,7 +117,7 @@
           "x": 0,
           "y": 5,
           "cols": 12,
-          "rows": 3,
+          "rows": 4,
           "settings": {}
         },
         {

@@ -12,16 +12,16 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 2,
+          "rows": 3,
           "settings": {}
         },
         {
           "id": "w-irl",
           "type": "presentation-irl",
           "x": 0,
-          "y": 2,
+          "y": 3,
           "cols": 6,
-          "rows": 5,
+          "rows": 6,
           "settings": {
             "title": "IRL presentation"
           }
@@ -30,9 +30,9 @@
           "id": "w-ig",
           "type": "presentation-ig",
           "x": 6,
-          "y": 2,
+          "y": 3,
           "cols": 6,
-          "rows": 5,
+          "rows": 6,
           "settings": {
             "title": "In-game presentation"
           }
@@ -49,7 +49,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ]
@@ -64,7 +64,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ],
@@ -80,7 +80,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ],
@@ -96,7 +96,7 @@
           "x": 0,
           "y": 0,
           "cols": 12,
-          "rows": 7,
+          "rows": 9,
           "settings": {}
         }
       ],
