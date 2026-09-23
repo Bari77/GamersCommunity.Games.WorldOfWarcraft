@@ -26,6 +26,9 @@ export const appConfig: ApplicationConfig = {
             },
             playerSheetApi: PlayersService,
         }),
+        // Required next to the kernel: GAME_PLAYER_SHEET_API is useExisting → PlayersService.
+        // App injects GameMembershipStore at root (session chip in the playground header).
+        PlayersService,
         providePlaygroundUi("cosmic"),
     ],
 };
