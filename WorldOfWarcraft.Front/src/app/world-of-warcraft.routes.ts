@@ -10,6 +10,7 @@ import {
 } from "@bari77/gc-sdk";
 import { WOW_GAME_ID, WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlatformUsersService } from "@core/services/platform-users.service";
+import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
 import { CharactersService } from "@features/characters/services/characters.service";
 import { ClassesService } from "@features/classes/services/classes.service";
 import { ClassesStore } from "@features/classes/stores/classes.store";
@@ -57,6 +58,7 @@ const wowRemoteProviders = [
     PostableGuildsService,
     PlayerLinkService,
     PlatformUsersService,
+    PlatformAvatarStore,
     ClassesService,
     ClassesStore,
 ];
