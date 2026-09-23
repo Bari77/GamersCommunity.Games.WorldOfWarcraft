@@ -10,7 +10,7 @@ import { GuildApplication } from "@features/guilds/models/guild-application.mode
 import { BaseService } from "@shared/services/base.service";
 import { map, Observable } from "rxjs";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class GuildApplicationsService extends BaseService {
     public constructor() {
         super("/worldofwarcraft/GuildApplications");

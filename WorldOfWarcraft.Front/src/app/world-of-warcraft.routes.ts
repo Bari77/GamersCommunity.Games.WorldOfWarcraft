@@ -21,13 +21,14 @@ import { GuildsService } from "@features/guilds/services/guilds.service";
 import { HomeFeedService } from "@features/home/services/home-feed.service";
 import { HomeFeedStore } from "@features/home/stores/home-feed.store";
 import { LfgChatService, PostableGuildsService } from "@features/lfg/services/lfg-chat.service";
+import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
 import { PlayerLinkService } from "@features/links/services/player-link.service";
 import { PlayersService } from "@features/players/services/players.service";
 import { environment } from "../environments/environment";
 
 /**
- * Federation loads these routes into the Platform shell without the remote `app.config`.
- * `providedIn: "root"` would hit the host root (no GC_ENVIRONMENT) — shadow those services here.
+ * Game services live on this remote injector (not providedIn: "root") so federation
+ * into the Platform shell does not resolve them against the host root.
  */
 const wowRemoteProviders = [
     provideGameRemoteKernel({
@@ -56,6 +57,7 @@ const wowRemoteProviders = [
     GuildApplicationsService,
     LfgChatService,
     PostableGuildsService,
+    LfgRealtimeService,
     PlayerLinkService,
     PlatformUsersService,
     PlatformAvatarStore,

@@ -16,7 +16,7 @@ export interface PlayerSearchPage {
     hasMore: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class PlayersService extends BaseService {
     public constructor() {
         super("/worldofwarcraft/Players");

@@ -12,7 +12,7 @@ import { map, Observable } from "rxjs";
 
 const RESOURCE = "PlayerLinks";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class PlayerLinkService extends BaseService {
     public constructor() {
         super("/worldofwarcraft");

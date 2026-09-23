@@ -4,7 +4,7 @@ import { firstValueFrom } from "rxjs";
 
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class PlatformAvatarStore {
     public readonly avatars = signal<Record<string, string>>({});
 

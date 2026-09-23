@@ -7,7 +7,7 @@ interface PublicUserDto {
     avatarUrl: string;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class PlatformUsersService extends BaseService {
     public constructor() {
         super("/platform/users");

@@ -20,7 +20,7 @@ export interface GuildSearchPage {
     hasMore: boolean;
 }
 
-@Injectable({ providedIn: "root" })
+@Injectable()
 export class GuildsService extends BaseService {
     public constructor() {
         super("/worldofwarcraft/Guilds");
