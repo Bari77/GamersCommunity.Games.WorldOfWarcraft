@@ -24,10 +24,20 @@
                     <ul class="player-hero__menu" role="listbox">
                         @for (game of otherGames(); track game.id) {
                             <li>
-                                <a class="player-hero__menu-item" [routerLink]="gameLink(game)" (click)="closeMenu()">
-                                    <img [src]="game.iconUrl" alt="" />
-                                    <span>{{ game.title }}</span>
-                                </a>
+                                @if (game.available) {
+                                    <a class="player-hero__menu-item" [routerLink]="gameLink(game)" (click)="closeMenu()">
+                                        <img [src]="game.iconUrl" alt="" />
+                                        <span>{{ game.title }}</span>
+                                    </a>
+                                } @else {
+                                    <span
+                                        class="player-hero__menu-item player-hero__menu-item--unavailable"
+                                        [attr.title]="unavailableLabel"
+                                    >
+                                        <img [src]="game.iconUrl" alt="" />
+                                        <span>{{ game.title }}</span>
+                                    </span>
+                                }
                             </li>
                         }
                     </ul>

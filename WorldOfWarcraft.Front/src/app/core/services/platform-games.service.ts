@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { catchError, forkJoin, map, Observable, of, switchMap } from "rxjs";
+import { catchError, forkJoin, map, Observable, of, switchMap, timeout } from "rxjs";
 
 interface PlatformGameDto {
     id: number;
@@ -15,15 +15,19 @@ interface PlayerResolveDto {
     hasSheet: boolean;
 }
 
+interface GatewayAvailabilityDto {
+    items?: { id: string; available: boolean }[];
+}
+
 export interface PlatformGame {
     id: number;
     title: string;
     url: string;
     iconUrl: string;
     playerPublicId: string | null;
+    available: boolean;
 }
 
-/** Reads the shell's game catalog so a game sheet can offer a switcher to the others. */
 @Injectable({ providedIn: "root" })
 export class PlatformGamesService {
     private readonly http = inject(HttpClient);
@@ -35,31 +39,56 @@ export class PlatformGamesService {
     }
 
     public listForPlayer(platformUserPublicId: string): Observable<PlatformGame[]> {
-        return this.list().pipe(
-            switchMap((games) => {
+        return forkJoin({
+            games: this.list(),
+            availability: this.availability(),
+        }).pipe(
+            switchMap(({ games, availability }) => {
                 if (games.length === 0) {
                     return of([]);
                 }
 
                 return forkJoin(
-                    games.map((game) =>
-                        this.resolve(game.url, platformUserPublicId).pipe(
-                            map((playerPublicId) => ({ ...game, playerPublicId })),
-                            catchError(() => of(game)),
-                        ),
-                    ),
+                    games.map((game) => {
+                        const available = availability.get(this.segment(game.url)) !== false;
+                        if (!available) {
+                            return of({ ...game, available: false, playerPublicId: null });
+                        }
+
+                        return this.resolve(game.url, platformUserPublicId).pipe(
+                            timeout(4000),
+                            map((playerPublicId) => ({ ...game, available: true, playerPublicId })),
+                            catchError(() => of({ ...game, available: false, playerPublicId: null })),
+                        );
+                    }),
                 );
             }),
         );
     }
 
+    private availability(): Observable<Map<string, boolean>> {
+        return this.http.get<GatewayAvailabilityDto>(`${environment.apiUrl}/gateway/availability`).pipe(
+            map((dto) => {
+                const statuses = new Map<string, boolean>();
+                for (const item of dto.items ?? []) {
+                    statuses.set(item.id.toLowerCase(), item.available);
+                }
+                return statuses;
+            }),
+            catchError(() => of(new Map<string, boolean>())),
+        );
+    }
+
     private resolve(gameUrl: string, platformUserPublicId: string): Observable<string | null> {
-        const segment = gameUrl.replace(/^\/+|\/+$/g, "").replace(/-/g, "");
         return this.http
-            .post<PlayerResolveDto>(`${environment.apiUrl}/${segment}/Players/actions/Resolve`, {
+            .post<PlayerResolveDto>(`${environment.apiUrl}/${this.segment(gameUrl)}/Players/actions/Resolve`, {
                 platformUserPublicId,
             })
             .pipe(map((dto) => (dto.hasSheet && dto.playerPublicId ? dto.playerPublicId : null)));
+    }
+
+    private segment(gameUrl: string): string {
+        return gameUrl.replace(/^\/+|\/+$/g, "").replace(/-/g, "").toLowerCase();
     }
 
     private toGame(dto: PlatformGameDto): PlatformGame {
@@ -69,6 +98,7 @@ export class PlatformGamesService {
             url: dto.urlValue.startsWith("/") ? dto.urlValue : `/${dto.urlValue}`,
             iconUrl: `${environment.assetsBaseUrl}/Icons/Games/${dto.picture}.png`,
             playerPublicId: null,
+            available: true,
         };
     }
 }

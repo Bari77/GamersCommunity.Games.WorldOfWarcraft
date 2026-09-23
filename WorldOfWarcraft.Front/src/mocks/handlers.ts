@@ -419,6 +419,15 @@ export const handlers = [
             guildCrest: summary?.crest ?? template.guildCrest,
         });
     }),
+    http.get(`${environment.apiUrl}/gateway/availability`, () =>
+        HttpResponse.json({
+            items: [
+                { id: "platform", available: true },
+                { id: "worldofwarcraft", available: true },
+                { id: "leagueoflegends", available: true },
+            ],
+        }),
+    ),
     http.get(`${environment.apiUrl}/platform/games`, () =>
         HttpResponse.json([
             { id: 1, title: "World Of Warcraft", urlValue: "/world-of-warcraft", picture: "world-of-warcraft" },
