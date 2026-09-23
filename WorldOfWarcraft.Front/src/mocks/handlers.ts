@@ -27,7 +27,7 @@ import {
     PlayerMediaCreateRequestDto,
     PlayerMediaDto,
     PlayerMediaListRequestDto,
-} from "@features/media/dto/player-media.dto";
+} from "@bari77/gc-sdk";
 import { PlayerUpdateRequestDto } from "@features/players/dto/player.dto";
 import { http, HttpResponse } from "msw";
 import { environment } from "../environments/environment";

@@ -19,7 +19,11 @@ export const appConfig: ApplicationConfig = {
                 apiUrl: environment.apiUrl,
                 assetsBaseUrl: environment.assetsBaseUrl,
             },
-            membership: { gameId: WOW_GAME_ID, gameUrl: WOW_GAME_URL },
+            membership: {
+                gameId: WOW_GAME_ID,
+                gameUrl: WOW_GAME_URL,
+                apiSegment: "worldofwarcraft",
+            },
             playerSheetApi: PlayersService,
         }),
         providePlaygroundUi("cosmic"),

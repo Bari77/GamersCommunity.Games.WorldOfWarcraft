@@ -1,171 +1,50 @@
-@if (canModerate()) {
-    <nb-card class="guild-wall__queue">
-        <nb-card-header class="guild-wall__queue-header">
-            <span i18n="@@wow.guild.wall.queue">Awaiting review</span>
-            @if (store.loadingPending()) {
-                <gc-skeleton width="1.5rem" height="0.8rem" />
-            } @else {
-                <span class="guild-wall__badge">{{ store.pendingCount() }}</span>
-            }
-        </nb-card-header>
-        <nb-card-body>
-            @if (store.loadingPending()) {
-                <gc-skeleton-text [lines]="2" />
-            } @else {
-                <ul class="guild-posts">
-                    @for (post of store.pending(); track post.publicId) {
-                        <li class="guild-post guild-post--pending">
-                            <header class="guild-post__head">
-                                @if (post.isContactable()) {
-                                    <a class="guild-post__author" [routerLink]="['/users', post.authorPlatformUserPublicId]">
-                                        {{ post.authorHandleLabel() }}
-                                    </a>
-                                } @else {
-                                    <span class="guild-post__author">{{ post.authorHandleLabel() }}</span>
-                                }
-                                <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
-                            </header>
+<gc-entity-wall
+    [posts]="store.posts()"
+    [pending]="store.pending()"
+    [canPublish]="canPublish()"
+    [canModerate]="canModerate()"
+    [playerPublicId]="playerPublicId()"
+    [loading]="store.loading()"
+    [loadingPending]="store.loadingPending()"
+    [loadingMore]="store.loadingMore()"
+    [hasMore]="store.hasMore()"
+    [posting]="store.posting()"
+    [queuedNotice]="queuedNotice()"
+    [labels]="labels"
+    (loadMoreClick)="store.loadMore()"
+    (moderateClick)="moderate($event)"
+    (removeClick)="remove($event)"
+    (editStart)="onEditStart()"
+>
+    <wow-guild-post-form
+        gcEntityWallComposer
+        #composer
+        [saving]="store.posting()"
+        [errorCode]="store.errorCode()"
+        [moderated]="canModerate()"
+        (save)="publish($event)"
+    />
 
-                            @if (editingId() === post.publicId) {
-                                <wow-guild-post-form
-                                    [post]="post"
-                                    [saving]="store.posting()"
-                                    [errorCode]="store.errorCode()"
-                                    [moderated]="canModerate()"
-                                    (save)="saveEdit(post, $event)"
-                                    (cancel)="cancelEdit()"
-                                />
-                            } @else {
-                                <gc-rich-content class="guild-post__body" [html]="post.body" />
-                                @if (post.mediaUrl) {
-                                    <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
-                                }
-                                @if (!post.isPublic()) {
-                                    <p class="guild-post__audience">
-                                        <span i18n="@@wow.guild.wall.audience">Readable from</span>
-                                        <strong>{{ visibilityLabel(post) }}</strong>
-                                    </p>
-                                }
-                                <footer class="guild-post__actions">
-                                    @if (isAuthor(post)) {
-                                        <button nbButton ghost size="small" status="basic" (click)="startEdit(post)">
-                                            <span i18n="@@wow.guild.wall.edit">Edit</span>
-                                        </button>
-                                    }
-                                    <button nbButton ghost size="small" status="success" (click)="moderate(post, true)">
-                                        <span i18n="@@wow.guild.wall.approve">Approve</span>
-                                    </button>
-                                    <button nbButton ghost size="small" status="danger" (click)="moderate(post, false)">
-                                        <span i18n="@@wow.guild.wall.reject">Reject</span>
-                                    </button>
-                                </footer>
-                            }
-                        </li>
-                    } @empty {
-                        <li class="guild-posts__empty" i18n="@@wow.guild.wall.queueEmpty">
-                            Nothing waiting for a decision.
-                        </li>
-                    }
-                </ul>
-            }
-        </nb-card-body>
-    </nb-card>
-}
+    <ng-template gcEntityWallEdit let-post>
+        <wow-guild-post-form
+            [post]="asGamePost(post)"
+            [saving]="store.posting()"
+            [errorCode]="store.errorCode()"
+            [moderated]="canModerate()"
+            (save)="saveEdit(asGamePost(post), $event)"
+            (cancel)="cancelEdit()"
+        />
+    </ng-template>
 
-<nb-card>
-    <nb-card-header i18n="@@wow.guild.wall.title">Guild wall</nb-card-header>
-    <nb-card-body>
-        @if (canPublish()) {
-            <div class="guild-wall__composer">
-                <wow-guild-post-form
-                    #composer
-                    [saving]="store.posting()"
-                    [errorCode]="editingId() ? null : store.errorCode()"
-                    [moderated]="canModerate()"
-                    (save)="publish($event)"
-                />
-
-                @if (queuedNotice()) {
-                    <p class="guild-wall__notice" role="status" i18n="@@wow.guild.wall.queued">
-                        Sent. An officer will review it shortly.
-                    </p>
-                }
-            </div>
+    <ng-template gcEntityWallExtras let-post>
+        @if (asGamePost(post).mediaUrl; as mediaUrl) {
+            <img class="guild-wall__media" [src]="mediaUrl" alt="" />
         }
-
-        <ul class="guild-posts">
-            @if (store.loading()) {
-                @for (placeholder of postPlaceholders; track placeholder) {
-                    <li class="guild-post guild-post--skeleton" aria-busy="true">
-                        <header class="guild-post__head">
-                            <gc-skeleton width="9rem" height="0.9rem" />
-                            <gc-skeleton width="5rem" height="0.75rem" />
-                        </header>
-                        <gc-skeleton-text [lines]="2" />
-                    </li>
-                }
-            } @else {
-                @for (post of store.posts(); track post.publicId) {
-                    <li class="guild-post">
-                        <header class="guild-post__head">
-                            @if (post.isContactable()) {
-                                <a class="guild-post__author" [routerLink]="['/users', post.authorPlatformUserPublicId]">
-                                    {{ post.authorHandleLabel() }}
-                                </a>
-                            } @else {
-                                <span class="guild-post__author">{{ post.authorHandleLabel() }}</span>
-                            }
-                            <time class="guild-post__date">{{ post.creationDate | date: "short" }}</time>
-                        </header>
-
-                        @if (editingId() === post.publicId) {
-                            <wow-guild-post-form
-                                [post]="post"
-                                [saving]="store.posting()"
-                                [errorCode]="store.errorCode()"
-                                [moderated]="canModerate()"
-                                (save)="saveEdit(post, $event)"
-                                (cancel)="cancelEdit()"
-                            />
-                        } @else {
-                            <gc-rich-content class="guild-post__body" [html]="post.body" />
-                            @if (post.mediaUrl) {
-                                <img class="guild-post__media" [src]="post.mediaUrl" alt="" />
-                            }
-                            @if (!post.isPublic()) {
-                                <p class="guild-post__audience">
-                                    <span i18n="@@wow.guild.wall.audience">Readable from</span>
-                                    <strong>{{ visibilityLabel(post) }}</strong>
-                                </p>
-                            }
-                            @if (isAuthor(post) || canDelete(post)) {
-                                <footer class="guild-post__actions">
-                                    @if (isAuthor(post)) {
-                                        <button nbButton ghost size="small" status="basic" (click)="startEdit(post)">
-                                            <span i18n="@@wow.guild.wall.edit">Edit</span>
-                                        </button>
-                                    }
-                                    @if (canDelete(post)) {
-                                        <button nbButton ghost size="small" status="danger" (click)="remove(post)">
-                                            <span i18n="@@wow.guild.wall.delete">Delete</span>
-                                        </button>
-                                    }
-                                </footer>
-                            }
-                        }
-                    </li>
-                } @empty {
-                    <li class="guild-posts__empty" i18n="@@wow.guild.wall.empty">The wall is empty for now.</li>
-                }
-            }
-        </ul>
-
-        @if (store.hasMore() && !store.loading()) {
-            <div class="guild-wall__more">
-                <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
-                    <span i18n="@@wow.guild.wall.loadMore">Load more</span>
-                </button>
-            </div>
+        @if (!asGamePost(post).isPublic()) {
+            <p class="guild-wall__audience">
+                <span>{{ audiencePrefix }}</span>
+                <strong>{{ visibilityLabel(asGamePost(post)) }}</strong>
+            </p>
         }
-    </nb-card-body>
-</nb-card>
+    </ng-template>
+</gc-entity-wall>

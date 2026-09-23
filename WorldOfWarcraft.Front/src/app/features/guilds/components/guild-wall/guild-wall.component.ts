@@ -1,25 +1,25 @@
-import { DatePipe } from "@angular/common";
 import { Component, inject, input, OnInit, output, signal, viewChild } from "@angular/core";
-import { RouterLink } from "@angular/router";
-import { RichContentComponent, SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
+import {
+    EntityWallComponent,
+    EntityWallComposerDirective,
+    EntityWallEditDirective,
+    EntityWallExtrasDirective,
+    type EntityWallLabels,
+} from "@bari77/gc-widgets";
 import { GuildPostFormComponent } from "@features/guilds/components/guild-post-form/guild-post-form.component";
 import { GamePost } from "@features/guilds/models/game-post.model";
 import { postVisibilityLabel } from "@features/guilds/models/post-visibility";
 import { GamePostDraft, GuildWallStore } from "@features/guilds/stores/guild-wall.store";
-import { NbButtonModule, NbCardModule } from "@nebular/theme";
 
 @Component({
     standalone: true,
     selector: "wow-guild-wall",
     imports: [
-        DatePipe,
-        RouterLink,
+        EntityWallComponent,
+        EntityWallComposerDirective,
+        EntityWallEditDirective,
+        EntityWallExtrasDirective,
         GuildPostFormComponent,
-        NbButtonModule,
-        NbCardModule,
-        SkeletonComponent,
-        SkeletonTextComponent,
-        RichContentComponent,
     ],
     providers: [GuildWallStore],
     templateUrl: "./guild-wall.component.html",
@@ -30,21 +30,26 @@ export class GuildWallComponent implements OnInit {
     public readonly canPublish = input(false);
     public readonly canModerate = input(false);
     public readonly playerPublicId = input<string | null>(null);
-
-    /** Fired after a moderation decision so the sheet can refresh its pending counter. */
     public readonly moderated = output<void>();
 
     protected readonly store = inject(GuildWallStore);
-
-    protected readonly postPlaceholders = [0, 1, 2];
-
-    /** Public id of the post being rewritten; only its author ever gets there. */
-    protected readonly editingId = signal<string | null>(null);
-
-    /** Set after a member's post landed in the queue, since nothing appears on the wall. */
     protected readonly queuedNotice = signal(false);
+    protected readonly labels: EntityWallLabels = {
+        title: $localize`:@@wow.guild.wall.title:Guild wall`,
+        queue: $localize`:@@wow.guild.wall.queue:Awaiting review`,
+        queueEmpty: $localize`:@@wow.guild.wall.queueEmpty:Nothing waiting for a decision.`,
+        empty: $localize`:@@wow.guild.wall.empty:The wall is empty for now.`,
+        queued: $localize`:@@wow.guild.wall.queued:Sent. An officer will review it shortly.`,
+        edit: $localize`:@@wow.guild.wall.edit:Edit`,
+        approve: $localize`:@@wow.guild.wall.approve:Approve`,
+        reject: $localize`:@@wow.guild.wall.reject:Reject`,
+        delete: $localize`:@@wow.guild.wall.delete:Delete`,
+        loadMore: $localize`:@@wow.guild.wall.loadMore:Load more`,
+    };
+    protected readonly audiencePrefix = $localize`:@@wow.guild.wall.audience:Readable from`;
 
     private readonly composer = viewChild<GuildPostFormComponent>("composer");
+    private readonly wall = viewChild(EntityWallComponent);
 
     public async ngOnInit(): Promise<void> {
         await this.store.load(this.guildPublicId(), this.canModerate());
@@ -66,40 +71,33 @@ export class GuildWallComponent implements OnInit {
             return;
         }
 
-        this.editingId.set(null);
-        // A member's edit needs a fresh review, which drops the post off the wall until then.
+        this.wall()?.clearEditing();
         this.queuedNotice.set(saved.isPending() && !this.canModerate());
     }
 
-    protected startEdit(post: GamePost): void {
+    protected cancelEdit(): void {
+        this.wall()?.clearEditing();
+    }
+
+    protected onEditStart(): void {
         this.store.errorCode.set(null);
         this.queuedNotice.set(false);
-        this.editingId.set(post.publicId);
     }
 
-    protected cancelEdit(): void {
-        this.editingId.set(null);
-    }
-
-    protected async moderate(post: GamePost, approve: boolean): Promise<void> {
-        if (await this.store.moderate(post.publicId, approve)) {
+    protected async moderate(event: { post: { publicId: string }; approve: boolean }): Promise<void> {
+        if (await this.store.moderate(event.post.publicId, event.approve)) {
             this.moderated.emit();
         }
     }
 
-    protected async remove(post: GamePost): Promise<void> {
+    protected async remove(post: { publicId: string }): Promise<void> {
         if (await this.store.remove(post.publicId)) {
             this.moderated.emit();
         }
     }
 
-    protected canDelete(post: GamePost): boolean {
-        return this.canModerate() || this.isAuthor(post);
-    }
-
-    /** Officers moderate what they are shown; rewriting is the author's own business. */
-    protected isAuthor(post: GamePost): boolean {
-        return post.isMine(this.playerPublicId());
+    protected asGamePost(post: unknown): GamePost {
+        return post as GamePost;
     }
 
     protected visibilityLabel(post: GamePost): string {

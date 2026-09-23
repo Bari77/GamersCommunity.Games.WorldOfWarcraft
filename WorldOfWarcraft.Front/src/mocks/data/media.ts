@@ -1,4 +1,4 @@
-import { PlayerMediaDto } from "@features/media/dto/player-media.dto";
+import { PlayerMediaDto } from "@bari77/gc-sdk";
 import { MOCK_PERSONAS } from "./portraits";
 
 const PHOTO_CAPTIONS = [
