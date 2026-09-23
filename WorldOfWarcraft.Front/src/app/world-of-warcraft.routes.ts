@@ -1,13 +1,7 @@
 /// <reference types="@angular/localize" />
 
 import { Routes } from "@angular/router";
-import {
-    GameMembershipStore,
-    PlatformGamesService,
-    PlatformSessionService,
-    PlayerMediaService,
-    provideGameRemoteKernel,
-} from "@bari77/gc-sdk";
+import { provideGameRemoteKernel } from "@bari77/gc-sdk";
 import { WOW_GAME_ID, WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlatformUsersService } from "@core/services/platform-users.service";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
@@ -29,6 +23,7 @@ import { environment } from "../environments/environment";
 /**
  * Game services live on this remote injector (not providedIn: "root") so federation
  * into the Platform shell does not resolve them against the host root.
+ * SDK kernel services come from provideGameRemoteKernel.
  */
 const wowRemoteProviders = [
     provideGameRemoteKernel({
@@ -43,11 +38,6 @@ const wowRemoteProviders = [
         },
         playerSheetApi: PlayersService,
     }),
-    // Explicit until consumers pick up gc-sdk ≥ kernel that re-provides these itself:
-    PlatformSessionService,
-    PlatformGamesService,
-    GameMembershipStore,
-    PlayerMediaService,
     HomeFeedService,
     PlayersService,
     CharactersService,
