@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
+import { EntityRowComponent } from "@bari77/gc-ui";
 import { CharacterSummary } from "@features/characters/models/character.model";
-import { EntityRowComponent, EntityRowFact, EntityRowIcon } from "@shared/components/entity-row/entity-row.component";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe, gameTerm } from "@shared/pipes/game-term.pipe";
 
@@ -18,7 +18,7 @@ export class HomeLatestCharactersComponent {
     protected readonly mainLabel = $localize`:@@wow.character.main:Main`;
 
     private readonly noSpecLabel = $localize`:@@wow.character.noSpec:No specialization`;
-    private readonly ilvlLabel = $localize`:@@wow.character.ilvlShort:iLvl`;
+    protected readonly ilvlLabel = $localize`:@@wow.character.ilvlShort:iLvl`;
 
     protected subtitle(character: CharacterSummary): string | null {
         if (!character.className) {
@@ -31,31 +31,7 @@ export class HomeLatestCharactersComponent {
             : classLabel;
     }
 
-    protected subtitleIcons(character: CharacterSummary): EntityRowIcon[] {
-        if (!character.className || !character.mainSpecializationName) {
-            return [];
-        }
-
-        return [
-            { kind: "role", slug: character.role(), label: character.roleName() },
-            { kind: "spec", slug: character.specKey(), label: gameTerm(character.mainSpecializationName) },
-        ];
-    }
-
-    protected facts(character: CharacterSummary): EntityRowFact[] {
-        const facts: EntityRowFact[] = [
-            {
-                label: gameTerm(character.raceName),
-                icon: { kind: "race", slug: character.raceName, label: gameTerm(character.raceName) },
-            },
-            { label: gameTerm(character.serverName) },
-            { label: String(character.ilvl), prefix: this.ilvlLabel },
-        ];
-
-        if (character.guildHandle) {
-            facts.push({ label: character.guildHandle, accent: true });
-        }
-
-        return facts;
+    protected hasSubtitleIcons(character: CharacterSummary): boolean {
+        return !!(character.className && character.mainSpecializationName);
     }
 }

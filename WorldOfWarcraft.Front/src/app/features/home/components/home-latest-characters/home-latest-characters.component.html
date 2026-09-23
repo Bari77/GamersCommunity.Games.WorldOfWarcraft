@@ -1,18 +1,16 @@
 <ul class="latest-characters">
     @for (character of characters(); track character.publicId) {
         <li>
-            <wow-entity-row
+            <gc-entity-row
                 [link]="['/world-of-warcraft/players', character.playerPublicId]"
-                [accent]="character.color"
+                [accent]="character.color || ''"
                 [name]="character.pseudo"
-                [subtitle]="subtitle(character)"
-                [subtitleIcons]="subtitleIcons(character)"
+                [subtitle]="subtitle(character) || ''"
                 [subtitleMuted]="!character.className"
-                [badge]="character.main ? mainLabel : null"
+                [badge]="character.main ? mainLabel : ''"
                 [level]="character.level"
                 [levelLabel]="levelLabel"
                 [date]="character.creationDate"
-                [facts]="facts(character)"
             >
                 <wow-icon
                     rowVisual
@@ -22,7 +20,46 @@
                     [label]="character.className | gameTerm"
                     [size]="34"
                 />
-            </wow-entity-row>
+
+                @if (hasSubtitleIcons(character)) {
+                    <span rowSubtitleLeading>
+                        <wow-icon
+                            kind="role"
+                            [slug]="character.role()"
+                            [label]="character.roleName()"
+                            [size]="24"
+                        />
+                        <wow-icon
+                            kind="spec"
+                            [slug]="character.specKey()"
+                            [label]="character.mainSpecializationName | gameTerm"
+                            [size]="24"
+                        />
+                    </span>
+                }
+
+                <span rowFacts>
+                    <span class="gc-entity-row__fact">
+                        <wow-icon
+                            kind="race"
+                            [slug]="character.raceName"
+                            [label]="character.raceName | gameTerm"
+                            [size]="14"
+                        />
+                        {{ character.raceName | gameTerm }}
+                    </span>
+                    <span class="gc-entity-row__fact">{{ character.serverName | gameTerm }}</span>
+                    <span class="gc-entity-row__fact">
+                        <span class="gc-entity-row__fact-prefix">{{ ilvlLabel }}</span>
+                        {{ character.ilvl }}
+                    </span>
+                    @if (character.guildHandle) {
+                        <span class="gc-entity-row__fact gc-entity-row__fact--accent">
+                            {{ character.guildHandle }}
+                        </span>
+                    }
+                </span>
+            </gc-entity-row>
         </li>
     } @empty {
         <li class="latest-characters__empty" i18n="@@wow.home.characters.empty">No characters yet.</li>

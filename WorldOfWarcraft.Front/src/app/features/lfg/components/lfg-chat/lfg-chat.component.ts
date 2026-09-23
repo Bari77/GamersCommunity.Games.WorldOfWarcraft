@@ -1,45 +1,32 @@
-import { DatePipe } from "@angular/common";
+import { Component, computed, inject, input, OnDestroy, OnInit } from "@angular/core";
 import {
-    afterRenderEffect,
-    Component,
-    ElementRef,
-    inject,
-    input,
-    OnDestroy,
-    OnInit,
-    signal,
-    viewChild,
-} from "@angular/core";
-import { FormsModule } from "@angular/forms";
-import { RouterLink } from "@angular/router";
-import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage } from "@features/lfg/models/lfg-message.model";
+    LfgChatComponent as GcLfgChatComponent,
+    LfgChatLeadingDirective,
+    LfgChatNeedsSheetDirective,
+    type LfgChatComposerState,
+    type LfgChatLabels,
+    type LfgChatMessage as GcLfgChatMessage,
+    type LfgChatPosterOption,
+} from "@bari77/gc-widgets";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
+import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage } from "@features/lfg/models/lfg-message.model";
 import { LfgChatStore } from "@features/lfg/stores/lfg-chat.store";
 import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
-import { NbChatModule, NbSelectModule } from "@nebular/theme";
-import { SkeletonComponent } from "@bari77/gc-ui";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
-
-const NEAR_BOTTOM_PX = 48;
-const NEAR_TOP_PX = 48;
 
 @Component({
     standalone: true,
     selector: "wow-lfg-chat",
     imports: [
-        DatePipe,
-        FormsModule,
-        RouterLink,
-        NbChatModule,
-        NbSelectModule,
-        SkeletonComponent,
+        GcLfgChatComponent,
+        LfgChatLeadingDirective,
+        LfgChatNeedsSheetDirective,
         CreateSheetWallComponent,
         GuildCrestComponent,
     ],
     providers: [LfgChatStore],
     templateUrl: "./lfg-chat.component.html",
-    styleUrl: "./lfg-chat.component.scss",
 })
 export class LfgChatComponent implements OnInit, OnDestroy {
     public readonly kind = input<LfgKind>("lfg");
@@ -47,64 +34,98 @@ export class LfgChatComponent implements OnInit, OnDestroy {
     public readonly store = inject(LfgChatStore);
     public readonly realtime = inject(LfgRealtimeService);
     public readonly avatars = inject(PlatformAvatarStore);
-    public readonly composePlaceholder = $localize`:@@wow.home.lfg.bodyPlaceholder:Type a message…`;
-    public readonly newMessagesLabel = $localize`:@@wow.home.lfg.newMessages:New messages`;
-    public readonly loadingOlderLabel = $localize`:@@wow.home.lfg.loadingOlder:Loading older messages…`;
-    public readonly guildPickerPlaceholder = $localize`:@@wow.home.recruit.guildPicker:Post as…`;
-    public readonly sheetWallMessage = $localize`:@@wow.sheet.wall.lfgMessage:Create your player profile to post in this chat.`;
 
-    protected readonly messagePlaceholders = [0, 1, 2, 3];
+    protected readonly sheetWallMessage = $localize`:@@wow.sheet.wall.lfgMessage:Create your player profile to post in this chat.`;
 
-    public readonly stickToBottom = signal(true);
-    public readonly pendingBelowCount = signal(0);
+    protected readonly labels: LfgChatLabels = {
+        live: $localize`:@@wow.home.lfg.live:Live`,
+        empty: $localize`:@@wow.home.lfg.empty:No messages yet. Say hello!`,
+        loadingOlder: $localize`:@@wow.home.lfg.loadingOlder:Loading older messages…`,
+        newMessages: $localize`:@@wow.home.lfg.newMessages:New messages`,
+        composePlaceholder: $localize`:@@wow.home.lfg.bodyPlaceholder:Type a message…`,
+        posterPickerPlaceholder: $localize`:@@wow.home.recruit.guildPicker:Post as…`,
+        muted: $localize`:@@wow.home.lfg.muted:You are muted and cannot post recruitment messages.`,
+        noPoster: $localize`:@@wow.home.recruit.noGuild:Only guild officers can post here.`,
+        pickPoster: $localize`:@@wow.home.recruit.pickGuild:Pick the guild you are posting for to enable the composer.`,
+        cooldown: $localize`:@@wow.home.lfg.cooldown:Please wait`,
+        cooldownHint: $localize`:@@wow.home.lfg.cooldownHint: before posting again.`,
+        login: $localize`:@@wow.home.lfg.login:Log in`,
+        loginHint: $localize`:@@wow.home.lfg.loginHint: to join the global LFG chat.`,
+        loginHref: "/users/login",
+    };
 
-    private readonly viewport = viewChild<ElementRef<HTMLElement>>("viewport");
-    private lastTailPublicId: string | null = null;
-    private loadingOlder = false;
+    protected readonly title = computed(() =>
+        this.isRecruitment()
+            ? $localize`:@@wow.home.recruit:Guild recruitment`
+            : $localize`:@@wow.home.lfg:Looking for group`,
+    );
 
-    public constructor() {
-        afterRenderEffect(() => {
-            const messages = this.store.messages();
-            const loading = this.store.loading();
-            const tailPublicId = messages.at(-1)?.publicId ?? null;
+    protected readonly viewMessages = computed((): GcLfgChatMessage[] => {
+        const sessionId = this.store.session()?.publicId;
+        const playerId = this.store.playerPublicId();
+        return this.store.messages().map((message) => this.toViewMessage(message, sessionId, playerId));
+    });
 
-            if (loading || messages.length === 0) {
-                return;
-            }
+    protected readonly posterOptions = computed((): LfgChatPosterOption[] =>
+        this.store.postableGuilds().map((guild) => ({
+            publicId: guild.publicId,
+            handleLabel: guild.handleLabel(),
+        })),
+    );
 
-            if (tailPublicId == null || tailPublicId === this.lastTailPublicId) {
-                if (messages.length > 0 && this.lastTailPublicId == null) {
-                    this.lastTailPublicId = tailPublicId;
-                    this.scrollToBottom(false);
-                }
-                return;
-            }
-
-            const isInitialPin = this.lastTailPublicId == null;
-            this.lastTailPublicId = tailPublicId;
-            if (this.stickToBottom()) {
-                this.pendingBelowCount.set(0);
-                this.scrollToBottom(!isInitialPin);
-                return;
-            }
-
-            this.pendingBelowCount.update((count) => count + 1);
-        });
-    }
+    protected readonly composerState = computed((): LfgChatComposerState => {
+        if (this.store.loading()) {
+            return "hidden";
+        }
+        if (this.store.isMuted()) {
+            return "muted";
+        }
+        if (this.store.hasNoPostableGuild()) {
+            return "noPoster";
+        }
+        if (this.store.canPost() && this.store.cooldownSeconds() > 0) {
+            return "cooldown";
+        }
+        if (this.store.canSend()) {
+            return "ready";
+        }
+        if (this.store.canPost() && this.isRecruitment()) {
+            return "pickPoster";
+        }
+        if (this.store.needsSheet()) {
+            return "needsSheet";
+        }
+        if (!this.store.canPost()) {
+            return "login";
+        }
+        return "hidden";
+    });
 
     public async ngOnInit(): Promise<void> {
         await this.store.init(this.kind());
-    }
-
-    public isRecruitment(): boolean {
-        return this.kind() === LFG_KIND_RECRUITMENT;
     }
 
     public ngOnDestroy(): void {
         this.store.destroy();
     }
 
-    public messageAvatar(message: LfgMessage): string {
+    protected isRecruitment(): boolean {
+        return this.kind() === LFG_KIND_RECRUITMENT;
+    }
+
+    protected asMessage(context: unknown): LfgMessage {
+        return context as LfgMessage;
+    }
+
+    protected onSend(body: string): void {
+        void this.store.send(body);
+    }
+
+    protected onRequestOlder(): void {
+        void this.store.loadOlder();
+    }
+
+    private messageAvatar(message: LfgMessage): string {
         const session = this.store.session();
         return this.avatars.urlFor(message.platformUserPublicId, {
             sessionPublicId: session?.publicId,
@@ -113,71 +134,28 @@ export class LfgChatComponent implements OnInit, OnDestroy {
         });
     }
 
-    public onChatSend(event: { message: string; files: File[] }): void {
-        const text = event.message.trim();
-        if (!text || !this.store.canSend()) {
-            return;
-        }
-        this.stickToBottom.set(true);
-        this.pendingBelowCount.set(0);
-        void this.store.send(text);
-        this.scrollToBottom(true);
-    }
-
-    public onViewportScroll(): void {
-        const el = this.viewport()?.nativeElement;
-        if (!el) {
-            return;
+    private toViewMessage(
+        message: LfgMessage,
+        sessionId: string | null | undefined,
+        playerId: string | null | undefined,
+    ): GcLfgChatMessage {
+        let senderLink: unknown[] | null = null;
+        if (message.isGuildAd() && message.guildPublicId) {
+            senderLink = ["/world-of-warcraft/guilds", message.guildPublicId];
+        } else if (message.playerPublicId) {
+            senderLink = ["/world-of-warcraft/players", message.playerPublicId];
         }
 
-        const distanceBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
-        const nearBottom = distanceBottom <= NEAR_BOTTOM_PX;
-        this.stickToBottom.set(nearBottom);
-        if (nearBottom) {
-            this.pendingBelowCount.set(0);
-        }
-
-        if (el.scrollTop <= NEAR_TOP_PX) {
-            void this.tryLoadOlder(el);
-        }
-    }
-
-    public jumpToLatest(): void {
-        this.pendingBelowCount.set(0);
-        this.stickToBottom.set(true);
-        this.scrollToBottom(true);
-    }
-
-    private scrollToBottom(smooth: boolean): void {
-        const el = this.viewport()?.nativeElement;
-        if (!el) {
-            return;
-        }
-        el.scrollTo({ top: el.scrollHeight, behavior: smooth ? "smooth" : "auto" });
-    }
-
-    private async tryLoadOlder(el: HTMLElement): Promise<void> {
-        if (this.loadingOlder || !this.store.hasMore() || this.store.loadingOlder()) {
-            return;
-        }
-
-        this.loadingOlder = true;
-        const previousHeight = el.scrollHeight;
-        const previousTop = el.scrollTop;
-        try {
-            const loaded = await this.store.loadOlder();
-            if (!loaded) {
-                return;
-            }
-            queueMicrotask(() => {
-                const next = this.viewport()?.nativeElement;
-                if (!next) {
-                    return;
-                }
-                next.scrollTop = next.scrollHeight - previousHeight + previousTop;
-            });
-        } finally {
-            this.loadingOlder = false;
-        }
+        return {
+            publicId: message.publicId,
+            body: message.body,
+            creationDate: message.creationDate,
+            handleLabel: message.handleLabel(),
+            initial: message.initial(),
+            isMine: message.isMine(sessionId, playerId),
+            avatarUrl: message.isGuildAd() ? null : this.messageAvatar(message) || null,
+            senderLink,
+            context: message,
+        };
     }
 }

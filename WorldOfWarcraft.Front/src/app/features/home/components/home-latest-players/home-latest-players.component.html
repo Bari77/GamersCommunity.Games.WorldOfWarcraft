@@ -1,7 +1,7 @@
 <ul class="latest-players">
     @for (player of players(); track player.publicId) {
         <li>
-            <wow-entity-row
+            <gc-entity-row
                 [link]="['/world-of-warcraft/players', player.publicId]"
                 [name]="player.handleLabel()"
                 [date]="player.creationDate"
@@ -15,7 +15,7 @@
                         <span class="latest-players__initials">{{ player.initials() }}</span>
                     }
                 </span>
-            </wow-entity-row>
+            </gc-entity-row>
         </li>
     } @empty {
         <li class="latest-players__empty" i18n="@@wow.home.players.empty">No player sheets yet.</li>

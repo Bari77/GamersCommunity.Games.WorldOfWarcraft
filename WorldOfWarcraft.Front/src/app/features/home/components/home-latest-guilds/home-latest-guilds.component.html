@@ -1,7 +1,7 @@
 <ul class="latest-guilds">
     @for (guild of guilds(); track guild.publicId) {
         <li>
-            <wow-entity-row
+            <gc-entity-row
                 [link]="['/world-of-warcraft/guilds', guild.publicId]"
                 [name]="guild.handleLabel()"
                 [level]="guild.level"
@@ -10,7 +10,7 @@
                 [facts]="facts(guild)"
             >
                 <wow-guild-crest rowVisual [crest]="guild.crest" [size]="44" />
-            </wow-entity-row>
+            </gc-entity-row>
         </li>
     } @empty {
         <li class="latest-guilds__empty" i18n="@@wow.home.guilds.empty">No guilds yet.</li>
