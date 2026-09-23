@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Serilog;
+using GamersCommunity.Core.Platform;
 using WorldOfWarcraft.Consumer.Configuration;
 using WorldOfWarcraft.Database.Context;
 using WorldOfWarcraft.Database.Models;

@@ -1,6 +1,7 @@
 ﻿using GamersCommunity.Core.Database;
 using GamersCommunity.Core.Exceptions;
 using GamersCommunity.Core.Logging;
+using GamersCommunity.Core.Platform;
 using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
@@ -70,9 +71,7 @@ namespace WorldOfWarcraft.Consumer
                         // Register application services
                         services.AddSingleton<Serilog.ILogger>(sp => Log.Logger);
                         services.AddSingleton<IRealtimeEventPublisher, RealtimeEventPublisher>();
-                        services.AddSingleton<IPlatformSanctionsClient, PlatformSanctionsClient>();
-                        services.AddSingleton<IPlatformFriendsClient, PlatformFriendsClient>();
-                        services.AddSingleton<IPlatformConversationsClient, PlatformConversationsClient>();
+                        services.AddPlatformRpcClients();
                         services.AddScoped<IGuildWhispers, GuildWhispers>();
 
                         services.Scan(scan => scan
