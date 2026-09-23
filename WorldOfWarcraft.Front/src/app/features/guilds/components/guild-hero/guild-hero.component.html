@@ -7,7 +7,7 @@
         }
         <div class="guild-hero__game-text">
             <p class="guild-hero__kicker" i18n="@@wow.guild.hero.kicker">Guild sheet</p>
-            <p class="guild-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</p>
+            <p class="guild-hero__game-name">{{ currentGame()?.title ?? gameNameFallback }}</p>
         </div>
     </div>
 

@@ -33,5 +33,7 @@ export class GuildHeroComponent {
 
     public readonly currentGame = computed(() => this.games.value().find((game) => game.url === WOW_GAME_URL));
 
+    protected readonly gameNameFallback = $localize`:@@wow.game.name:World of Warcraft`;
+
     private readonly platformGames = inject(PlatformGamesService);
 }

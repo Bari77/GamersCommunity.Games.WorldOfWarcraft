@@ -2,6 +2,7 @@
   "locale": "en-US",
   "translations": {
     "wow.playground.banner": "WoW Playground",
+    "wow.game.name": "World of Warcraft",
     "wow.character.main": "Main",
     "wow.character.level": "Level",
     "wow.character.noSpec": "No specialization",

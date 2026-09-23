@@ -18,6 +18,7 @@ export class PlayerHeroComponent {
 
     protected readonly switchLabel = $localize`:@@wow.player.hero.switch:Switch to another game`;
     protected readonly unavailableLabel = $localize`:@@wow.player.hero.unavailable:Temporarily unavailable`;
+    protected readonly gameNameFallback = $localize`:@@wow.game.name:World of Warcraft`;
     protected readonly menuOpen = signal(false);
 
     /** The identity snapshot arrives through a Platform event, which may lag a fresh sheet. */
