@@ -3,6 +3,8 @@
 WoW microservice + micro-frontend. **Only entry required for the team**: this repo (+ GitHub Packages auth).  
 No daily Core / Gateway / Shell checkout.
 
+Specs : WorldOfWarcraft.Front/docs (PRODUCT_VISION, SPEC_PLAYER_SHEET, SPEC_GUILDS, SPEC_EVENTS).
+
 ## GitHub Packages auth (once)
 
 PAT with `read:packages`:
