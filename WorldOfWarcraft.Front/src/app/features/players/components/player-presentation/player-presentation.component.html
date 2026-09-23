@@ -16,7 +16,7 @@
         </div>
     </div>
 } @else if (text()) {
-    <gc-rich-content class="presentation__text" [html]="text()" />
+    <gc-rich-content class="presentation__text" [html]="text() ?? ''" />
 } @else {
     <p class="presentation__empty">{{ emptyLabel() }}</p>
 }

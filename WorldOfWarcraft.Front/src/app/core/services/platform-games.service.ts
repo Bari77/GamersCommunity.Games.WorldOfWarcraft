@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { inject, Injectable } from "@angular/core";
 import { environment } from "environments/environment";
-import { map, Observable } from "rxjs";
+import { catchError, forkJoin, map, Observable, of, switchMap } from "rxjs";
 
 interface PlatformGameDto {
     id: number;
@@ -10,11 +10,17 @@ interface PlatformGameDto {
     picture: string;
 }
 
+interface PlayerResolveDto {
+    playerPublicId?: string | null;
+    hasSheet: boolean;
+}
+
 export interface PlatformGame {
     id: number;
     title: string;
     url: string;
     iconUrl: string;
+    playerPublicId: string | null;
 }
 
 /** Reads the shell's game catalog so a game sheet can offer a switcher to the others. */
@@ -28,12 +34,41 @@ export class PlatformGamesService {
             .pipe(map((dtos) => dtos.map((dto) => this.toGame(dto))));
     }
 
+    public listForPlayer(platformUserPublicId: string): Observable<PlatformGame[]> {
+        return this.list().pipe(
+            switchMap((games) => {
+                if (games.length === 0) {
+                    return of([]);
+                }
+
+                return forkJoin(
+                    games.map((game) =>
+                        this.resolve(game.url, platformUserPublicId).pipe(
+                            map((playerPublicId) => ({ ...game, playerPublicId })),
+                            catchError(() => of(game)),
+                        ),
+                    ),
+                );
+            }),
+        );
+    }
+
+    private resolve(gameUrl: string, platformUserPublicId: string): Observable<string | null> {
+        const segment = gameUrl.replace(/^\/+|\/+$/g, "").replace(/-/g, "");
+        return this.http
+            .post<PlayerResolveDto>(`${environment.apiUrl}/${segment}/Players/actions/Resolve`, {
+                platformUserPublicId,
+            })
+            .pipe(map((dto) => (dto.hasSheet && dto.playerPublicId ? dto.playerPublicId : null)));
+    }
+
     private toGame(dto: PlatformGameDto): PlatformGame {
         return {
             id: dto.id,
             title: dto.title,
             url: dto.urlValue.startsWith("/") ? dto.urlValue : `/${dto.urlValue}`,
             iconUrl: `${environment.assetsBaseUrl}/Icons/Games/${dto.picture}.png`,
+            playerPublicId: null,
         };
     }
 }

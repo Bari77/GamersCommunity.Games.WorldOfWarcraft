@@ -7,7 +7,34 @@
         }
         <div class="player-hero__game-text">
             <p class="player-hero__kicker" i18n="@@wow.player.hero.kicker">Player sheet</p>
-            <p class="player-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</p>
+            @if (canSwitch()) {
+                <button
+                    type="button"
+                    class="player-hero__game-toggle"
+                    [attr.aria-expanded]="menuOpen()"
+                    [attr.aria-label]="switchLabel"
+                    (click)="toggleMenu()"
+                >
+                    <span class="player-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</span>
+                    <svg class="player-hero__chevron" viewBox="0 0 12 8" aria-hidden="true">
+                        <path d="M1 1.5 6 6.5 11 1.5" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                </button>
+                @if (menuOpen()) {
+                    <ul class="player-hero__menu" role="listbox">
+                        @for (game of otherGames(); track game.id) {
+                            <li>
+                                <a class="player-hero__menu-item" [routerLink]="gameLink(game)" (click)="closeMenu()">
+                                    <img [src]="game.iconUrl" alt="" />
+                                    <span>{{ game.title }}</span>
+                                </a>
+                            </li>
+                        }
+                    </ul>
+                }
+            } @else {
+                <p class="player-hero__game-name">{{ currentGame()?.title ?? "World of Warcraft" }}</p>
+            }
         </div>
     </div>
 
@@ -30,20 +57,4 @@
             </p>
         </div>
     </div>
-
-    @if (otherGames().length > 0) {
-        <nav class="player-hero__switch" [attr.aria-label]="switchLabel">
-            <span class="player-hero__switch-label" i18n="@@wow.player.hero.otherGames">Other games</span>
-            <ul class="player-hero__switch-list">
-                @for (game of otherGames(); track game.id) {
-                    <li>
-                        <a class="player-hero__switch-item" [routerLink]="game.url" [title]="game.title">
-                            <img [src]="game.iconUrl" alt="" />
-                            <span>{{ game.title }}</span>
-                        </a>
-                    </li>
-                }
-            </ul>
-        </nav>
-    }
 </header>

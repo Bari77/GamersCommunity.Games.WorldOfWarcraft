@@ -422,7 +422,14 @@ export const handlers = [
     http.get(`${environment.apiUrl}/platform/games`, () =>
         HttpResponse.json([
             { id: 1, title: "World Of Warcraft", urlValue: "/world-of-warcraft", picture: "world-of-warcraft" },
+            { id: 2, title: "League Of Legends", urlValue: "/league-of-legends", picture: "league-of-legends" },
         ]),
+    ),
+    http.post(gatewayUrl(environment.apiUrl, "leagueoflegends", "Players", "actions", "Resolve"), () =>
+        HttpResponse.json({
+            hasSheet: true,
+            playerPublicId: "33333333-3333-3333-3333-333333333333",
+        }),
     ),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Resolve"), () =>
         HttpResponse.json({
