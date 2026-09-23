@@ -80,8 +80,9 @@ namespace WorldOfWarcraft.Database.Migrations
                         principalColumn: "Id");
                 });
 
-            // Ranks are also declared in GuildRanksSeed, which stays idempotent. They are inserted
-            // here so the GuildMember backfill below has a valid foreign key to point at.
+            // HISTORICAL (AGENTS exception): ranks are also declared in GuildRanksSeed.
+            // Inserted here so the GuildMember backfill below has a valid FK. Do not add
+            // further catalog rows via migrations — use Seed/ classes only.
             migrationBuilder.InsertData(
                 table: "GuildRank",
                 columns: new[] { "Id", "CreationDate", "ModificationDate", "Entitled" },
