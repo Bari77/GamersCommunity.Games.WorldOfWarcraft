@@ -58,6 +58,7 @@ export default withNativeFederation({
 
   skip: [
     // Ships raw .ts: the Angular compiler must see it, the federation bundler cannot.
+    '@bari77/gc-sdk',
     '@bari77/gc-widgets',
     // SCSS-only package — bundled via angular.json styles, not federation.
     '@bari77/gc-theme',
