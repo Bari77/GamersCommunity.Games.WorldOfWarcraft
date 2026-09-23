@@ -55,16 +55,6 @@ public sealed class CharacterSummaryDto
     public string? GuildDiscriminator { get; init; }
 }
 
-public sealed class EventSummaryDto
-{
-    public Guid PublicId { get; init; }
-    public string Entitled { get; init; } = "";
-    public string Location { get; init; } = "";
-    public DateTime DateHourBegin { get; init; }
-    public DateTime DateHourEnd { get; init; }
-    public string Picture { get; init; } = "";
-}
-
 public sealed class GuildSummaryDto
 {
     public Guid PublicId { get; init; }
