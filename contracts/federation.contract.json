@@ -2,5 +2,21 @@
   "remoteName": "worldOfWarcraft",
   "expose": "./Routes",
   "routePrefix": "/world-of-warcraft",
-  "remoteEntryDev": "http://localhost:4201/remoteEntry.json"
+  "remoteEntryDev": "http://localhost:4201/remoteEntry.json",
+  "resources": [
+    { "type": "INFRA", "name": "Health", "actions": ["Check"] },
+    { "type": "DATA", "name": "Classes", "actions": ["List"] },
+    { "type": "DATA", "name": "Players", "actions": ["Get", "Resolve", "Search", "Load", "Update"] },
+    { "type": "DATA", "name": "HomeFeed", "actions": ["Get"] },
+    { "type": "DATA", "name": "LfgAds", "actions": ["ListRecent", "ListBefore", "Search", "Create"] },
+    { "type": "DATA", "name": "Guilds", "actions": ["Get", "Search", "ListPostable", "Create", "Update", "SetRank", "Kick", "Leave", "TransferLeadership", "Disband"] },
+    { "type": "DATA", "name": "GuildApplications", "actions": ["Create", "ListMine", "Withdraw", "List", "Review"] },
+    { "type": "DATA", "name": "GamePosts", "actions": ["ListGuildWall", "Create", "ListPending", "Update", "Moderate", "Delete"] },
+    { "type": "DATA", "name": "Characters", "actions": ["Get", "List", "Options", "Search", "Create", "Update", "Delete"] },
+    { "type": "DATA", "name": "PlayerPictures", "actions": ["List", "Create", "Update", "Delete"] },
+    { "type": "DATA", "name": "PlayerVideos", "actions": ["List", "Create", "Update", "Delete"] },
+    { "type": "DATA", "name": "PlayerStreams", "actions": ["List", "Create", "Update", "Delete"] },
+    { "type": "DATA", "name": "GuildLinks", "actions": ["List", "Create", "Update", "Reorder", "Delete"] },
+    { "type": "DATA", "name": "PlayerLinks", "actions": ["List", "Create", "Update", "Reorder", "Delete"] }
+  ]
 }
