@@ -37,13 +37,12 @@ import {
     mockCharacterOptions,
     mockCharacters,
     mockPlayerSheet,
-    PLATFORM_USER_PUBLIC_ID,
     PLAYER_PUBLIC_ID,
     playerSheetByPublicId,
     toCharacterSummary,
     toPlayerSummary,
-} from "./data/characters";
-import { mockClasses } from "./data/classes";
+} from "./catalog/characters";
+import { mockClasses } from "./catalog/classes";
 import {
     guildSheetByPublicId,
     mockGuildApplications,
@@ -51,12 +50,13 @@ import {
     mockGuildSummaries,
     mockGuildWallPosts,
     mockPendingPosts,
-} from "./data/guilds";
-import { mockGuildLinks } from "./data/guild-links";
-import { mockHomeFeed, mockLfgMessages, mockPostableGuilds, mockRecruitmentMessages } from "./data/home-feed";
-import { mockPlayerLinks } from "./data/links";
-import { mockPlayerPictures, mockPlayerStreams, mockPlayerVideos } from "./data/media";
-import { mockPortraitUrl, personaByPlatformId } from "./data/portraits";
+} from "./catalog/orgs";
+import { mockGuildLinks } from "./catalog/guild-links";
+import { mockHomeFeed, mockLfgMessages, mockPostableGuilds, mockRecruitmentMessages } from "./catalog/home-feed";
+import { mockPlayerLinks } from "./catalog/links";
+import { mockPlayerPictures, mockPlayerStreams, mockPlayerVideos } from "./catalog/media";
+import { mockPortraitUrl, personaByPlatformId } from "./catalog/personas";
+import { getSessionPersona } from "./catalog/session";
 
 const charactersUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters");
 const playersUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players");
@@ -437,7 +437,7 @@ export const handlers = [
     http.post(gatewayUrl(environment.apiUrl, "leagueoflegends", "Players", "actions", "Resolve"), () =>
         HttpResponse.json({
             hasSheet: true,
-            playerPublicId: "33333333-3333-3333-3333-333333333333",
+            playerPublicId: mockPlayerSheet.publicId,
         }),
     ),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Resolve"), () =>
@@ -507,16 +507,17 @@ export const handlers = [
         characters = characters.filter((item) => item.publicId !== publicId);
         return new HttpResponse(null, { status: 204 });
     }),
-    http.post(gatewayUrl(environment.apiUrl, "platform", "users", "actions", "Touch"), () =>
-        HttpResponse.json({
+    http.post(gatewayUrl(environment.apiUrl, "platform", "users", "actions", "Touch"), () => {
+        const session = getSessionPersona();
+        return HttpResponse.json({
             id: 1,
-            publicId: PLATFORM_USER_PUBLIC_ID,
-            nickname: "Aelindra",
-            discriminator: "0042",
-            avatarUrl: mockPortraitUrl("Aelindra"),
+            publicId: session.platformUserPublicId,
+            nickname: session.nickname,
+            discriminator: session.discriminator,
+            avatarUrl: mockPortraitUrl(session.nickname),
             activeMute: null,
-        }),
-    ),
+        });
+    }),
     http.get(`${gatewayUrl(environment.apiUrl, "platform", "users")}/:publicId`, ({ params }) => {
         const publicId = params["publicId"] as string;
         const persona = personaByPlatformId(publicId);

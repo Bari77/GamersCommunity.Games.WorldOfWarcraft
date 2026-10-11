@@ -6,15 +6,21 @@ import {
 } from "@features/characters/dto/character.dto";
 import { PlayerSheetDto, PlayerSummaryDto } from "@features/players/dto/player.dto";
 import { GuildCrestDto } from "@shared/models/guild-crest";
-import { MOCK_PERSONAS, mockPortraitUrl } from "./portraits";
+import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
+import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
+import { getSessionPersona } from "./session";
 
-export const PLAYER_PUBLIC_ID = "22222222-2222-2222-2222-222222222222";
-export const PLATFORM_USER_PUBLIC_ID = "33333333-3333-3333-3333-333333333333";
+const self = getSessionPersona();
 
-const GUARDIANS_ID = "55555555-5555-5555-5555-555555555555";
-const BLACKROCK_ID = "55555555-5555-5555-5555-55555555555a";
-const MOONWELL_ID = "55555555-5555-5555-5555-55555555555b";
-const ASHEN_ID = "55555555-5555-5555-5555-55555555555c";
+export const PLATFORM_USER_PUBLIC_ID = self.platformUserPublicId;
+export const PLAYER_PUBLIC_ID = self.playerPublicId;
+
+const GUARDIANS_ID = WOW_GUILD_IDS.guardians;
+const BLACKROCK_ID = WOW_GUILD_IDS.blackrock;
+const MOONWELL_ID = WOW_GUILD_IDS.moonwell;
+const ASHEN_ID = WOW_GUILD_IDS.ashen;
+const STORMWATCH_ID = WOW_GUILD_IDS.stormwatch;
+const EMBERHOLD_ID = WOW_GUILD_IDS.emberhold;
 
 const GUARDIANS_CREST: GuildCrestDto = {
     emblem: 42,
@@ -52,7 +58,23 @@ const ASHEN_CREST: GuildCrestDto = {
     faction: "horde",
 };
 
-const persona = (nickname: string) => MOCK_PERSONAS.find((item) => item.nickname === nickname)!;
+const STORMWATCH_CREST: GuildCrestDto = {
+    emblem: 28,
+    emblemColor: "#e8f0ff",
+    border: 2,
+    borderColor: "#7a9cc8",
+    backgroundColor: "#1a2438",
+    faction: "alliance",
+};
+
+const EMBERHOLD_CREST: GuildCrestDto = {
+    emblem: 15,
+    emblemColor: "#ffb060",
+    border: 3,
+    borderColor: "#a04020",
+    backgroundColor: "#2c1408",
+    faction: "horde",
+};
 
 export const mockCharacterOptions: CharacterOptionsDto = {
     maxLevel: 120,
@@ -201,9 +223,8 @@ type GuildBind = {
     crest: GuildCrestDto;
 };
 
-const cid = (tail: string) => `44444444-4444-4444-4444-4444444444${tail}`;
-const owner = (nickname: string) =>
-    nickname === "Aelindra" ? PLAYER_PUBLIC_ID : persona(nickname).playerPublicId!;
+const cid = (key: string) => characterPublicId(key);
+const owner = (nickname: string) => persona(nickname).playerPublicId;
 
 const guardians = (rank: string): GuildBind => ({
     publicId: GUARDIANS_ID,
@@ -232,6 +253,20 @@ const ashen = (rank: string): GuildBind => ({
     discriminator: "0204",
     rank,
     crest: ASHEN_CREST,
+});
+const stormwatch = (rank: string): GuildBind => ({
+    publicId: STORMWATCH_ID,
+    entitled: "Stormwatch Keep",
+    discriminator: "0312",
+    rank,
+    crest: STORMWATCH_CREST,
+});
+const emberhold = (rank: string): GuildBind => ({
+    publicId: EMBERHOLD_ID,
+    entitled: "Emberhold Pact",
+    discriminator: "0559",
+    rank,
+    crest: EMBERHOLD_CREST,
 });
 
 function character(opts: {
@@ -306,7 +341,7 @@ export const mockCharacters: CharacterDto[] = [
         guild: guardians("leader"),
     }),
     character({
-        id: "77777777-7777-7777-7777-777777777777",
+        id: mockUuid("wow:character:Korgath"),
         player: "Aelindra",
         pseudo: "Korgath",
         level: 74,
@@ -684,44 +719,294 @@ export const mockCharacters: CharacterDto[] = [
         mainSpec: [7, "beast_mastery"],
         offSpec: [8, "marksmanship"],
     }),
+    character({
+        id: cid("5d"),
+        player: "Dravenor",
+        pseudo: "Stormbrand",
+        level: 80,
+        ilvl: 622,
+        achievement: 13400,
+        sentence: "Arms warrior, keeps the Stormwatch calendar honest.",
+        main: true,
+        created: "2025-05-18T17:00:00Z",
+        race: [1, "human"],
+        server: [1, "hyjal"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [1, "warrior"],
+        mainSpec: [1, "arms"],
+        offSpec: [3, "protection"],
+        guild: stormwatch("leader"),
+    }),
+    character({
+        id: cid("5e"),
+        player: "Dravenor",
+        pseudo: "Tidebreaker",
+        level: 72,
+        ilvl: 510,
+        achievement: 6200,
+        created: "2026-02-09T11:20:00Z",
+        race: [1, "human"],
+        server: [1, "hyjal"],
+        direction: [1, "tank"],
+        alignment: [1, "alliance"],
+        klass: [1, "warrior"],
+        mainSpec: [3, "protection"],
+        offSpec: [2, "fury"],
+    }),
+    character({
+        id: cid("5f"),
+        player: "Isendre",
+        pseudo: "Moonlace",
+        level: 80,
+        ilvl: 615,
+        achievement: 10110,
+        sentence: "Holy priest, raid logs and calm callouts.",
+        main: true,
+        created: "2025-07-03T20:15:00Z",
+        race: [4, "night_elf"],
+        server: [1, "hyjal"],
+        direction: [2, "heal"],
+        alignment: [1, "alliance"],
+        klass: [5, "priest"],
+        mainSpec: [14, "holy"],
+        offSpec: [13, "discipline"],
+        guild: stormwatch("officer"),
+    }),
+    character({
+        id: cid("60"),
+        player: "Torveth",
+        pseudo: "Oakrend",
+        level: 80,
+        ilvl: 598,
+        achievement: 8700,
+        sentence: "Feral enjoyer, late-night keys only.",
+        main: true,
+        created: "2025-09-22T22:40:00Z",
+        race: [4, "night_elf"],
+        server: [1, "hyjal"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [10, "druid"],
+        mainSpec: [29, "feral"],
+        offSpec: [30, "guardian"],
+        guild: stormwatch("member"),
+    }),
+    character({
+        id: cid("61"),
+        player: "Lythara",
+        pseudo: "Cinderhex",
+        level: 80,
+        ilvl: 629,
+        achievement: 14880,
+        sentence: "Destruction warlock, Emberhold raid lead.",
+        main: true,
+        created: "2025-03-28T19:30:00Z",
+        race: [9, "blood_elf"],
+        server: [4, "archimonde"],
+        direction: [3, "dps"],
+        alignment: [2, "horde"],
+        klass: [9, "warlock"],
+        mainSpec: [21, "destruction"],
+        offSpec: [19, "affliction"],
+        guild: emberhold("leader"),
+    }),
+    character({
+        id: cid("62"),
+        player: "Lythara",
+        pseudo: "Ashwhisper",
+        level: 66,
+        ilvl: 420,
+        achievement: 3100,
+        created: "2026-04-02T15:00:00Z",
+        race: [5, "undead"],
+        server: [4, "archimonde"],
+        direction: [3, "dps"],
+        alignment: [2, "horde"],
+        klass: [8, "mage"],
+        mainSpec: [17, "fire"],
+        offSpec: [18, "frost"],
+    }),
+    character({
+        id: cid("63"),
+        player: "Bramdor",
+        pseudo: "Ironmaul",
+        level: 80,
+        ilvl: 608,
+        achievement: 11200,
+        sentence: "Protection warrior, stands where the fire is hottest.",
+        main: true,
+        created: "2025-04-12T18:00:00Z",
+        race: [2, "orc"],
+        server: [4, "archimonde"],
+        direction: [1, "tank"],
+        alignment: [2, "horde"],
+        klass: [1, "warrior"],
+        mainSpec: [3, "protection"],
+        offSpec: [2, "fury"],
+        guild: emberhold("officer"),
+    }),
+    character({
+        id: cid("64"),
+        player: "Elyndra",
+        pseudo: "Starveil",
+        level: 80,
+        ilvl: 611,
+        achievement: 9400,
+        sentence: "Arcane mage, still shopping for a raid home.",
+        main: true,
+        created: "2025-10-14T13:25:00Z",
+        race: [29, "void_elf"],
+        server: [2, "dalaran"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [8, "mage"],
+        mainSpec: [16, "arcane"],
+        offSpec: [18, "frost"],
+    }),
+    character({
+        id: cid("65"),
+        player: "Elyndra",
+        pseudo: "Glimmercog",
+        level: 58,
+        ilvl: 290,
+        achievement: 2100,
+        created: "2026-07-19T10:10:00Z",
+        race: [7, "gnome"],
+        server: [2, "dalaran"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [4, "rogue"],
+        mainSpec: [12, "subtlety"],
+        offSpec: [11, "outlaw"],
+    }),
+    character({
+        id: cid("66"),
+        player: "Quorath",
+        pseudo: "Bonehowl",
+        level: 80,
+        ilvl: 602,
+        achievement: 8800,
+        sentence: "Unholy vibes on a frost mage — do not ask.",
+        main: true,
+        created: "2025-08-07T21:00:00Z",
+        race: [5, "undead"],
+        server: [4, "archimonde"],
+        direction: [3, "dps"],
+        alignment: [2, "horde"],
+        klass: [8, "mage"],
+        mainSpec: [18, "frost"],
+        offSpec: [17, "fire"],
+        guild: emberhold("member"),
+    }),
+    character({
+        id: cid("67"),
+        player: "Fenrisa",
+        pseudo: "Quickfang",
+        level: 80,
+        ilvl: 595,
+        achievement: 7600,
+        sentence: "Survival hunter, outdoor content first.",
+        main: true,
+        created: "2025-11-29T16:45:00Z",
+        race: [6, "tauren"],
+        server: [2, "dalaran"],
+        direction: [3, "dps"],
+        alignment: [2, "horde"],
+        klass: [3, "hunter"],
+        mainSpec: [9, "survival"],
+        offSpec: [7, "beast_mastery"],
+        guild: ashen("member"),
+    }),
+    character({
+        id: cid("68"),
+        player: "Zarokh",
+        pseudo: "Voidstep",
+        level: 80,
+        ilvl: 624,
+        achievement: 11950,
+        sentence: "Subtlety rogue looking for a mythic push duo.",
+        main: true,
+        created: "2025-01-30T19:05:00Z",
+        race: [29, "void_elf"],
+        server: [1, "hyjal"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [4, "rogue"],
+        mainSpec: [12, "subtlety"],
+        offSpec: [10, "assassination"],
+        guild: guardians("member"),
+    }),
+    character({
+        id: cid("69"),
+        player: "Zarokh",
+        pseudo: "Nightcoil",
+        level: 69,
+        ilvl: 455,
+        achievement: 3400,
+        created: "2026-03-21T14:30:00Z",
+        race: [4, "night_elf"],
+        server: [1, "hyjal"],
+        direction: [3, "dps"],
+        alignment: [1, "alliance"],
+        klass: [11, "demon_hunter"],
+        mainSpec: [32, "havoc"],
+        offSpec: [33, "vengeance"],
+    }),
 ];
 
-export const mockPlayerSheet: PlayerSheetDto = {
-    publicId: PLAYER_PUBLIC_ID,
-    platformUserPublicId: PLATFORM_USER_PUBLIC_ID,
-    nickname: "Aelindra",
-    discriminator: "0042",
-    avatarUrl: mockPortraitUrl("Aelindra"),
-    presentationIrl: "Raid leader by night, backend developer by day.",
-    presentationIg: "Pushing keys since Legion.",
-    nbMount: 412,
-    successPoints: 28450,
-    creationDate: new Date("2024-02-11T10:00:00Z").toISOString(),
-    characterCount: 3,
-    layoutJson: null,
-    guild: {
-        publicId: GUARDIANS_ID,
-        entitled: "Guardians of Azeroth",
-        discriminator: "0001",
-        rank: "leader",
-        crest: GUARDIANS_CREST,
-    },
+type SheetSeed = {
+    who: string;
+    presentationIrl: string;
+    presentationIg: string;
+    nbMount: number;
+    successPoints: number;
+    creationDate: string;
+    guild: PlayerSheetDto["guild"];
 };
 
-export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
-    [persona("Thalorim").playerPublicId!]: {
-        publicId: persona("Thalorim").playerPublicId!,
-        platformUserPublicId: persona("Thalorim").platformUserPublicId,
-        nickname: "Thalorim",
-        discriminator: "0108",
-        avatarUrl: mockPortraitUrl("Thalorim"),
+function sheet(opts: SheetSeed): PlayerSheetDto {
+    const who = persona(opts.who);
+    return {
+        publicId: who.playerPublicId,
+        platformUserPublicId: who.platformUserPublicId,
+        nickname: who.nickname,
+        discriminator: who.discriminator,
+        avatarUrl: mockPortraitUrl(who.nickname),
+        presentationIrl: opts.presentationIrl,
+        presentationIg: opts.presentationIg,
+        nbMount: opts.nbMount,
+        successPoints: opts.successPoints,
+        creationDate: new Date(opts.creationDate).toISOString(),
+        characterCount: 1,
+        layoutJson: null,
+        guild: opts.guild,
+    };
+}
+
+const SHEET_SEEDS: SheetSeed[] = [
+    {
+        who: "Aelindra",
+        presentationIrl: "Raid leader by night, backend developer by day.",
+        presentationIg: "Pushing keys since Legion.",
+        nbMount: 412,
+        successPoints: 28450,
+        creationDate: "2024-02-11T10:00:00Z",
+        guild: {
+            publicId: GUARDIANS_ID,
+            entitled: "Guardians of Azeroth",
+            discriminator: "0001",
+            rank: "leader",
+            crest: GUARDIANS_CREST,
+        },
+    },
+    {
+        who: "Thalorim",
         presentationIrl: "Tank main, raid officer.",
         presentationIg: "Protection paladin since Vanilla.",
         nbMount: 188,
         successPoints: 19200,
-        creationDate: new Date("2024-03-02T19:00:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2024-03-02T19:00:00Z",
         guild: {
             publicId: GUARDIANS_ID,
             entitled: "Guardians of Azeroth",
@@ -730,34 +1015,22 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: GUARDIANS_CREST,
         },
     },
-    [persona("Nerysse").playerPublicId!]: {
-        publicId: persona("Nerysse").playerPublicId!,
-        platformUserPublicId: persona("Nerysse").platformUserPublicId,
-        nickname: "Nerysse",
-        discriminator: "0731",
-        avatarUrl: mockPortraitUrl("Nerysse"),
+    {
+        who: "Nerysse",
         presentationIrl: "Looking for a mythic roster.",
         presentationIg: "Discipline priest, 8/8 heroic.",
         nbMount: 64,
         successPoints: 9800,
-        creationDate: new Date("2025-11-18T14:00:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2025-11-18T14:00:00Z",
         guild: null,
     },
-    [persona("Korrath").playerPublicId!]: {
-        publicId: persona("Korrath").playerPublicId!,
-        platformUserPublicId: persona("Korrath").platformUserPublicId,
-        nickname: "Korrath",
-        discriminator: "2214",
-        avatarUrl: mockPortraitUrl("Korrath"),
+    {
+        who: "Korrath",
         presentationIrl: "Horde PvP, evenings after work.",
         presentationIg: "Fury warrior, Blackrock Vanguard. Tanks are welcome to stand in front of me.",
         nbMount: 97,
         successPoints: 14120,
-        creationDate: new Date("2025-02-14T20:00:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2025-02-14T20:00:00Z",
         guild: {
             publicId: BLACKROCK_ID,
             entitled: "Blackrock Vanguard",
@@ -766,19 +1039,13 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: BLACKROCK_CREST,
         },
     },
-    [persona("Vaelis").playerPublicId!]: {
-        publicId: persona("Vaelis").playerPublicId!,
-        platformUserPublicId: persona("Vaelis").platformUserPublicId,
-        nickname: "Vaelis",
-        discriminator: "0904",
-        avatarUrl: mockPortraitUrl("Vaelis"),
+    {
+        who: "Vaelis",
         presentationIrl: "Social player, Elune nights.",
         presentationIg: "Beast Mastery hunter who actually drinks the potions.",
         nbMount: 51,
         successPoints: 7600,
-        creationDate: new Date("2025-06-04T10:30:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2025-06-04T10:30:00Z",
         guild: {
             publicId: MOONWELL_ID,
             entitled: "Moonwell Circle",
@@ -787,19 +1054,13 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: MOONWELL_CREST,
         },
     },
-    [persona("Orinthal").playerPublicId!]: {
-        publicId: persona("Orinthal").playerPublicId!,
-        platformUserPublicId: persona("Orinthal").platformUserPublicId,
-        nickname: "Orinthal",
-        discriminator: "1180",
-        avatarUrl: mockPortraitUrl("Orinthal"),
+    {
+        who: "Orinthal",
         presentationIrl: "Bears named after snacks. Do not ask.",
         presentationIg: "Guardian druid, Dalaran raid nights.",
         nbMount: 73,
         successPoints: 11240,
-        creationDate: new Date("2025-04-21T18:00:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2025-04-21T18:00:00Z",
         guild: {
             publicId: ASHEN_ID,
             entitled: "Ashen Covenant",
@@ -808,19 +1069,13 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: ASHEN_CREST,
         },
     },
-    [persona("Maelis").playerPublicId!]: {
-        publicId: persona("Maelis").playerPublicId!,
-        platformUserPublicId: persona("Maelis").platformUserPublicId,
-        nickname: "Maelis",
-        discriminator: "0622",
-        avatarUrl: mockPortraitUrl("Maelis"),
+    {
+        who: "Maelis",
         presentationIrl: "Melee enjoyer, logs after every pull.",
         presentationIg: "Havoc DH in Guardians of Azeroth.",
         nbMount: 140,
         successPoints: 16880,
-        creationDate: new Date("2024-12-09T19:40:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2024-12-09T19:40:00Z",
         guild: {
             publicId: GUARDIANS_ID,
             entitled: "Guardians of Azeroth",
@@ -829,19 +1084,13 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: GUARDIANS_CREST,
         },
     },
-    [persona("Serethis").playerPublicId!]: {
-        publicId: persona("Serethis").playerPublicId!,
-        platformUserPublicId: persona("Serethis").platformUserPublicId,
-        nickname: "Serethis",
-        discriminator: "4419",
-        avatarUrl: mockPortraitUrl("Serethis"),
+    {
+        who: "Serethis",
         presentationIrl: "Arenas on weeknights, raids when tagged.",
         presentationIg: "Affliction warlock, Blackrock Vanguard.",
         nbMount: 44,
         successPoints: 9050,
-        creationDate: new Date("2025-03-01T12:55:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2025-03-01T12:55:00Z",
         guild: {
             publicId: BLACKROCK_ID,
             entitled: "Blackrock Vanguard",
@@ -850,19 +1099,13 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: BLACKROCK_CREST,
         },
     },
-    [persona("Calyra").playerPublicId!]: {
-        publicId: persona("Calyra").playerPublicId!,
-        platformUserPublicId: persona("Calyra").platformUserPublicId,
-        nickname: "Calyra",
-        discriminator: "0317",
-        avatarUrl: mockPortraitUrl("Calyra"),
+    {
+        who: "Calyra",
         presentationIrl: "Here for the guild Discord more than the parses.",
         presentationIg: "Holy paladin, Moonwell Circle.",
         nbMount: 28,
         successPoints: 5120,
-        creationDate: new Date("2026-01-12T09:20:00Z").toISOString(),
-        characterCount: 1,
-        layoutJson: null,
+        creationDate: "2026-01-12T09:20:00Z",
         guild: {
             publicId: MOONWELL_ID,
             entitled: "Moonwell Circle",
@@ -871,7 +1114,166 @@ export const extraPlayerSheets: Record<string, PlayerSheetDto> = {
             crest: MOONWELL_CREST,
         },
     },
-};
+    {
+        who: "Dravenor",
+        presentationIrl: "Spreadsheet raider, still somehow fun at parties.",
+        presentationIg: "Arms warrior leading Stormwatch Keep.",
+        nbMount: 156,
+        successPoints: 15400,
+        creationDate: "2025-05-18T16:40:00Z",
+        guild: {
+            publicId: STORMWATCH_ID,
+            entitled: "Stormwatch Keep",
+            discriminator: "0312",
+            rank: "leader",
+            crest: STORMWATCH_CREST,
+        },
+    },
+    {
+        who: "Isendre",
+        presentationIrl: "Healer main, quiet Discord, loud meters.",
+        presentationIg: "Holy priest, Stormwatch Keep officer.",
+        nbMount: 82,
+        successPoints: 10880,
+        creationDate: "2025-07-03T19:50:00Z",
+        guild: {
+            publicId: STORMWATCH_ID,
+            entitled: "Stormwatch Keep",
+            discriminator: "0312",
+            rank: "officer",
+            crest: STORMWATCH_CREST,
+        },
+    },
+    {
+        who: "Torveth",
+        presentationIrl: "Night owl, prefers voice after 22:00.",
+        presentationIg: "Feral druid in Stormwatch Keep.",
+        nbMount: 39,
+        successPoints: 8420,
+        creationDate: "2025-09-22T22:10:00Z",
+        guild: {
+            publicId: STORMWATCH_ID,
+            entitled: "Stormwatch Keep",
+            discriminator: "0312",
+            rank: "member",
+            crest: STORMWATCH_CREST,
+        },
+    },
+    {
+        who: "Lythara",
+        presentationIrl: "Horde evenings, coffee-fueled progress nights.",
+        presentationIg: "Destro warlock of Emberhold Pact.",
+        nbMount: 121,
+        successPoints: 16110,
+        creationDate: "2025-03-28T19:00:00Z",
+        guild: {
+            publicId: EMBERHOLD_ID,
+            entitled: "Emberhold Pact",
+            discriminator: "0559",
+            rank: "leader",
+            crest: EMBERHOLD_CREST,
+        },
+    },
+    {
+        who: "Bramdor",
+        presentationIrl: "Tank who marks everything twice.",
+        presentationIg: "Protection warrior, Emberhold Pact.",
+        nbMount: 66,
+        successPoints: 12040,
+        creationDate: "2025-04-12T17:40:00Z",
+        guild: {
+            publicId: EMBERHOLD_ID,
+            entitled: "Emberhold Pact",
+            discriminator: "0559",
+            rank: "officer",
+            crest: EMBERHOLD_CREST,
+        },
+    },
+    {
+        who: "Elyndra",
+        presentationIrl: "Guildless for now, auditioning raid teams.",
+        presentationIg: "Arcane mage on Dalaran.",
+        nbMount: 47,
+        successPoints: 9010,
+        creationDate: "2025-10-14T13:00:00Z",
+        guild: null,
+    },
+    {
+        who: "Quorath",
+        presentationIrl: "Quiet chat, loud AoE.",
+        presentationIg: "Frost mage, Emberhold Pact.",
+        nbMount: 33,
+        successPoints: 7980,
+        creationDate: "2025-08-07T20:40:00Z",
+        guild: {
+            publicId: EMBERHOLD_ID,
+            entitled: "Emberhold Pact",
+            discriminator: "0559",
+            rank: "member",
+            crest: EMBERHOLD_CREST,
+        },
+    },
+    {
+        who: "Fenrisa",
+        presentationIrl: "World content first, parses second.",
+        presentationIg: "Survival hunter with Ashen Covenant.",
+        nbMount: 91,
+        successPoints: 7340,
+        creationDate: "2025-11-29T16:20:00Z",
+        guild: {
+            publicId: ASHEN_ID,
+            entitled: "Ashen Covenant",
+            discriminator: "0204",
+            rank: "member",
+            crest: ASHEN_CREST,
+        },
+    },
+    {
+        who: "Zarokh",
+        presentationIrl: "Melee DPS, short messages, long pulls.",
+        presentationIg: "Subtlety rogue in Guardians of Azeroth.",
+        nbMount: 58,
+        successPoints: 12660,
+        creationDate: "2025-01-30T18:45:00Z",
+        guild: {
+            publicId: GUARDIANS_ID,
+            entitled: "Guardians of Azeroth",
+            discriminator: "0001",
+            rank: "member",
+            crest: GUARDIANS_CREST,
+        },
+    },
+];
+
+if (SHEET_SEEDS.length !== MOCK_PERSONAS.length) {
+    throw new Error(
+        `WoW mock sheet seeds (${SHEET_SEEDS.length}) must match personas (${MOCK_PERSONAS.length}).`,
+    );
+}
+
+const sheetsByNickname = Object.fromEntries(SHEET_SEEDS.map((seed) => [seed.who, sheet(seed)])) as Record<
+    string,
+    PlayerSheetDto
+>;
+
+export const mockPlayerSheet: PlayerSheetDto = sheetsByNickname[self.nickname];
+
+export const extraPlayerSheets: Record<string, PlayerSheetDto> = Object.fromEntries(
+    Object.values(sheetsByNickname)
+        .filter((item) => item.publicId !== PLAYER_PUBLIC_ID)
+        .map((item) => [item.publicId, item]),
+);
+
+export function sheetByNickname(nickname: string, current: PlayerSheetDto = mockPlayerSheet): PlayerSheetDto {
+    if (nickname === current.nickname) {
+        return current;
+    }
+    const found = sheetsByNickname[nickname];
+    if (!found) {
+        throw new Error(`No player sheet for persona ${nickname}`);
+    }
+    return found;
+}
 
 export function toCharacterSummary(character: CharacterDto): CharacterSummaryDto {
     return {

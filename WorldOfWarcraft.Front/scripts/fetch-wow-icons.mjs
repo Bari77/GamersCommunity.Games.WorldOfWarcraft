@@ -1,15 +1,24 @@
-// Downloads the World of Warcraft icons served by the Wowhead CDN into public/wow-icons.
+// Downloads the World of Warcraft icons served by the Blizzard render CDN into public/wow-icons.
 // The artwork belongs to Blizzard, so it stays out of git: run `npm run icons` after cloning.
 //
 // Local file names are the `Entitled` values seeded in WorldOfWarcraft.Database, so the app
 // resolves an icon straight from the reference data without any extra lookup table.
+//
+// Prefer render.worldofwarcraft.com over wow.zamimg.com: Wowhead's CDN often answers 403
+// for newer icons (e.g. classicon_evoker_augmentation) and to non-browser clients.
 
 import { mkdir, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const CDN = "https://wow.zamimg.com/images/wow/icons/large";
+const CDN = "https://render.worldofwarcraft.com/eu/icons/56";
 const OUTPUT = join(dirname(fileURLToPath(import.meta.url)), "..", "public", "wow-icons");
+
+// Same pattern as fetch-wow-crests.mjs — the CDN answers 403 without a browser UA.
+const HEADERS = {
+    "user-agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/131.0.0.0 Safari/537.36",
+};
 
 const classes = {
     warrior: "classicon_warrior",
@@ -27,23 +36,24 @@ const classes = {
     evoker: "classicon_evoker",
 };
 
+// Slugs must match Blizzard render CDN file names (not always identical to Wowhead / zamimg).
 const races = {
     human: "race_human_male",
     orc: "race_orc_male",
     dwarf: "race_dwarf_male",
-    night_elf: "race_nightelf_male",
-    undead: "race_scourge_male",
+    night_elf: "achievement_character_nightelf_male",
+    undead: "race_undead_male",
     tauren: "race_tauren_male",
     gnome: "race_gnome_male",
     troll: "race_troll_male",
-    blood_elf: "race_bloodelf_male",
+    blood_elf: "achievement_character_bloodelf_male",
     draenei: "race_draenei_male",
     worgen: "race_worgen_male",
     goblin: "race_goblin_male",
-    pandaren: "race_pandaren_male",
-    vulpera: "race_vulpera_male",
-    dracthyr: "race_dracthyr_male",
-    void_elf: "race_voidelf_male",
+    pandaren: "achievement_character_pandaren_female",
+    vulpera: "achievement_alliedrace_vulpera",
+    dracthyr: "ui_dracthyr",
+    void_elf: "achievement_alliedrace_voidelf",
 };
 
 const specs = {
@@ -93,9 +103,10 @@ const specs = {
 const groups = { classes, races, specs };
 
 async function download(folder, slug, icon) {
-    const response = await fetch(`${CDN}/${icon}.jpg`);
+    const url = `${CDN}/${icon}.jpg`;
+    const response = await fetch(url, { headers: HEADERS });
     if (!response.ok) {
-        throw new Error(`${response.status} ${CDN}/${icon}.jpg`);
+        throw new Error(`${response.status} ${url}`);
     }
     const buffer = Buffer.from(await response.arrayBuffer());
     await writeFile(join(OUTPUT, folder, `${slug}.jpg`), buffer);

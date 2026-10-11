@@ -2,7 +2,7 @@ import { Component, computed, input } from "@angular/core";
 import { RouterLink } from "@angular/router";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { NbButtonModule, NbCardModule } from "@nebular/theme";
-import { mockPortraitUrl, personaByPlatformId } from "../../mocks/data/portraits";
+import { mockPortraitUrl, personaByPlatformId } from "../../mocks/catalog/personas";
 
 /** Stand-in for the Platform community profile while the game runs on its own playground. */
 @Component({

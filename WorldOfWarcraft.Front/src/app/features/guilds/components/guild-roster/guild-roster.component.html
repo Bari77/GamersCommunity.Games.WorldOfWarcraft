@@ -99,60 +99,22 @@
 
                     @if (hasActions(member)) {
                         <footer class="member-card__actions">
-                            @if (canPromote(member)) {
-                                <button
-                                    type="button"
-                                    class="member-card__action member-card__action--info"
+                            <div class="member-card__admin">
+                                <nb-select
+                                    class="member-card__rank-select"
+                                    size="small"
+                                    fullWidth
+                                    [placeholder]="rankFieldName"
+                                    [attr.aria-label]="rankFieldName"
+                                    [selected]="selectValue(member)"
                                     [disabled]="busy()"
-                                    (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankOfficer })"
+                                    (selectedChange)="onRankSelect(member, $event)"
                                 >
-                                    <span i18n="@@wow.guild.roster.promote">Promote</span>
-                                </button>
-                            }
-
-                            @if (canDemote(member)) {
-                                <button
-                                    type="button"
-                                    class="member-card__action"
-                                    [disabled]="busy()"
-                                    (click)="setRank.emit({ characterPublicId: member.characterPublicId, rank: rankMember })"
-                                >
-                                    <span i18n="@@wow.guild.roster.demote">Demote</span>
-                                </button>
-                            }
-
-                            @if (canTransfer(member)) {
-                                <button
-                                    type="button"
-                                    class="member-card__action member-card__action--warning"
-                                    [disabled]="busy()"
-                                    (click)="transfer.emit(member.characterPublicId)"
-                                >
-                                    <span i18n="@@wow.guild.roster.transfer">Make leader</span>
-                                </button>
-                            }
-
-                            @if (canKick(member)) {
-                                <button
-                                    type="button"
-                                    class="member-card__action member-card__action--danger"
-                                    [disabled]="busy()"
-                                    (click)="kick.emit(member.characterPublicId)"
-                                >
-                                    <span i18n="@@wow.guild.roster.kick">Remove</span>
-                                </button>
-                            }
-
-                            @if (canLeave(member)) {
-                                <button
-                                    type="button"
-                                    class="member-card__action member-card__action--danger"
-                                    [disabled]="busy()"
-                                    (click)="leave.emit(member.characterPublicId)"
-                                >
-                                    <span i18n="@@wow.guild.roster.leave">Leave</span>
-                                </button>
-                            }
+                                    @for (option of rankOptions(member); track option.value) {
+                                        <nb-option [value]="option.value">{{ option.label }}</nb-option>
+                                    }
+                                </nb-select>
+                            </div>
                         </footer>
                     }
                 </article>
@@ -162,3 +124,16 @@
         </div>
     }
 </section>
+
+@if (pending(); as action) {
+    <gc-decision-prompt
+        [open]="true"
+        [heading]="action.heading"
+        [message]="action.message"
+        [primaryLabel]="action.primaryLabel"
+        [secondaryLabel]="cancelLabel"
+        [busy]="busy()"
+        (primary)="confirmPending()"
+        (secondary)="cancelPending()"
+    />
+}

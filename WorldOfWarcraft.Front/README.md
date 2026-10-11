@@ -9,7 +9,7 @@ Angular remote (Native Federation) — port `4201`, exposes `./Routes`.
 ```bash
 # NODE_AUTH_TOKEN = PAT read:packages
 npm install
-npm start
+npm start   # prestart runs `msw init public --save` (mockServiceWorker.js is gitignored)
 ```
 
 Packages: `@bari77/gc-sdk`, `@bari77/gc-msw`, `@bari77/gc-playground` (GitHub Packages).

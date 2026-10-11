@@ -2,25 +2,28 @@ import { GamePostDto } from "@features/guilds/dto/game-post.dto";
 import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
 import { GuildMemberDto, GuildSheetDto, GuildSummaryDto } from "@features/guilds/dto/guild.dto";
 import { mockCharacters } from "./characters";
-import { MOCK_PERSONAS, mockPortraitUrl } from "./portraits";
+import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
+import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
 
-export const GUILD_PUBLIC_ID = "55555555-5555-5555-5555-555555555555";
-export const BLACKROCK_ID = "55555555-5555-5555-5555-55555555555a";
-export const MOONWELL_ID = "55555555-5555-5555-5555-55555555555b";
-export const ASHEN_ID = "55555555-5555-5555-5555-55555555555c";
+export const GUILD_PUBLIC_ID = WOW_GUILD_IDS.guardians;
+export const BLACKROCK_ID = WOW_GUILD_IDS.blackrock;
+export const MOONWELL_ID = WOW_GUILD_IDS.moonwell;
+export const ASHEN_ID = WOW_GUILD_IDS.ashen;
+export const STORMWATCH_ID = WOW_GUILD_IDS.stormwatch;
+export const EMBERHOLD_ID = WOW_GUILD_IDS.emberhold;
 
-function member(characterPublicId: string, rank: string, joinedAt: string): GuildMemberDto {
-    const character = mockCharacters.find((item) => item.publicId === characterPublicId);
+function member(charId: string, rank: string, joinedAt: string): GuildMemberDto {
+    const character = mockCharacters.find((item) => item.publicId === charId);
     if (!character) {
-        throw new Error(`Unknown mock character ${characterPublicId}`);
+        throw new Error(`Unknown mock character ${charId}`);
     }
     const who = MOCK_PERSONAS.find((persona) => persona.playerPublicId === character.playerPublicId);
     if (!who) {
-        throw new Error(`Unknown mock persona for character ${characterPublicId}`);
+        throw new Error(`Unknown mock persona for character ${charId}`);
     }
 
     return {
-        characterPublicId,
+        characterPublicId: charId,
         pseudo: character.pseudo,
         level: character.level,
         ilvl: character.ilvl,
@@ -58,16 +61,17 @@ export const mockGuildSheet: GuildSheetDto = {
         faction: "alliance",
     },
     creationDate: new Date("2024-11-02T18:00:00Z").toISOString(),
-    memberCount: 3,
+    memberCount: 4,
     viewerRank: "leader",
     viewerApplicationStatus: null,
     viewerApplicationPublicId: null,
     pendingApplicationCount: 1,
     pendingPostCount: 1,
     members: [
-        member("44444444-4444-4444-4444-444444444444", "leader", "2024-11-02T18:05:00Z"),
-        member("44444444-4444-4444-4444-44444444444a", "officer", "2024-11-02T18:00:00Z"),
-        member("44444444-4444-4444-4444-44444444444e", "member", "2024-12-10T19:00:00Z"),
+        member(characterPublicId("44"), "leader", "2024-11-02T18:05:00Z"),
+        member(characterPublicId("4a"), "officer", "2024-11-02T18:00:00Z"),
+        member(characterPublicId("4e"), "member", "2024-12-10T19:00:00Z"),
+        member(characterPublicId("68"), "member", "2025-02-01T19:20:00Z"),
     ],
 };
 
@@ -133,7 +137,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         level: 16,
         creationDate: new Date("2025-04-21T19:00:00Z").toISOString(),
         serverName: "dalaran",
-        memberCount: 2,
+        memberCount: 3,
         sentence: "Heroic raids, Horde, Dalaran.",
         alignmentName: "horde",
         orientationName: "pvpe",
@@ -146,11 +150,53 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
             faction: "horde",
         },
     },
+    {
+        publicId: STORMWATCH_ID,
+        entitled: "Stormwatch Keep",
+        discriminator: "0312",
+        level: 20,
+        creationDate: new Date("2025-05-18T17:30:00Z").toISOString(),
+        serverName: "hyjal",
+        memberCount: 3,
+        sentence: "Alliance heroic + M+, Hyjal evenings.",
+        alignmentName: "alliance",
+        orientationName: "pvpe",
+        crest: {
+            emblem: 28,
+            emblemColor: "#e8f0ff",
+            border: 2,
+            borderColor: "#7a9cc8",
+            backgroundColor: "#1a2438",
+            faction: "alliance",
+        },
+    },
+    {
+        publicId: EMBERHOLD_ID,
+        entitled: "Emberhold Pact",
+        discriminator: "0559",
+        level: 19,
+        creationDate: new Date("2025-03-28T20:00:00Z").toISOString(),
+        serverName: "archimonde",
+        memberCount: 3,
+        sentence: "Horde progress raids, Archimonde.",
+        alignmentName: "horde",
+        orientationName: "pve",
+        crest: {
+            emblem: 15,
+            emblemColor: "#ffb060",
+            border: 3,
+            borderColor: "#a04020",
+            backgroundColor: "#2c1408",
+            faction: "horde",
+        },
+    },
 ];
 
 const BLACKROCK = mockGuildSummaries[1];
 const MOONWELL = mockGuildSummaries[2];
 const ASHEN = mockGuildSummaries[3];
+const STORMWATCH = mockGuildSummaries[4];
+const EMBERHOLD = mockGuildSummaries[5];
 
 function extraSheet(
     summary: GuildSummaryDto,
@@ -180,17 +226,28 @@ function extraSheet(
 
 export const extraGuildSheets: Record<string, GuildSheetDto> = {
     [BLACKROCK.publicId]: extraSheet(BLACKROCK, [
-        member("44444444-4444-4444-4444-444444444445", "leader", "2025-02-14T20:35:00Z"),
-        member("44444444-4444-4444-4444-44444444444f", "officer", "2025-03-02T18:00:00Z"),
-        member("44444444-4444-4444-4444-444444444453", "member", "2025-08-19T21:10:00Z"),
+        member(characterPublicId("45"), "leader", "2025-02-14T20:35:00Z"),
+        member(characterPublicId("4f"), "officer", "2025-03-02T18:00:00Z"),
+        member(characterPublicId("53"), "member", "2025-08-19T21:10:00Z"),
     ]),
     [MOONWELL.publicId]: extraSheet(MOONWELL, [
-        member("44444444-4444-4444-4444-44444444444c", "leader", "2025-06-04T12:05:00Z"),
-        member("44444444-4444-4444-4444-444444444450", "member", "2026-01-13T10:00:00Z"),
+        member(characterPublicId("4c"), "leader", "2025-06-04T12:05:00Z"),
+        member(characterPublicId("50"), "member", "2026-01-13T10:00:00Z"),
     ]),
     [ASHEN.publicId]: extraSheet(ASHEN, [
-        member("44444444-4444-4444-4444-44444444444d", "leader", "2025-04-21T19:10:00Z"),
-        member("44444444-4444-4444-4444-444444444457", "member", "2025-09-03T18:40:00Z"),
+        member(characterPublicId("4d"), "leader", "2025-04-21T19:10:00Z"),
+        member(characterPublicId("57"), "member", "2025-09-03T18:40:00Z"),
+        member(characterPublicId("67"), "member", "2025-12-01T17:00:00Z"),
+    ]),
+    [STORMWATCH.publicId]: extraSheet(STORMWATCH, [
+        member(characterPublicId("5d"), "leader", "2025-05-18T17:40:00Z"),
+        member(characterPublicId("5f"), "officer", "2025-07-04T20:30:00Z"),
+        member(characterPublicId("60"), "member", "2025-09-23T23:00:00Z"),
+    ]),
+    [EMBERHOLD.publicId]: extraSheet(EMBERHOLD, [
+        member(characterPublicId("61"), "leader", "2025-03-28T20:10:00Z"),
+        member(characterPublicId("63"), "officer", "2025-04-13T18:20:00Z"),
+        member(characterPublicId("66"), "member", "2025-08-08T21:15:00Z"),
     ]),
 };
 
@@ -203,7 +260,7 @@ export function guildSheetByPublicId(publicId: string, current: GuildSheetDto): 
 
 export const mockGuildApplications: GuildApplicationDto[] = [
     {
-        publicId: "88888888-8888-8888-8888-888888888888",
+        publicId: mockUuid("wow:org-row:88888888-8888-8888-8888-888888888888"),
         message: "Disc priest, 8/8 heroic cleared, looking for a mythic roster.",
         status: "pending",
         creationDate: new Date("2026-09-08T19:12:00Z").toISOString(),
@@ -211,7 +268,7 @@ export const mockGuildApplications: GuildApplicationDto[] = [
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
-        characterPublicId: "44444444-4444-4444-4444-44444444444b",
+        characterPublicId: characterPublicId("4b"),
         characterPseudo: "Nyxara",
         characterLevel: 80,
         characterClassName: "priest",
@@ -237,10 +294,7 @@ function wallPost(opts: {
     authorNickname: string;
     moderatedAt?: string | null;
 }): GamePostDto {
-    const who = MOCK_PERSONAS.find((persona) => persona.nickname === opts.authorNickname);
-    if (!who) {
-        throw new Error(`Unknown mock persona ${opts.authorNickname}`);
-    }
+    const who = persona(opts.authorNickname);
 
     return {
         publicId: opts.publicId,
@@ -253,7 +307,7 @@ function wallPost(opts: {
         status: opts.status,
         visibility: opts.visibility,
         creationDate: opts.creationDate,
-        authorPlayerPublicId: who.playerPublicId!,
+        authorPlayerPublicId: who.playerPublicId,
         authorPlatformUserPublicId: who.platformUserPublicId,
         authorNickname: who.nickname,
         authorDiscriminator: who.discriminator,
@@ -265,7 +319,7 @@ function wallPost(opts: {
 
 export const mockGuildWallPosts: GamePostDto[] = [
     wallPost({
-        publicId: "99999999-9999-9999-9999-999999999999",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-999999999999"),
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
@@ -277,7 +331,7 @@ export const mockGuildWallPosts: GamePostDto[] = [
         moderatedAt: "2026-09-10T20:00:00Z",
     }),
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999b",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999b"),
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",
@@ -289,7 +343,7 @@ export const mockGuildWallPosts: GamePostDto[] = [
         moderatedAt: "2026-09-09T17:30:00Z",
     }),
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999c",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999c"),
         guildPublicId: MOONWELL_ID,
         guildName: "Moonwell Circle",
         guildDiscriminator: "0088",
@@ -301,7 +355,7 @@ export const mockGuildWallPosts: GamePostDto[] = [
         moderatedAt: "2026-09-12T18:00:00Z",
     }),
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999d",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999d"),
         guildPublicId: MOONWELL_ID,
         guildName: "Moonwell Circle",
         guildDiscriminator: "0088",
@@ -313,7 +367,7 @@ export const mockGuildWallPosts: GamePostDto[] = [
         moderatedAt: "2026-09-11T16:40:00Z",
     }),
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999e",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999e"),
         guildPublicId: BLACKROCK_ID,
         guildName: "Blackrock Vanguard",
         guildDiscriminator: "0417",
@@ -325,7 +379,7 @@ export const mockGuildWallPosts: GamePostDto[] = [
         moderatedAt: "2026-09-13T12:00:00Z",
     }),
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999f",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999f"),
         guildPublicId: ASHEN_ID,
         guildName: "Ashen Covenant",
         guildDiscriminator: "0204",
@@ -336,11 +390,71 @@ export const mockGuildWallPosts: GamePostDto[] = [
         authorNickname: "Orinthal",
         moderatedAt: "2026-09-08T19:45:00Z",
     }),
+    wallPost({
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-9999999999a0"),
+        guildPublicId: STORMWATCH_ID,
+        guildName: "Stormwatch Keep",
+        guildDiscriminator: "0312",
+        body: "Stormwatch mythic signup is live. Healers and a second tank preferred.",
+        visibility: "public",
+        status: "approved",
+        creationDate: "2026-09-14T18:30:00Z",
+        authorNickname: "Dravenor",
+        moderatedAt: "2026-09-14T18:30:00Z",
+    }),
+    wallPost({
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-9999999999a1"),
+        guildPublicId: STORMWATCH_ID,
+        guildName: "Stormwatch Keep",
+        guildDiscriminator: "0312",
+        body: "Consumables run Thursday before raid. Bring herbs if you have them.",
+        visibility: "member",
+        status: "approved",
+        creationDate: "2026-09-13T21:00:00Z",
+        authorNickname: "Isendre",
+        moderatedAt: "2026-09-13T21:00:00Z",
+    }),
+    wallPost({
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-9999999999a2"),
+        guildPublicId: EMBERHOLD_ID,
+        guildName: "Emberhold Pact",
+        guildDiscriminator: "0559",
+        body: "Emberhold clears heroic Wed/Sun. Looking for one more melee.",
+        visibility: "public",
+        status: "approved",
+        creationDate: "2026-09-12T20:15:00Z",
+        authorNickname: "Lythara",
+        moderatedAt: "2026-09-12T20:15:00Z",
+    }),
+    wallPost({
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-9999999999a3"),
+        guildPublicId: EMBERHOLD_ID,
+        guildName: "Emberhold Pact",
+        guildDiscriminator: "0559",
+        body: "Tank markers updated for this week. Read the notes before pull.",
+        visibility: "member",
+        status: "approved",
+        creationDate: "2026-09-11T19:00:00Z",
+        authorNickname: "Bramdor",
+        moderatedAt: "2026-09-11T19:00:00Z",
+    }),
+    wallPost({
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-9999999999a4"),
+        guildPublicId: ASHEN_ID,
+        guildName: "Ashen Covenant",
+        guildDiscriminator: "0204",
+        body: "World quest blitz tomorrow after reset. Hunters bring the snacks.",
+        visibility: "member",
+        status: "approved",
+        creationDate: "2026-09-10T15:30:00Z",
+        authorNickname: "Fenrisa",
+        moderatedAt: "2026-09-10T15:40:00Z",
+    }),
 ];
 
 export const mockPendingPosts: GamePostDto[] = [
     wallPost({
-        publicId: "99999999-9999-9999-9999-99999999999a",
+        publicId: mockUuid("wow:org-row:99999999-9999-9999-9999-99999999999a"),
         guildPublicId: GUILD_PUBLIC_ID,
         guildName: "Guardians of Azeroth",
         guildDiscriminator: "0001",

@@ -139,45 +139,29 @@
 
 .member-card__actions {
     display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.45rem;
     margin-top: auto;
     padding-top: 0.6rem;
     border-top: 1px solid rgba(255, 255, 255, 0.06);
 }
 
-/* Native buttons: the layout editor has no Nebular theme, and `nbButton` explodes there. */
-.member-card__action {
-    appearance: none;
-    background: transparent;
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 0.35rem;
-    color: inherit;
-    cursor: pointer;
-    font: inherit;
-    font-size: 0.75rem;
-    line-height: 1.2;
-    padding: 0.25rem 0.55rem;
+.member-card__admin {
+    display: block;
+    width: 100%;
 }
 
-.member-card__action:disabled {
-    cursor: default;
-    opacity: 0.45;
+:host ::ng-deep .member-card__admin nb-select,
+:host ::ng-deep .member-card__admin nb-select.full-width {
+    display: block !important;
+    width: 100% !important;
+    max-width: none !important;
 }
 
-.member-card__action--info {
-    color: #00d4ff;
-    border-color: color-mix(in srgb, #00d4ff 45%, transparent);
-}
-
-.member-card__action--warning {
-    color: #ffaa00;
-    border-color: color-mix(in srgb, #ffaa00 45%, transparent);
-}
-
-.member-card__action--danger {
-    color: #ff6b81;
-    border-color: color-mix(in srgb, #ff6b81 45%, transparent);
+:host ::ng-deep .member-card__admin .select-button {
+    width: 100% !important;
+    max-width: none !important;
 }
 
 .guild-roster__empty {
