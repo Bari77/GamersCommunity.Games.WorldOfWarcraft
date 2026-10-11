@@ -6,12 +6,26 @@ import { appConfig } from "./app/app.config";
 import { App } from "./app/app";
 import { environment } from "./environments/environment";
 
-async function main() {
-  await bootstrapMocks(shouldUseMocks(environment), async () => {
-    const { worker } = await import("./mocks/browser");
-    await worker.start({ onUnhandledRequest: "bypass" });
-  });
-  await bootstrapApplication(App, appConfig);
+function removeBootstrapSplash(): void {
+    const splash = document.getElementById("app-splash");
+    if (!splash) {
+        return;
+    }
+
+    splash.classList.add("is-hidden");
+    window.setTimeout(() => splash.remove(), 220);
 }
 
-main().catch(console.error);
+async function main(): Promise<void> {
+    await bootstrapMocks(shouldUseMocks(environment), async () => {
+        const { worker } = await import("./mocks/browser");
+        await worker.start({ onUnhandledRequest: "bypass" });
+    });
+    await bootstrapApplication(App, appConfig);
+    removeBootstrapSplash();
+}
+
+main().catch((err) => {
+    removeBootstrapSplash();
+    console.error(err);
+});
