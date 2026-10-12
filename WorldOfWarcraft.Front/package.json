@@ -13,6 +13,8 @@
     "icons": "node scripts/fetch-wow-icons.mjs",
     "crests": "node scripts/fetch-wow-crests.mjs",
     "watch": "ng build --watch --configuration development",
+    "test": "ng test --watch=false --browsers=ChromeHeadless",
+    "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
     "i18n": "ng extract-i18n --build-target=WorldOfWarcraft.Front:esbuild --output-path src/locale --out-file source.json --format=json"
   },
   "gcWorkspace": {
@@ -62,7 +64,14 @@
     "@angular/compiler-cli": "21.2.17",
     "@bari77/gc-workspace-editor": "^1.0.6",
     "@softarc/native-federation-orchestrator": "^4.2.2",
+    "@types/jasmine": "5.1.13",
     "es-module-shims": "^2.8.1",
+    "jasmine-core": "5.12.1",
+    "karma": "6.4.4",
+    "karma-chrome-launcher": "3.2.0",
+    "karma-coverage": "2.2.1",
+    "karma-jasmine": "5.1.0",
+    "karma-jasmine-html-reporter": "2.1.0",
     "prettier": "^3.8.1",
     "typescript": "~5.9.2"
   },
