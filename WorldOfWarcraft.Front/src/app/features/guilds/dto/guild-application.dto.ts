@@ -19,23 +19,3 @@ export interface GuildApplicationDto {
     discriminator: string;
     avatarUrl: string;
 }
-
-export interface GuildApplicationCreateRequestDto {
-    guildPublicId: string;
-    characterPublicId: string;
-    message: string;
-}
-
-export interface GuildApplicationListRequestDto {
-    guildPublicId: string;
-    status?: string;
-}
-
-export interface GuildApplicationReviewRequestDto {
-    publicId: string;
-    accept: boolean;
-}
-
-export interface GuildApplicationTargetRequestDto {
-    publicId: string;
-}

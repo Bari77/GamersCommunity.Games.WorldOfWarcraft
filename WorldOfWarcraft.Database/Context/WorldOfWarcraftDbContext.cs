@@ -1,5 +1,3 @@
-﻿using System;
-using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using WorldOfWarcraft.Database.Models;
 
@@ -12,75 +10,75 @@ public partial class WorldOfWarcraftDbContext : DbContext
     {
     }
 
-    public virtual DbSet<Alignment> Alignments { get; set; }
+    public virtual DbSet<Alignment> Alignments { get; set; } = null!;
 
-    public virtual DbSet<Character> Characters { get; set; }
+    public virtual DbSet<Character> Characters { get; set; } = null!;
 
-    public virtual DbSet<CharacterJob> CharacterJobs { get; set; }
+    public virtual DbSet<CharacterJob> CharacterJobs { get; set; } = null!;
 
-    public virtual DbSet<Class> Classes { get; set; }
+    public virtual DbSet<Class> Classes { get; set; } = null!;
 
-    public virtual DbSet<Direction> Directions { get; set; }
+    public virtual DbSet<Direction> Directions { get; set; } = null!;
 
-    public virtual DbSet<Event> Events { get; set; }
+    public virtual DbSet<Event> Events { get; set; } = null!;
 
-    public virtual DbSet<EventParticipant> EventParticipants { get; set; }
+    public virtual DbSet<EventParticipant> EventParticipants { get; set; } = null!;
 
-    public virtual DbSet<EventParticipantStatus> EventParticipantStatuses { get; set; }
+    public virtual DbSet<EventParticipantStatus> EventParticipantStatuses { get; set; } = null!;
 
-    public virtual DbSet<GamePost> GamePosts { get; set; }
+    public virtual DbSet<GamePost> GamePosts { get; set; } = null!;
 
-    public virtual DbSet<GamePostStatus> GamePostStatuses { get; set; }
+    public virtual DbSet<GamePostStatus> GamePostStatuses { get; set; } = null!;
 
-    public virtual DbSet<Guild> Guilds { get; set; }
+    public virtual DbSet<Guild> Guilds { get; set; } = null!;
 
-    public virtual DbSet<GuildLink> GuildLinks { get; set; }
+    public virtual DbSet<GuildLink> GuildLinks { get; set; } = null!;
 
-    public virtual DbSet<GuildMember> GuildMembers { get; set; }
+    public virtual DbSet<GuildMember> GuildMembers { get; set; } = null!;
 
-    public virtual DbSet<GuildOrientation> GuildOrientations { get; set; }
+    public virtual DbSet<GuildOrientation> GuildOrientations { get; set; } = null!;
 
-    public virtual DbSet<GuildRank> GuildRanks { get; set; }
+    public virtual DbSet<GuildRank> GuildRanks { get; set; } = null!;
 
-    public virtual DbSet<GuildApplication> GuildApplications { get; set; }
+    public virtual DbSet<GuildApplication> GuildApplications { get; set; } = null!;
 
-    public virtual DbSet<GuildApplicationStatus> GuildApplicationStatuses { get; set; }
+    public virtual DbSet<GuildApplicationStatus> GuildApplicationStatuses { get; set; } = null!;
 
-    public virtual DbSet<GuildVip> GuildVips { get; set; }
+    public virtual DbSet<GuildVip> GuildVips { get; set; } = null!;
 
-    public virtual DbSet<Job> Jobs { get; set; }
+    public virtual DbSet<Job> Jobs { get; set; } = null!;
 
-    public virtual DbSet<LfgAd> LfgAds { get; set; }
+    public virtual DbSet<LfgAd> LfgAds { get; set; } = null!;
 
-    public virtual DbSet<PlatformUserSnapshot> PlatformUserSnapshots { get; set; }
+    public virtual DbSet<PlatformUserSnapshot> PlatformUserSnapshots { get; set; } = null!;
 
-    public virtual DbSet<Player> Players { get; set; }
+    public virtual DbSet<Player> Players { get; set; } = null!;
 
-    public virtual DbSet<PlayerLink> PlayerLinks { get; set; }
+    public virtual DbSet<PlayerLink> PlayerLinks { get; set; } = null!;
 
-    public virtual DbSet<PlayerPicture> PlayerPictures { get; set; }
+    public virtual DbSet<PlayerPicture> PlayerPictures { get; set; } = null!;
 
-    public virtual DbSet<PlayerRank> PlayerRanks { get; set; }
+    public virtual DbSet<PlayerRank> PlayerRanks { get; set; } = null!;
 
-    public virtual DbSet<PlayerStream> PlayerStreams { get; set; }
+    public virtual DbSet<PlayerStream> PlayerStreams { get; set; } = null!;
 
-    public virtual DbSet<PlayerVideo> PlayerVideos { get; set; }
+    public virtual DbSet<PlayerVideo> PlayerVideos { get; set; } = null!;
 
-    public virtual DbSet<PlayerVip> PlayerVips { get; set; }
+    public virtual DbSet<PlayerVip> PlayerVips { get; set; } = null!;
 
-    public virtual DbSet<Race> Races { get; set; }
+    public virtual DbSet<Race> Races { get; set; } = null!;
 
-    public virtual DbSet<RaceClass> RaceClasses { get; set; }
+    public virtual DbSet<RaceClass> RaceClasses { get; set; } = null!;
 
-    public virtual DbSet<Roster> Rosters { get; set; }
+    public virtual DbSet<Roster> Rosters { get; set; } = null!;
 
-    public virtual DbSet<RosterMember> RosterMembers { get; set; }
+    public virtual DbSet<RosterMember> RosterMembers { get; set; } = null!;
 
-    public virtual DbSet<Server> Servers { get; set; }
+    public virtual DbSet<Server> Servers { get; set; } = null!;
 
-    public virtual DbSet<Specialization> Specializations { get; set; }
+    public virtual DbSet<Specialization> Specializations { get; set; } = null!;
 
-    public virtual DbSet<SpecializationClass> SpecializationClasses { get; set; }
+    public virtual DbSet<SpecializationClass> SpecializationClasses { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

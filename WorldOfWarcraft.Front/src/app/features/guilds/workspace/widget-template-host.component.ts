@@ -8,18 +8,17 @@ import {
 } from "@bari77/gc-widgets";
 import { Character } from "@features/characters/models/character.model";
 import { GuildApplicationsComponent } from "@features/guilds/components/guild-applications/guild-applications.component";
-import {
-    GuildApplicationDraft,
-    GuildApplyFormComponent,
-} from "@features/guilds/components/guild-apply-form/guild-apply-form.component";
+import { GuildApplyFormComponent } from "@features/guilds/components/guild-apply-form/guild-apply-form.component";
+import { GuildApplicationDraft } from "@features/guilds/components/guild-apply-form/guild-application-draft.model";
 import { GuildLinkAdminComponent } from "@features/guilds/components/guild-link-admin/guild-link-admin.component";
 import { GuildLinkBoardComponent } from "@features/guilds/components/guild-link-board/guild-link-board.component";
-import { GuildRosterComponent, RankChange } from "@features/guilds/components/guild-roster/guild-roster.component";
+import { GuildRosterComponent } from "@features/guilds/components/guild-roster/guild-roster.component";
+import { RankChange } from "@features/guilds/components/guild-roster/rank-change.model";
 import { GuildStatsComponent } from "@features/guilds/components/guild-stats/guild-stats.component";
 import { GuildWallComponent } from "@features/guilds/components/guild-wall/guild-wall.component";
-import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild-update-request.dto";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
-import { GuildSheet } from "@features/guilds/models/guild.model";
+import { GuildSheet } from "@features/guilds/models/guild-sheet.model";
 import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guild";
 import {
     WORKSPACE_PREVIEW_GUILD_LINKS,
@@ -90,7 +89,7 @@ export class WowGuildWidgetTemplateHostComponent {
     /** Patch of the sole fields a widget touched, saved by the page hosting the workspace. */
     public readonly saveField = output<GuildUpdateRequestDto>();
 
-    protected readonly view = computed(() => this.preview() ? WORKSPACE_PREVIEW_GUILD : this.guild()!);
+    protected readonly view = computed(() => (this.preview() ? WORKSPACE_PREVIEW_GUILD : this.guild()!));
 
     protected readonly emptyGalleryLabel = $localize`:@@wow.guild.widget.media.empty:Nothing here yet.`;
     protected readonly noSentenceLabel = $localize`:@@wow.guild.noSentence:This guild has not written a presentation yet.`;
@@ -108,9 +107,7 @@ export class WowGuildWidgetTemplateHostComponent {
     protected readonly previewVideos = WORKSPACE_PREVIEW_GUILD_VIDEOS;
 
     /** Officers and the leader edit widget data; rearranging the page is a mode of its own. */
-    protected readonly canEditFields = computed(
-        () => !this.editing() && !this.preview() && this.view().canModerate(),
-    );
+    protected readonly canEditFields = computed(() => !this.editing() && !this.preview() && this.view().canModerate());
 
     /**
      * Guild galleries are configured from the widget settings rather than an API, so the leader

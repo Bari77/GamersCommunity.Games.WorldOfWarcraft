@@ -2,14 +2,9 @@ import { Component, input, output } from "@angular/core";
 import { CREST_BORDER_COUNT, CREST_EMBLEM_COUNT, GuildCrest } from "@shared/models/guild-crest";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { environment } from "environments/environment";
+import { CrestPart } from "./crest-part.model";
 
 const PARTS = `${environment.assetsUrl}/wow-crests`;
-
-interface CrestPart {
-    index: number;
-    art: string;
-}
-
 const parts = (folder: string, count: number): CrestPart[] =>
     Array.from({ length: count }, (_, index) => ({
         index,

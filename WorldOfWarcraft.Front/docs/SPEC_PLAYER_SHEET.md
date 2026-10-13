@@ -51,15 +51,15 @@ Pont identité shell ↔ microservice, fiche joueur publique, rails sur la home.
 
 ## Gateway
 
-| Resource | Public | Private (auth) |
-|----------|--------|----------------|
-| Players | Get, Resolve | Load, Update |
-| HomeFeed | Get | — |
-| LfgAds | ListRecent | Create |
-| Characters | Get, List, Options | Create, Update, Delete |
-| PlayerPictures | List | Create, Update, Delete |
-| PlayerVideos | List | Create, Update, Delete |
-| PlayerStreams | List | Create, Update, Delete |
+| Resource       | Public             | Private (auth)         |
+| -------------- | ------------------ | ---------------------- |
+| Players        | Get, Resolve       | Load, Update           |
+| HomeFeed       | Get                | —                      |
+| LfgAds         | ListRecent         | Create                 |
+| Characters     | Get, List, Options | Create, Update, Delete |
+| PlayerPictures | List               | Create, Update, Delete |
+| PlayerVideos   | List               | Create, Update, Delete |
+| PlayerStreams  | List               | Create, Update, Delete |
 
 ## Hors scope
 
@@ -69,8 +69,8 @@ Pont identité shell ↔ microservice, fiche joueur publique, rails sur la home.
 
 ## Matrice d’accès
 
-| Visiteur | Profil public | Fiche joueur |
-|----------|---------------|--------------|
-| Anonyme | identité publique | fiche publique si existe |
-| Connecté | + amis / DM / report | + lien depuis le profil |
-| Propriétaire | édition profil | `Load` + `Update` fiche + layout |
+| Visiteur     | Profil public        | Fiche joueur                     |
+| ------------ | -------------------- | -------------------------------- |
+| Anonyme      | identité publique    | fiche publique si existe         |
+| Connecté     | + amis / DM / report | + lien depuis le profil          |
+| Propriétaire | édition profil       | `Load` + `Update` fiche + layout |

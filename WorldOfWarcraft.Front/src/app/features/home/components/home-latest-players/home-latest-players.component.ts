@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
 import { EntityRowComponent } from "@bari77/gc-ui";
-import { PlayerSummary } from "@features/players/models/player.model";
+import { PlayerSummary } from "@features/players/models/player-summary.model";
 
 @Component({
     standalone: true,

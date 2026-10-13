@@ -1,3 +1,4 @@
+using System.Text.Json;
 using GamersCommunity.Core.Exceptions;
 using GamersCommunity.Core.Html;
 using GamersCommunity.Core.Platform;
@@ -5,8 +6,6 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
-using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
 using WorldOfWarcraft.Consumer.Workspace;
@@ -238,9 +237,12 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
         if (sent.Contains(nameof(PlayerUpdateRequest.NbMount)))
             target.NbMount = ValidateCount(request.NbMount, MaxMounts, "Mount count");
         if (sent.Contains(nameof(PlayerUpdateRequest.SuccessPoints)))
+        {
             target.SuccessPoints = request.SuccessPoints is null
                 ? null
                 : ValidateCount(request.SuccessPoints, MaxSuccessPoints, "Achievement points");
+        }
+
         if (sent.Contains(nameof(PlayerUpdateRequest.LayoutJson)))
             target.LayoutJson = NormalizeLayout(request.LayoutJson ?? "");
 
@@ -297,14 +299,18 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
     private async Task<Player> ResolvePlayerAsync(BusMessage message, CancellationToken ct)
     {
         if (message.PublicId is Guid publicId)
+        {
             return await Context.Players.AsNoTracking()
                        .FirstOrDefaultAsync(p => p.PublicId == publicId, ct)
                    ?? throw new NotFoundException("NOT_FOUND", "Cannot find ressource");
+        }
 
         if (message.Id is int id)
+        {
             return await Context.Players.AsNoTracking()
                        .FirstOrDefaultAsync(p => p.Id == id, ct)
                    ?? throw new NotFoundException("NOT_FOUND", "Cannot find ressource");
+        }
 
         throw new BadRequestException("ID_MANDATORY", "Id mandatory");
     }

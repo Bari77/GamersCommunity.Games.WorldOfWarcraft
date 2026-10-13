@@ -1,7 +1,9 @@
 import { Component, computed, effect, input, output, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
-import { Character, CharacterOptions } from "@features/characters/models/character.model";
+import { CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterCreateRequestDto } from "@features/characters/dto/character-create-request.dto";
+import { Character } from "@features/characters/models/character.model";
+import { CharacterOptions } from "@features/characters/models/character-options.model";
 import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbCheckboxModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
@@ -60,14 +62,15 @@ export class CharacterFormComponent {
     public readonly level = signal<number | null>(1);
     public readonly ilvl = signal<number | null>(0);
     public readonly achievement = signal<number | null>(0);
-    protected readonly sentencePlaceholder = $localize`:@@wow.character.form.sentencePlaceholder:Character catchphrase…`;
 
     public readonly sentence = signal("");
     public readonly main = signal(false);
 
     public readonly availableClasses = computed(() => this.options().classesForRace(this.idRace()));
     public readonly availableSpecs = computed(() => this.options().specializationsForClass(this.idClass()));
-    public readonly secondarySpecs = computed(() => this.availableSpecs().filter((spec) => spec.id !== this.idMainSpec()));
+    public readonly secondarySpecs = computed(() =>
+        this.availableSpecs().filter((spec) => spec.id !== this.idMainSpec()),
+    );
 
     /** The backend ceiling is authoritative, but a missing value must not lock the form. */
     public readonly maxLevel = computed(() => this.options().maxLevel || 120);
@@ -86,6 +89,8 @@ export class CharacterFormComponent {
             level <= this.maxLevel()
         );
     });
+
+    protected readonly sentencePlaceholder = $localize`:@@wow.character.form.sentencePlaceholder:Character catchphrase…`;
 
     public constructor() {
         effect(() => {

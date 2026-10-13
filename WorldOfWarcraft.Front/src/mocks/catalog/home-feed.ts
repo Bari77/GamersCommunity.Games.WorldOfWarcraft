@@ -1,22 +1,13 @@
-import { LfgMessageDto, PostableGuildDto } from "@features/lfg/dto/lfg-message.dto";
+import { LfgMessageDto } from "@features/lfg/dto/lfg-message.dto";
+import { PostableGuildDto } from "@features/lfg/dto/postable-guild.dto";
 import { HomeFeedDto } from "@features/home/dto/home-feed.dto";
-import {
-    EMBERHOLD_ID,
-    GUILD_PUBLIC_ID,
-    STORMWATCH_ID,
-    mockGuildSummaries,
-} from "./orgs";
-import {
-    allPlayerSheets,
-    mockCharacters,
-    toCharacterSummary,
-    toPlayerSummary,
-} from "./characters";
+import { EMBERHOLD_ID, GUILD_PUBLIC_ID, STORMWATCH_ID, mockGuildSummaries } from "./orgs";
+import { allPlayerSheets, mockCharacters, toCharacterSummary, toPlayerSummary } from "./characters";
 import { mockUuid } from "./ids";
 import { mockPortraitUrl, persona } from "./personas";
 
-const hoursAgo = (hours: number) => new Date(Date.now() - hours * 3600000).toISOString();
-const tomorrow = () => new Date(Date.now() + 86400000).toISOString();
+const hoursAgo = (hours: number): string => new Date(Date.now() - hours * 3600000).toISOString();
+const tomorrow = (): string => new Date(Date.now() + 86400000).toISOString();
 
 function lfg(opts: {
     publicId: string;

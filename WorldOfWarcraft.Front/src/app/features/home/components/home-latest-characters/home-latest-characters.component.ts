@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
 import { EntityRowComponent } from "@bari77/gc-ui";
-import { CharacterSummary } from "@features/characters/models/character.model";
+import { CharacterSummary } from "@features/characters/models/character-summary.model";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe, gameTerm } from "@shared/pipes/game-term.pipe";
 
@@ -16,9 +16,9 @@ export class HomeLatestCharactersComponent {
 
     protected readonly levelLabel = $localize`:@@wow.character.level:Level`;
     protected readonly mainLabel = $localize`:@@wow.character.main:Main`;
+    protected readonly ilvlLabel = $localize`:@@wow.character.ilvlShort:iLvl`;
 
     private readonly noSpecLabel = $localize`:@@wow.character.noSpec:No specialization`;
-    protected readonly ilvlLabel = $localize`:@@wow.character.ilvlShort:iLvl`;
 
     protected subtitle(character: CharacterSummary): string | null {
         if (!character.className) {

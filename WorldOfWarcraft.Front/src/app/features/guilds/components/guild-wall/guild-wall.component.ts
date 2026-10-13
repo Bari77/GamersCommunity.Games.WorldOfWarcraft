@@ -4,12 +4,13 @@ import {
     EntityWallComposerDirective,
     EntityWallEditDirective,
     EntityWallExtrasDirective,
-    type EntityWallLabels,
+    EntityWallLabels,
 } from "@bari77/gc-widgets";
 import { GuildPostFormComponent } from "@features/guilds/components/guild-post-form/guild-post-form.component";
 import { GamePost } from "@features/guilds/models/game-post.model";
 import { postVisibilityLabel } from "@features/guilds/models/post-visibility";
-import { GamePostDraft, GuildWallStore } from "@features/guilds/stores/guild-wall.store";
+import { GuildWallStore } from "@features/guilds/stores/guild-wall.store";
+import { GamePostDraft } from "@features/guilds/models/game-post-draft.model";
 
 @Component({
     standalone: true,
@@ -80,7 +81,7 @@ export class GuildWallComponent implements OnInit {
     }
 
     protected onEditStart(): void {
-        this.store.errorCode.set(null);
+        this.store.clearError();
         this.queuedNotice.set(false);
     }
 

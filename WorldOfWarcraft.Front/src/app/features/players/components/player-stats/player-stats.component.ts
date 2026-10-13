@@ -1,7 +1,7 @@
 import { Component, effect, input, output, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
-import { PlayerUpdateRequestDto } from "@features/players/dto/player.dto";
-import { PlayerSheet } from "@features/players/models/player.model";
+import { PlayerUpdateRequestDto } from "@features/players/dto/player-update-request.dto";
+import { PlayerSheet } from "@features/players/models/player-sheet.model";
 import { NbButtonModule, NbInputModule } from "@nebular/theme";
 
 /** Counters of a player sheet, editable in place by its owner from the widget chrome. */

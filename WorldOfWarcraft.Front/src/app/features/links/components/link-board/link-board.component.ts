@@ -7,7 +7,8 @@ import { PlayerLinkStore } from "@features/links/stores/player-link.store";
     standalone: true,
     selector: "wow-link-board",
     imports: [LinkListComponent],
-    template: `<gc-link-list [links]="cards()" [emptyLabel]="emptyLabel" />`,
+    templateUrl: "./link-board.component.html",
+    styleUrl: "./link-board.component.scss",
 })
 export class LinkBoardComponent {
     public readonly playerPublicId = input.required<string>();

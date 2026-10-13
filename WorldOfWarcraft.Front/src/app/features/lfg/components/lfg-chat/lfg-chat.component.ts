@@ -3,10 +3,10 @@ import {
     LfgChatComponent as GcLfgChatComponent,
     LfgChatLeadingDirective,
     LfgChatNeedsSheetDirective,
-    type LfgChatComposerState,
-    type LfgChatLabels,
-    type LfgChatMessage as GcLfgChatMessage,
-    type LfgChatPosterOption,
+    LfgChatComposerState,
+    LfgChatLabels,
+    LfgChatMessage as GcLfgChatMessage,
+    LfgChatPosterOption,
 } from "@bari77/gc-widgets";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
 import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage } from "@features/lfg/models/lfg-message.model";
@@ -27,6 +27,7 @@ import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.
     ],
     providers: [LfgChatStore],
     templateUrl: "./lfg-chat.component.html",
+    styleUrl: "./lfg-chat.component.scss",
 })
 export class LfgChatComponent implements OnInit, OnDestroy {
     public readonly kind = input<LfgKind>("lfg");

@@ -14,12 +14,7 @@
     />
 </ng-template>
 
-<ng-template
-    gcWidget="guild-stats"
-    gcWidgetEditable
-    let-editingData="editingData"
-    let-stopDataEdit="stopDataEdit"
->
+<ng-template gcWidget="guild-stats" gcWidgetEditable let-editingData="editingData" let-stopDataEdit="stopDataEdit">
     <wow-guild-stats
         [sheet]="view()"
         [editing]="canEditFields() && !!editingData"

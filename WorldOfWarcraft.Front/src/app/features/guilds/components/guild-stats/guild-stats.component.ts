@@ -2,13 +2,13 @@ import { DatePipe } from "@angular/common";
 import { Component, effect, inject, input, output, resource, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { CharactersService } from "@features/characters/services/characters.service";
-import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild-update-request.dto";
 import {
     GUILD_ORIENTATION_OPTIONS,
     GUILD_ORIENTATION_PVE,
     guildOrientationLabel,
 } from "@features/guilds/models/guild-orientation";
-import { GuildSheet } from "@features/guilds/models/guild.model";
+import { GuildSheet } from "@features/guilds/models/guild-sheet.model";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { firstValueFrom } from "rxjs";
@@ -36,12 +36,12 @@ export class GuildStatsComponent {
     protected readonly orientation = signal(GUILD_ORIENTATION_PVE);
     protected readonly idServer = signal<number | null>(null);
 
-    private readonly characters = inject(CharactersService);
-
     protected readonly servers = resource({
         loader: () => firstValueFrom(this.characters.options()).then((options) => options.servers),
         defaultValue: [],
     });
+
+    private readonly characters = inject(CharactersService);
 
     public constructor() {
         effect(() => {

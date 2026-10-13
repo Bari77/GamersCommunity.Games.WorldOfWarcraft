@@ -1,11 +1,9 @@
 import { Injectable } from "@angular/core";
-import {
-    GuildApplicationCreateRequestDto,
-    GuildApplicationDto,
-    GuildApplicationListRequestDto,
-    GuildApplicationReviewRequestDto,
-    GuildApplicationTargetRequestDto,
-} from "@features/guilds/dto/guild-application.dto";
+import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
+import { GuildApplicationTargetRequestDto } from "@features/guilds/dto/guild-application-target-request.dto";
+import { GuildApplicationReviewRequestDto } from "@features/guilds/dto/guild-application-review-request.dto";
+import { GuildApplicationListRequestDto } from "@features/guilds/dto/guild-application-list-request.dto";
+import { GuildApplicationCreateRequestDto } from "@features/guilds/dto/guild-application-create-request.dto";
 import { GuildApplication } from "@features/guilds/models/guild-application.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";

@@ -1,16 +1,7 @@
-import {
-    GuildDisbandResultDto,
-    GuildLeaveResultDto,
-    GuildMemberDto,
-    GuildSearchResultDto,
-    GuildSheetDto,
-    GuildSummaryDto,
-} from "@features/guilds/dto/guild.dto";
+import { GuildMemberDto } from "@features/guilds/dto/guild.dto";
 import { classColor } from "@features/characters/models/class-colors";
 import { roleLabel, specKey, specRole, WowRole } from "@features/characters/models/spec-roles";
 import { WowIconKind } from "@shared/components/wow-icon/wow-icon.component";
-import { GuildCrest } from "@shared/models/guild-crest";
-
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
 export const GUILD_RANK_LEADER = "leader";
@@ -47,6 +38,10 @@ export class GuildMember {
         public joinedAt: Date,
     ) {}
 
+    public get color(): string {
+        return classColor(this.className);
+    }
+
     public static fromDto(dto: GuildMemberDto): GuildMember {
         return new GuildMember(
             dto.characterPublicId,
@@ -65,10 +60,6 @@ export class GuildMember {
             dto.avatarUrl,
             new Date(dto.joinedAt),
         );
-    }
-
-    public get color(): string {
-        return classColor(this.className);
     }
 
     public emblem(): { kind: WowIconKind; slug: string | null } {
@@ -99,139 +90,5 @@ export class GuildMember {
 
     public isLeader(): boolean {
         return this.rank === GUILD_RANK_LEADER;
-    }
-}
-
-export class GuildSheet {
-    public constructor(
-        public publicId: string,
-        public entitled: string,
-        public discriminator: string,
-        public level: number,
-        public sentence: string | null,
-        public layoutJson: string | null,
-        public idServer: number,
-        public serverName: string,
-        public orientationName: string,
-        public crest: GuildCrest,
-        public creationDate: Date,
-        public memberCount: number,
-        public members: GuildMember[],
-        public viewerRank: string | null,
-        public viewerApplicationStatus: string | null,
-        public viewerApplicationPublicId: string | null,
-        public pendingApplicationCount: number,
-        public pendingPostCount: number,
-    ) {}
-
-    public static fromDto(dto: GuildSheetDto): GuildSheet {
-        return new GuildSheet(
-            dto.publicId,
-            dto.entitled,
-            dto.discriminator,
-            dto.level,
-            dto.sentence ?? null,
-            dto.layoutJson ?? null,
-            dto.idServer,
-            dto.serverName,
-            dto.orientationName,
-            GuildCrest.fromDto(dto.crest),
-            new Date(dto.creationDate),
-            dto.memberCount ?? (dto.members ?? []).length,
-            (dto.members ?? []).map((member) => GuildMember.fromDto(member)),
-            dto.viewerRank ?? null,
-            dto.viewerApplicationStatus ?? null,
-            dto.viewerApplicationPublicId ?? null,
-            dto.pendingApplicationCount ?? 0,
-            dto.pendingPostCount ?? 0,
-        );
-    }
-
-    public handleLabel(): string {
-        return `${this.entitled}#${this.discriminator}`;
-    }
-
-    public isMember(): boolean {
-        return guildRankWeight(this.viewerRank) > 0;
-    }
-
-    public canModerate(): boolean {
-        return guildRankWeight(this.viewerRank) >= guildRankWeight(GUILD_RANK_OFFICER);
-    }
-
-    public isLeader(): boolean {
-        return this.viewerRank === GUILD_RANK_LEADER;
-    }
-}
-
-export class GuildSummary {
-    public constructor(
-        public publicId: string,
-        public entitled: string,
-        public discriminator: string,
-        public level: number,
-        public creationDate: Date,
-        public serverName: string,
-        public memberCount: number,
-        public sentence: string | null,
-        public alignmentName: string | null,
-        public orientationName: string | null,
-        public crest: GuildCrest,
-    ) {}
-
-    public static fromDto(dto: GuildSummaryDto): GuildSummary {
-        return new GuildSummary(
-            dto.publicId,
-            dto.entitled,
-            dto.discriminator,
-            dto.level,
-            new Date(dto.creationDate),
-            dto.serverName,
-            dto.memberCount,
-            dto.sentence ?? null,
-            dto.alignmentName ?? null,
-            dto.orientationName ?? null,
-            GuildCrest.fromDto(dto.crest),
-        );
-    }
-
-    public handleLabel(): string {
-        return `${this.entitled}#${this.discriminator}`;
-    }
-}
-
-export class GuildSearchPage {
-    public constructor(
-        public items: GuildSummary[],
-        public hasMore: boolean,
-    ) {}
-
-    public static fromDto(dto: GuildSearchResultDto): GuildSearchPage {
-        return new GuildSearchPage(
-            (dto.items ?? []).map((item) => GuildSummary.fromDto(item)),
-            dto.hasMore ?? false,
-        );
-    }
-}
-
-export class GuildLeaveResult {
-    public constructor(
-        public guildPublicId: string,
-        public characterPublicId: string,
-    ) {}
-
-    public static fromDto(dto: GuildLeaveResultDto): GuildLeaveResult {
-        return new GuildLeaveResult(dto.guildPublicId, dto.characterPublicId);
-    }
-}
-
-export class GuildDisbandResult {
-    public constructor(
-        public publicId: string,
-        public handle: string,
-    ) {}
-
-    public static fromDto(dto: GuildDisbandResultDto): GuildDisbandResult {
-        return new GuildDisbandResult(dto.publicId, dto.handle);
     }
 }

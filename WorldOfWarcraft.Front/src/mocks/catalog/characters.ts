@@ -1,14 +1,15 @@
-import {
-    CharacterCreateRequestDto,
-    CharacterDto,
-    CharacterOptionsDto,
-    CharacterSummaryDto,
-} from "@features/characters/dto/character.dto";
-import { PlayerSheetDto, PlayerSummaryDto } from "@features/players/dto/player.dto";
-import { GuildCrestDto } from "@shared/models/guild-crest";
+import { CharacterDto } from "@features/characters/dto/character.dto";
+import { CharacterSummaryDto } from "@features/characters/dto/character-summary.dto";
+import { CharacterOptionsDto } from "@features/characters/dto/character-options.dto";
+import { CharacterCreateRequestDto } from "@features/characters/dto/character-create-request.dto";
+import { SpecializationClassOptionDto } from "@features/characters/dto/specialization-class-option.dto";
+import { PlayerSummaryDto } from "@features/players/dto/player-summary.dto";
+import { PlayerSheetDto } from "@features/players/dto/player-sheet.dto";
+import { GuildCrestDto } from "@shared/models/guild-crest.dto";
 import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
 import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
 import { getSessionPersona } from "./session";
+import { SheetSeed } from "./sheet-seed";
 
 const self = getSessionPersona();
 
@@ -215,16 +216,16 @@ export const mockCharacterOptions: CharacterOptionsDto = {
     ],
 };
 
-type GuildBind = {
+interface GuildBind {
     publicId: string;
     entitled: string;
     discriminator: string;
     rank: string;
     crest: GuildCrestDto;
-};
+}
 
-const cid = (key: string) => characterPublicId(key);
-const owner = (nickname: string) => persona(nickname).playerPublicId;
+const cid = (key: string): string => characterPublicId(key);
+const owner = (nickname: string): string => persona(nickname).playerPublicId;
 
 const guardians = (rank: string): GuildBind => ({
     publicId: GUARDIANS_ID,
@@ -955,16 +956,6 @@ export const mockCharacters: CharacterDto[] = [
     }),
 ];
 
-type SheetSeed = {
-    who: string;
-    presentationIrl: string;
-    presentationIg: string;
-    nbMount: number;
-    successPoints: number;
-    creationDate: string;
-    guild: PlayerSheetDto["guild"];
-};
-
 function sheet(opts: SheetSeed): PlayerSheetDto {
     const who = persona(opts.who);
     return {
@@ -1246,9 +1237,7 @@ const SHEET_SEEDS: SheetSeed[] = [
 ];
 
 if (SHEET_SEEDS.length !== MOCK_PERSONAS.length) {
-    throw new Error(
-        `WoW mock sheet seeds (${SHEET_SEEDS.length}) must match personas (${MOCK_PERSONAS.length}).`,
-    );
+    throw new Error(`WoW mock sheet seeds (${SHEET_SEEDS.length}) must match personas (${MOCK_PERSONAS.length}).`);
 }
 
 const sheetsByNickname = Object.fromEntries(SHEET_SEEDS.map((seed) => [seed.who, sheet(seed)])) as Record<
@@ -1329,7 +1318,8 @@ export function allPlayerSheets(current: PlayerSheetDto = mockPlayerSheet): Play
 export function buildMockCharacter(request: CharacterCreateRequestDto, publicId: string): CharacterDto {
     const entitled = (items: { id: number; entitled: string }[], id: number | null): string =>
         items.find((item) => item.id === id)?.entitled ?? "";
-    const spec = (id: number | null) => mockCharacterOptions.specializationClasses.find((item) => item.id === id);
+    const spec = (id: number | null): SpecializationClassOptionDto | undefined =>
+        mockCharacterOptions.specializationClasses.find((item) => item.id === id);
 
     const mainSpec = spec(request.idMainSpecializationClass);
     const secondarySpec = spec(request.idSecondarySpecializationClass);

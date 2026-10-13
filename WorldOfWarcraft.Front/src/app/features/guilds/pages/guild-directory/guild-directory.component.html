@@ -33,7 +33,7 @@
                     type="search"
                     [placeholder]="searchPlaceholder"
                     [ngModel]="store.query()"
-                    (ngModelChange)="store.query.set($event)"
+                    (ngModelChange)="store.setQuery($event)"
                     [ngModelOptions]="{ standalone: true }"
                 />
 
@@ -42,7 +42,7 @@
                     placeholder="—"
                     [disabled]="loadingOptions()"
                     [ngModel]="store.idServer()"
-                    (ngModelChange)="store.idServer.set($event); onFilterChange()"
+                    (ngModelChange)="store.setIdServer($event); onFilterChange()"
                     [ngModelOptions]="{ standalone: true }"
                 >
                     <nb-option [value]="null" i18n="@@wow.guild.directory.allServers">All servers</nb-option>
@@ -56,7 +56,7 @@
                     placeholder="—"
                     [disabled]="loadingOptions()"
                     [ngModel]="store.idAlignment()"
-                    (ngModelChange)="store.idAlignment.set($event); onFilterChange()"
+                    (ngModelChange)="store.setIdAlignment($event); onFilterChange()"
                     [ngModelOptions]="{ standalone: true }"
                 >
                     <nb-option [value]="null" i18n="@@wow.guild.directory.allFactions">All factions</nb-option>
@@ -155,7 +155,9 @@
                             @if (orientationLabel(guild.orientationName); as orientation) {
                                 · {{ orientation }}
                             }
-                            · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }}
+                            ·
+                            <span i18n="@@wow.guild.level">Level</span>
+                            {{ guild.level }}
                         </p>
                         @if (guild.sentence) {
                             <gc-rich-content class="guild-card__sentence" [html]="guild.sentence" />

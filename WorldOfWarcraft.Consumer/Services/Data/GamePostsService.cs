@@ -6,7 +6,6 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
-using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
 using WorldOfWarcraft.Database.Context;

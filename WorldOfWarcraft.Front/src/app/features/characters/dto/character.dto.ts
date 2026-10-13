@@ -1,4 +1,5 @@
-import { GuildCrestDto } from "@shared/models/guild-crest";
+import { GuildCrestDto } from "@shared/models/guild-crest.dto";
+import { CharacterCreateRequestDto } from "./character-create-request.dto";
 
 /**
  * Optional rather than nullable on every field the back may leave empty: its serializer omits null
@@ -35,86 +36,4 @@ export interface CharacterDto {
     guildCrest?: GuildCrestDto | null;
 }
 
-export interface CharacterListRequestDto {
-    playerPublicId: string;
-}
-
-export interface CharacterSummaryDto {
-    publicId: string;
-    pseudo: string;
-    level: number;
-    ilvl: number;
-    main: boolean;
-    creationDate: string;
-    playerPublicId: string;
-    serverName: string;
-    raceName: string;
-    className?: string | null;
-    mainSpecializationName?: string | null;
-    guildPublicId?: string | null;
-    guildName?: string | null;
-    guildDiscriminator?: string | null;
-}
-
-export interface CharacterSearchRequestDto {
-    query?: string;
-    idServer?: number;
-    idAlignment?: number;
-    idDirection?: number;
-    idClass?: number;
-    minLevel?: number;
-    beforeCreationDate?: string;
-    beforePublicId?: string;
-    take?: number;
-}
-
-export interface CharacterSearchResultDto {
-    items: CharacterSummaryDto[];
-    hasMore: boolean;
-}
-
-export interface CharacterCreateRequestDto {
-    pseudo: string;
-    level: number;
-    ilvl: number;
-    achievement: number;
-    sentence: string | null;
-    main: boolean;
-    idRace: number;
-    idServer: number;
-    idDirection: number;
-    idAlignment: number | null;
-    idMainSpecializationClass: number | null;
-    idSecondarySpecializationClass: number | null;
-}
-
 export type CharacterUpdateRequestDto = Partial<CharacterCreateRequestDto>;
-
-export interface ReferenceItemDto {
-    id: number;
-    entitled: string;
-}
-
-export interface SpecializationClassOptionDto {
-    id: number;
-    entitled: string;
-    idClass: number;
-    specializationEntitled: string;
-}
-
-export interface RaceClassOptionDto {
-    idRace: number;
-    idClass: number;
-}
-
-export interface CharacterOptionsDto {
-    races: ReferenceItemDto[];
-    servers: ReferenceItemDto[];
-    directions: ReferenceItemDto[];
-    alignments: ReferenceItemDto[];
-    classes: ReferenceItemDto[];
-    specializationClasses: SpecializationClassOptionDto[];
-    raceClasses: RaceClassOptionDto[];
-    maxLevel: number;
-    maxIlvl: number;
-}

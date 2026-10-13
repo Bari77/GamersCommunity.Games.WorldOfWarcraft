@@ -3,7 +3,7 @@ import { Component, computed, inject, input, model, resource } from "@angular/co
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlatformGamesService } from "@core/services/platform-games.service";
 import { guildOrientationLabel } from "@features/guilds/models/guild-orientation";
-import { GuildSheet } from "@features/guilds/models/guild.model";
+import { GuildSheet } from "@features/guilds/models/guild-sheet.model";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";
@@ -24,14 +24,14 @@ export class GuildHeroComponent {
     public readonly canModerate = input(false);
     public readonly settingsOpen = model(false);
 
-    protected readonly orientationLabel = computed(() => guildOrientationLabel(this.guild().orientationName));
-
     public readonly games = resource({
         loader: () => firstValueFrom(this.platformGames.list()).catch(() => []),
         defaultValue: [],
     });
 
     public readonly currentGame = computed(() => this.games.value().find((game) => game.url === WOW_GAME_URL));
+
+    protected readonly orientationLabel = computed(() => guildOrientationLabel(this.guild().orientationName));
 
     protected readonly gameNameFallback = $localize`:@@wow.game.name:World of Warcraft`;
 

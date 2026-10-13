@@ -23,24 +23,3 @@ export interface LfgMessageDto {
     serverName?: string | null;
     directionName?: string | null;
 }
-
-export interface ListLfgBeforeRequestDto {
-    kind: string;
-    beforeCreationDate: string;
-    beforePublicId: string;
-    take?: number;
-}
-
-export interface CreateLfgMessageRequestDto {
-    body: string;
-    platformUserId?: number;
-    platformUserPublicId?: string;
-    guildPublicId?: string;
-}
-
-export interface PostableGuildDto {
-    publicId: string;
-    entitled: string;
-    discriminator: string;
-    rank: string;
-}

@@ -1,29 +1,18 @@
 import { computed, inject, Injectable, signal } from "@angular/core";
-import { CharacterSummary } from "@features/characters/models/character.model";
+import { CharacterSearchRequestDto } from "@features/characters/dto/character-search-request.dto";
+import { CharacterSummary } from "@features/characters/models/character-summary.model";
 import { CharactersService } from "@features/characters/services/characters.service";
-import { GuildSummary } from "@features/guilds/models/guild.model";
+import { GuildSearchRequestDto } from "@features/guilds/dto/guild-search-request.dto";
+import { GuildSummary } from "@features/guilds/models/guild-summary.model";
 import { GuildsService } from "@features/guilds/services/guilds.service";
-import { PlayerSummary } from "@features/players/models/player.model";
+import { PlayerSearchRequestDto } from "@features/players/dto/player-search-request.dto";
+import { PlayerSummary } from "@features/players/models/player-summary.model";
 import { PlayersService } from "@features/players/services/players.service";
 import { firstValueFrom } from "rxjs";
+import { SearchCriteria } from "../models/search-criteria.model";
+import { SearchHit } from "../models/search-hit.model";
 
 export type SearchScope = "all" | "guilds" | "characters" | "players";
-
-export interface SearchCriteria {
-    query: string;
-    scope: SearchScope;
-    idServer: number | null;
-    idAlignment: number | null;
-    idClass: number | null;
-    minLevel: number | null;
-}
-
-/** A result the page can jump to directly. Characters have no sheet of their own. */
-export interface SearchHit {
-    kind: "guild" | "player";
-    publicId: string;
-}
-
 export const EMPTY_CRITERIA: SearchCriteria = {
     query: "",
     scope: "all",
@@ -46,20 +35,20 @@ const PAGE_SIZE = 20;
  */
 @Injectable()
 export class GlobalSearchStore {
-    public readonly guilds = signal<GuildSummary[]>([]);
-    public readonly characters = signal<CharacterSummary[]>([]);
-    public readonly players = signal<PlayerSummary[]>([]);
+    public readonly guilds = computed(() => this.$guilds());
+    public readonly characters = computed(() => this.$characters());
+    public readonly players = computed(() => this.$players());
 
-    public readonly loading = signal(true);
-    public readonly loadingMore = signal(false);
+    public readonly loading = computed(() => this.$loading());
+    public readonly loadingMore = computed(() => this.$loadingMore());
 
     /** Only meaningful on a single-type scope; the overview offers "see all" links instead. */
-    public readonly hasMore = signal(false);
+    public readonly hasMore = computed(() => this.$hasMore());
 
-    public readonly criteria = signal<SearchCriteria>(EMPTY_CRITERIA);
+    public readonly criteria = computed(() => this.$criteria());
 
     public readonly isEmpty = computed(
-        () => this.guilds().length === 0 && this.characters().length === 0 && this.players().length === 0,
+        () => this.$guilds().length === 0 && this.$characters().length === 0 && this.$players().length === 0,
     );
 
     /**
@@ -67,13 +56,13 @@ export class GlobalSearchStore {
      * for. Characters carry no discriminator, so they never shortcut.
      */
     public readonly handleMatch = computed<SearchHit | null>(() => {
-        const criteria = this.criteria();
+        const criteria = this.$criteria();
         if (criteria.scope !== "all" || !criteria.query.includes("#")) {
             return null;
         }
 
-        const guilds = this.guilds();
-        const players = this.players();
+        const guilds = this.$guilds();
+        const players = this.$players();
         if (guilds.length + players.length !== 1) {
             return null;
         }
@@ -92,11 +81,18 @@ export class GlobalSearchStore {
      * late answer obsolete, and applying it would show results for a term no longer on screen.
      */
     private token = 0;
+    private readonly $guilds = signal<GuildSummary[]>([]);
+    private readonly $characters = signal<CharacterSummary[]>([]);
+    private readonly $players = signal<PlayerSummary[]>([]);
+    private readonly $loading = signal(true);
+    private readonly $loadingMore = signal(false);
+    private readonly $hasMore = signal(false);
+    private readonly $criteria = signal<SearchCriteria>(EMPTY_CRITERIA);
 
     public async search(criteria: SearchCriteria): Promise<void> {
         const current = ++this.token;
-        this.criteria.set(criteria);
-        this.loading.set(true);
+        this.$criteria.set(criteria);
+        this.$loading.set(true);
 
         const take = criteria.scope === "all" ? OVERVIEW_TAKE : PAGE_SIZE;
 
@@ -117,27 +113,25 @@ export class GlobalSearchStore {
                 return;
             }
 
-            this.guilds.set(guilds?.items ?? []);
-            this.characters.set(characters?.items ?? []);
-            this.players.set(players?.items ?? []);
-            this.hasMore.set(
-                criteria.scope === "all" ? false : (guilds ?? characters ?? players)?.hasMore === true,
-            );
+            this.$guilds.set(guilds?.items ?? []);
+            this.$characters.set(characters?.items ?? []);
+            this.$players.set(players?.items ?? []);
+            this.$hasMore.set(criteria.scope === "all" ? false : (guilds ?? characters ?? players)?.hasMore === true);
         } finally {
             if (current === this.token) {
-                this.loading.set(false);
+                this.$loading.set(false);
             }
         }
     }
 
     public async loadMore(): Promise<void> {
-        const criteria = this.criteria();
-        if (criteria.scope === "all" || !this.hasMore() || this.loadingMore()) {
+        const criteria = this.$criteria();
+        if (criteria.scope === "all" || !this.$hasMore() || this.$loadingMore()) {
             return;
         }
 
         const token = this.token;
-        this.loadingMore.set(true);
+        this.$loadingMore.set(true);
 
         try {
             switch (criteria.scope) {
@@ -152,12 +146,12 @@ export class GlobalSearchStore {
                     break;
             }
         } finally {
-            this.loadingMore.set(false);
+            this.$loadingMore.set(false);
         }
     }
 
     private async appendGuilds(criteria: SearchCriteria, token: number): Promise<void> {
-        const current = this.guilds();
+        const current = this.$guilds();
         const last = current.at(-1);
         if (!last) {
             return;
@@ -177,12 +171,12 @@ export class GlobalSearchStore {
         }
 
         const known = new Set(current.map((item) => item.publicId));
-        this.guilds.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
-        this.hasMore.set(page.hasMore);
+        this.$guilds.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
+        this.$hasMore.set(page.hasMore);
     }
 
     private async appendCharacters(criteria: SearchCriteria, token: number): Promise<void> {
-        const current = this.characters();
+        const current = this.$characters();
         const last = current.at(-1);
         if (!last) {
             return;
@@ -202,12 +196,12 @@ export class GlobalSearchStore {
         }
 
         const known = new Set(current.map((item) => item.publicId));
-        this.characters.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
-        this.hasMore.set(page.hasMore);
+        this.$characters.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
+        this.$hasMore.set(page.hasMore);
     }
 
     private async appendPlayers(criteria: SearchCriteria, token: number): Promise<void> {
-        const current = this.players();
+        const current = this.$players();
         const last = current.at(-1);
         if (!last) {
             return;
@@ -227,15 +221,15 @@ export class GlobalSearchStore {
         }
 
         const known = new Set(current.map((item) => item.publicId));
-        this.players.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
-        this.hasMore.set(page.hasMore);
+        this.$players.set([...current, ...page.items.filter((item) => !known.has(item.publicId))]);
+        this.$hasMore.set(page.hasMore);
     }
 
     private wants(criteria: SearchCriteria, type: Exclude<SearchScope, "all">): boolean {
         return criteria.scope === "all" || criteria.scope === type;
     }
 
-    private guildRequest(criteria: SearchCriteria) {
+    private guildRequest(criteria: SearchCriteria): GuildSearchRequestDto {
         const query = criteria.query.trim();
         return {
             ...(query ? { query } : {}),
@@ -244,7 +238,7 @@ export class GlobalSearchStore {
         };
     }
 
-    private characterRequest(criteria: SearchCriteria) {
+    private characterRequest(criteria: SearchCriteria): CharacterSearchRequestDto {
         const query = criteria.query.trim();
         return {
             ...(query ? { query } : {}),
@@ -255,7 +249,7 @@ export class GlobalSearchStore {
         };
     }
 
-    private playerRequest(criteria: SearchCriteria) {
+    private playerRequest(criteria: SearchCriteria): PlayerSearchRequestDto {
         const query = criteria.query.trim();
         return {
             ...(query ? { query } : {}),

@@ -1,34 +1,21 @@
 import { createGatewayListHandler, gatewayUrl } from "@bari77/gc-msw";
-import {
-    CharacterCreateRequestDto,
-    CharacterDto,
-    CharacterListRequestDto,
-} from "@features/characters/dto/character.dto";
-import {
-    GamePostCreateRequestDto,
-    GamePostDto,
-    GamePostUpdateRequestDto,
-    GuildWallRequestDto,
-} from "@features/guilds/dto/game-post.dto";
+import { CharacterDto } from "@features/characters/dto/character.dto";
+import { CharacterListRequestDto } from "@features/characters/dto/character-list-request.dto";
+import { CharacterCreateRequestDto } from "@features/characters/dto/character-create-request.dto";
+import { GamePostDto } from "@features/guilds/dto/game-post.dto";
+import { GuildWallRequestDto } from "@features/guilds/dto/guild-wall-request.dto";
+import { GamePostUpdateRequestDto } from "@features/guilds/dto/game-post-update-request.dto";
+import { GamePostCreateRequestDto } from "@features/guilds/dto/game-post-create-request.dto";
 import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
-import {
-    GuildLinkCreateRequestDto,
-    GuildLinkDto,
-    GuildLinkReorderRequestDto,
-    GuildLinkUpdateRequestDto,
-} from "@features/guilds/dto/guild-link.dto";
-import { GuildSheetDto } from "@features/guilds/dto/guild.dto";
-import {
-    PlayerLinkCreateRequestDto,
-    PlayerLinkDto,
-    PlayerLinkReorderRequestDto,
-} from "@features/links/dto/player-link.dto";
-import {
-    PlayerMediaCreateRequestDto,
-    PlayerMediaDto,
-    PlayerMediaListRequestDto,
-} from "@bari77/gc-sdk";
-import { PlayerUpdateRequestDto } from "@features/players/dto/player.dto";
+import { GuildLinkDto, GuildLinkUpdateRequestDto } from "@features/guilds/dto/guild-link.dto";
+import { GuildLinkReorderRequestDto } from "@features/guilds/dto/guild-link-reorder-request.dto";
+import { GuildLinkCreateRequestDto } from "@features/guilds/dto/guild-link-create-request.dto";
+import { GuildSheetDto } from "@features/guilds/dto/guild-sheet.dto";
+import { PlayerLinkDto } from "@features/links/dto/player-link.dto";
+import { PlayerLinkReorderRequestDto } from "@features/links/dto/player-link-reorder-request.dto";
+import { PlayerLinkCreateRequestDto } from "@features/links/dto/player-link-create-request.dto";
+import { PlayerMediaCreateRequestDto, PlayerMediaDto, PlayerMediaListRequestDto } from "@bari77/gc-sdk";
+import { PlayerUpdateRequestDto } from "@features/players/dto/player-update-request.dto";
 import { http, HttpResponse } from "msw";
 import { environment } from "../environments/environment";
 import {
@@ -147,7 +134,8 @@ const guildHandlers = [
         };
         const serverName =
             idServer != null
-                ? (mockCharacterOptions.servers.find((server) => server.id === idServer)?.entitled ?? guildSheet.serverName)
+                ? (mockCharacterOptions.servers.find((server) => server.id === idServer)?.entitled ??
+                  guildSheet.serverName)
                 : guildSheet.serverName;
         guildSheet = {
             ...guildSheet,
@@ -397,10 +385,13 @@ export const handlers = [
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "HomeFeed", "actions", "Get"), () =>
         HttpResponse.json(mockHomeFeed),
     ),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "ListRecent"), async ({ request }) => {
-        const { kind } = (await request.json()) as { kind?: string };
-        return HttpResponse.json(kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages);
-    }),
+    http.post(
+        gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "ListRecent"),
+        async ({ request }) => {
+            const { kind } = (await request.json()) as { kind?: string };
+            return HttpResponse.json(kind === "recruit" ? mockRecruitmentMessages : mockLfgMessages);
+        },
+    ),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "LfgAds", "actions", "ListBefore"), () =>
         HttpResponse.json([]),
     ),
@@ -462,36 +453,48 @@ export const handlers = [
         player = { ...player, ...body };
         return HttpResponse.json({ ...player, characterCount: characters.length });
     }),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "List"), async ({ request }) => {
-        const { playerPublicId } = (await request.json()) as CharacterListRequestDto;
-        return HttpResponse.json(characters.filter((item) => item.playerPublicId === playerPublicId));
-    }),
+    http.post(
+        gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "List"),
+        async ({ request }) => {
+            const { playerPublicId } = (await request.json()) as CharacterListRequestDto;
+            return HttpResponse.json(characters.filter((item) => item.playerPublicId === playerPublicId));
+        },
+    ),
     http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Options"), () =>
         HttpResponse.json(mockCharacterOptions),
     ),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Search"), async ({ request }) => {
-        const { query } = (await request.json()) as { query?: string };
-        const needle = query?.trim().toLowerCase();
-        const items = characters
-            .filter((character) => !needle || character.pseudo.toLowerCase().includes(needle))
-            .map(toCharacterSummary);
-        return HttpResponse.json({ items, hasMore: false });
-    }),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Search"), async ({ request }) => {
-        const { query } = (await request.json()) as { query?: string };
-        const needle = query?.trim().toLowerCase().split("#")[0];
-        const items = allPlayerSheets(player)
-            .map(toPlayerSummary)
-            .filter((item) => !needle || item.nickname.toLowerCase().includes(needle));
-        return HttpResponse.json({ items, hasMore: false });
-    }),
-    http.post(gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Create"), async ({ request }) => {
-        const body = (await request.json()) as CharacterCreateRequestDto;
-        const created = buildMockCharacter(body, crypto.randomUUID());
-        characters = created.main ? characters.map((item) => ({ ...item, main: false })) : characters;
-        characters = [...characters, created];
-        return HttpResponse.json(created);
-    }),
+    http.post(
+        gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Search"),
+        async ({ request }) => {
+            const { query } = (await request.json()) as { query?: string };
+            const needle = query?.trim().toLowerCase();
+            const items = characters
+                .filter((character) => !needle || character.pseudo.toLowerCase().includes(needle))
+                .map(toCharacterSummary);
+            return HttpResponse.json({ items, hasMore: false });
+        },
+    ),
+    http.post(
+        gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Search"),
+        async ({ request }) => {
+            const { query } = (await request.json()) as { query?: string };
+            const needle = query?.trim().toLowerCase().split("#")[0];
+            const items = allPlayerSheets(player)
+                .map(toPlayerSummary)
+                .filter((item) => !needle || item.nickname.toLowerCase().includes(needle));
+            return HttpResponse.json({ items, hasMore: false });
+        },
+    ),
+    http.post(
+        gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Create"),
+        async ({ request }) => {
+            const body = (await request.json()) as CharacterCreateRequestDto;
+            const created = buildMockCharacter(body, crypto.randomUUID());
+            characters = created.main ? characters.map((item) => ({ ...item, main: false })) : characters;
+            characters = [...characters, created];
+            return HttpResponse.json(created);
+        },
+    ),
     http.put(`${charactersUrl}/:publicId`, async ({ request, params }) => {
         const publicId = params["publicId"] as string;
         const body = (await request.json()) as CharacterCreateRequestDto;

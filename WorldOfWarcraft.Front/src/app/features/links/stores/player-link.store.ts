@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, resource, signal } from "@angular/core";
-import { PlayerLinkCreateRequestDto, PlayerLinkUpdateRequestDto } from "@features/links/dto/player-link.dto";
+import { PlayerLinkUpdateRequestDto } from "@features/links/dto/player-link.dto";
+import { PlayerLinkCreateRequestDto } from "@features/links/dto/player-link-create-request.dto";
 import { PlayerLink } from "@features/links/models/player-link.model";
 import { PlayerLinkService } from "@features/links/services/player-link.service";
 import { firstValueFrom } from "rxjs";
@@ -11,24 +12,27 @@ import { firstValueFrom } from "rxjs";
 @Injectable()
 export class PlayerLinkStore {
     public readonly items = resource({
-        params: () => this.playerPublicId(),
+        params: () => this.$playerPublicId(),
         loader: ({ params }) => firstValueFrom(this.service.list(params)),
         defaultValue: [] as PlayerLink[],
     });
 
     public readonly loading = computed(() => this.items.isLoading());
-    public readonly saving = signal(false);
-    public readonly errorCode = signal<string | null>(null);
+    public readonly saving = computed(() => this.$saving());
+    public readonly errorCode = computed(() => this.$errorCode());
 
-    private readonly playerPublicId = signal<string | undefined>(undefined);
+    public readonly playerPublicId = computed(() => this.$playerPublicId());
     private readonly service = inject(PlayerLinkService);
+    private readonly $saving = signal(false);
+    private readonly $errorCode = signal<string | null>(null);
+    private readonly $playerPublicId = signal<string | undefined>(undefined);
 
     public setContext(playerPublicId: string): void {
-        this.playerPublicId.set(playerPublicId);
+        this.$playerPublicId.set(playerPublicId);
     }
 
     public clearError(): void {
-        this.errorCode.set(null);
+        this.$errorCode.set(null);
     }
 
     public create(data: PlayerLinkCreateRequestDto): Promise<boolean> {
@@ -57,17 +61,17 @@ export class PlayerLinkStore {
     }
 
     private async run(action: () => Promise<unknown>): Promise<boolean> {
-        this.saving.set(true);
-        this.errorCode.set(null);
+        this.$saving.set(true);
+        this.$errorCode.set(null);
         try {
             await action();
             this.items.reload();
             return true;
         } catch (err: unknown) {
-            this.errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");
+            this.$errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");
             return false;
         } finally {
-            this.saving.set(false);
+            this.$saving.set(false);
         }
     }
 }

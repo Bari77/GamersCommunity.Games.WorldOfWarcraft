@@ -1,4 +1,4 @@
-import { Injectable, inject, signal } from "@angular/core";
+import { Injectable, inject, signal, computed } from "@angular/core";
 import { PlatformUsersService } from "@core/services/platform-users.service";
 import { firstValueFrom } from "rxjs";
 
@@ -6,10 +6,11 @@ const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
 
 @Injectable()
 export class PlatformAvatarStore {
-    public readonly avatars = signal<Record<string, string>>({});
+    public readonly avatars = computed(() => this.$avatars());
 
     private readonly users = inject(PlatformUsersService);
     private readonly pending = new Set<string>();
+    private readonly $avatars = signal<Record<string, string>>({});
 
     public urlFor(
         platformUserPublicId: string,
@@ -22,17 +23,17 @@ export class PlatformAvatarStore {
         if (options?.fallbackUrl) {
             return options.fallbackUrl;
         }
-        if (
-            options?.sessionPublicId &&
-            platformUserPublicId === options.sessionPublicId &&
-            options.sessionAvatarUrl
-        ) {
+        if (options?.sessionPublicId && platformUserPublicId === options.sessionPublicId && options.sessionAvatarUrl) {
             return options.sessionAvatarUrl;
         }
         if (!platformUserPublicId || platformUserPublicId === EMPTY_GUID) {
             return "";
         }
-        return this.avatars()[platformUserPublicId] ?? "";
+        return this.$avatars()[platformUserPublicId] ?? "";
+    }
+
+    public remember(platformUserPublicId: string, avatarUrl: string): void {
+        this.$avatars.update((current) => ({ ...current, [platformUserPublicId]: avatarUrl }));
     }
 
     public async prefetchPublicIds(ids: Iterable<string>): Promise<void> {
@@ -46,7 +47,7 @@ export class PlatformAvatarStore {
     }
 
     public async ensure(publicId: string): Promise<void> {
-        if (!publicId || publicId === EMPTY_GUID || this.avatars()[publicId] || this.pending.has(publicId)) {
+        if (!publicId || publicId === EMPTY_GUID || this.$avatars()[publicId] || this.pending.has(publicId)) {
             return;
         }
 
@@ -54,7 +55,7 @@ export class PlatformAvatarStore {
         try {
             const avatarUrl = await firstValueFrom(this.users.getAvatarUrl(publicId));
             if (avatarUrl) {
-                this.avatars.update((current) => ({ ...current, [publicId]: avatarUrl }));
+                this.$avatars.update((current) => ({ ...current, [publicId]: avatarUrl }));
             }
         } catch {
             // ignore missing profiles

@@ -1,8 +1,8 @@
-import type { WidgetCatalog, WidgetPageVisibilityOption } from '@bari77/gc-widgets';
+import { WidgetCatalog, WidgetPageVisibilityOption } from "@bari77/gc-widgets";
 
-export const PAGE_VISIBILITY_PUBLIC = 'public';
-export const PAGE_VISIBILITY_FRIENDS = 'friends';
-export const PAGE_VISIBILITY_PRIVATE = 'private';
+export const PAGE_VISIBILITY_PUBLIC = "public";
+export const PAGE_VISIBILITY_FRIENDS = "friends";
+export const PAGE_VISIBILITY_PRIVATE = "private";
 
 /** Audiences a sheet page may be restricted to, from the widest to the narrowest. */
 export const PLAYER_PAGE_VISIBILITY_OPTIONS: WidgetPageVisibilityOption[] = [
@@ -16,16 +16,16 @@ export const PLAYER_PAGE_VISIBILITY_OPTIONS: WidgetPageVisibilityOption[] = [
  * from this catalog, so removing an entry retires it from every saved profile.
  */
 export const PLAYER_WIDGETS = {
-    identity: 'identity',
-    presentationIrl: 'presentation-irl',
-    presentationIg: 'presentation-ig',
-    stats: 'stats',
-    characters: 'characters',
-    photos: 'photos',
-    videos: 'videos',
-    streams: 'streams',
-    twitch: 'gc-twitch',
-    links: 'gc-links',
+    identity: "identity",
+    presentationIrl: "presentation-irl",
+    presentationIg: "presentation-ig",
+    stats: "stats",
+    characters: "characters",
+    photos: "photos",
+    videos: "videos",
+    streams: "streams",
+    twitch: "gc-twitch",
+    links: "gc-links",
 } as const;
 
 export const gameWorkspaceRegistry = {
@@ -91,10 +91,10 @@ export const gameWorkspaceRegistry = {
             rows: 5,
             fields: [
                 {
-                    key: 'channel',
-                    type: 'url',
+                    key: "channel",
+                    type: "url",
                     label: $localize`:@@wow.player.widget.twitch.channel:Channel or twitch.tv address`,
-                    placeholder: 'https://twitch.tv/…',
+                    placeholder: "https://twitch.tv/…",
                 },
             ],
         },

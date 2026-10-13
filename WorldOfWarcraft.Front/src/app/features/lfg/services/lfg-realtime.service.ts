@@ -2,13 +2,12 @@ import { computed, Injectable, signal } from "@angular/core";
 import { LfgMessage } from "@features/lfg/models/lfg-message.model";
 import { environment } from "environments/environment";
 import * as signalR from "@microsoft/signalr";
+import { LfgMessagePayloadDto } from "../dto/lfg-message-payload.dto";
 
 export type LfgRealtimeStatus = "offline" | "connecting" | "connected";
 
 @Injectable()
 export class LfgRealtimeService {
-    private readonly $status = signal<LfgRealtimeStatus>("offline");
-
     public readonly status = computed(() => this.$status());
     public readonly isLive = computed(() => this.$status() === "connected");
     public readonly offlineMessage = computed(() => {
@@ -21,6 +20,8 @@ export class LfgRealtimeService {
                 return "";
         }
     });
+
+    private readonly $status = signal<LfgRealtimeStatus>("offline");
 
     private connection: signalR.HubConnection | null = null;
     private onMessage: ((message: LfgMessage) => void) | null = null;
@@ -44,23 +45,25 @@ export class LfgRealtimeService {
             .withAutomaticReconnect([0, 2_000, 5_000, 10_000])
             .build();
 
-        this.connection.on("lfg.message.created", (payload: LfgMessageDtoPayload) => {
-            this.onMessage?.(LfgMessage.fromDto({
-                publicId: payload.publicId,
-                kind: payload.kind ?? "lfg",
-                body: payload.body,
-                senderNickname: payload.senderNickname,
-                senderDiscriminator: payload.senderDiscriminator,
-                creationDate: payload.creationDate,
-                expiresAt: payload.expiresAt ?? payload.creationDate,
-                playerPublicId: payload.playerPublicId,
-                platformUserPublicId: payload.platformUserPublicId,
-                senderAvatarUrl: payload.senderAvatarUrl ?? "",
-                guildPublicId: payload.guildPublicId ?? null,
-                guildName: payload.guildName ?? null,
-                guildDiscriminator: payload.guildDiscriminator ?? null,
-                guildCrest: payload.guildCrest ?? null,
-            }));
+        this.connection.on("lfg.message.created", (payload: LfgMessagePayloadDto) => {
+            this.onMessage?.(
+                LfgMessage.fromDto({
+                    publicId: payload.publicId,
+                    kind: payload.kind ?? "lfg",
+                    body: payload.body,
+                    senderNickname: payload.senderNickname,
+                    senderDiscriminator: payload.senderDiscriminator,
+                    creationDate: payload.creationDate,
+                    expiresAt: payload.expiresAt ?? payload.creationDate,
+                    playerPublicId: payload.playerPublicId,
+                    platformUserPublicId: payload.platformUserPublicId,
+                    senderAvatarUrl: payload.senderAvatarUrl ?? "",
+                    guildPublicId: payload.guildPublicId ?? null,
+                    guildName: payload.guildName ?? null,
+                    guildDiscriminator: payload.guildDiscriminator ?? null,
+                    guildCrest: payload.guildCrest ?? null,
+                }),
+            );
         });
 
         this.connection.onreconnected(() => this.$status.set("connected"));
@@ -91,28 +94,4 @@ export class LfgRealtimeService {
         }
         this.connection = null;
     }
-}
-
-interface LfgMessageDtoPayload {
-    publicId: string;
-    kind?: string;
-    body: string;
-    senderNickname: string;
-    senderDiscriminator: string;
-    creationDate: string;
-    expiresAt?: string;
-    playerPublicId: string;
-    platformUserPublicId: string;
-    senderAvatarUrl?: string;
-    guildPublicId?: string | null;
-    guildName?: string | null;
-    guildDiscriminator?: string | null;
-    guildCrest?: {
-        emblem: number;
-        emblemColor: string;
-        border: number;
-        borderColor: string;
-        backgroundColor: string;
-        faction?: string | null;
-    } | null;
 }

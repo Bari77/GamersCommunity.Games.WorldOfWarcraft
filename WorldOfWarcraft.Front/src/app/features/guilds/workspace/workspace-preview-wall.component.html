@@ -9,7 +9,7 @@
             <li class="guild-post guild-post--pending">
                 <header class="guild-post__head">
                     <span class="guild-post__author">{{ post.author }}</span>
-                    <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
+                    <time class="guild-post__date">{{ post.date | date: "short" }}</time>
                 </header>
                 <p class="guild-post__body">{{ post.body }}</p>
                 @if (post.audience) {
@@ -57,7 +57,7 @@
             <li class="guild-post">
                 <header class="guild-post__head">
                     <span class="guild-post__author">{{ post.author }}</span>
-                    <time class="guild-post__date">{{ post.date | date: 'short' }}</time>
+                    <time class="guild-post__date">{{ post.date | date: "short" }}</time>
                 </header>
                 <p class="guild-post__body">{{ post.body }}</p>
                 @if (post.audience) {

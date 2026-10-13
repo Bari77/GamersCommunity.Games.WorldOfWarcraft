@@ -1,13 +1,12 @@
 import { Injectable } from "@angular/core";
-import {
-    CharacterCreateRequestDto,
-    CharacterDto,
-    CharacterListRequestDto,
-    CharacterOptionsDto,
-    CharacterSearchRequestDto,
-    CharacterUpdateRequestDto,
-} from "@features/characters/dto/character.dto";
-import { Character, CharacterOptions, CharacterSearchPage } from "@features/characters/models/character.model";
+import { CharacterDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterSearchRequestDto } from "@features/characters/dto/character-search-request.dto";
+import { CharacterOptionsDto } from "@features/characters/dto/character-options.dto";
+import { CharacterListRequestDto } from "@features/characters/dto/character-list-request.dto";
+import { CharacterCreateRequestDto } from "@features/characters/dto/character-create-request.dto";
+import { Character } from "@features/characters/models/character.model";
+import { CharacterSearchPage } from "@features/characters/models/character-search-page.model";
+import { CharacterOptions } from "@features/characters/models/character-options.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";
 

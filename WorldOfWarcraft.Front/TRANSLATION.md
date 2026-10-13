@@ -36,13 +36,13 @@ Writes / updates `src/locale/source.json`.
 
 WoW catalog `Entitled` values are lowercase snake_case. Build message IDs as:
 
-| Domain | Pattern | Example |
-| --- | --- | --- |
-| Class | `wow.class.` + entitled | `wow.class.demon_hunter` |
-| Race | `wow.race.` + entitled | `wow.race.night_elf` |
+| Domain    | Pattern                     | Example                  |
+| --------- | --------------------------- | ------------------------ |
+| Class     | `wow.class.` + entitled     | `wow.class.demon_hunter` |
+| Race      | `wow.race.` + entitled      | `wow.race.night_elf`     |
 | Alignment | `wow.alignment.` + entitled | `wow.alignment.alliance` |
-| Direction | `wow.direction.` + entitled | `wow.direction.tank` |
-| Server | `wow.server.` + entitled | `wow.server.archimonde` |
+| Direction | `wow.direction.` + entitled | `wow.direction.tank`     |
+| Server    | `wow.server.` + entitled    | `wow.server.archimonde`  |
 
 ## Federation
 

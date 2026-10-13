@@ -1,16 +1,12 @@
 import { Injectable } from "@angular/core";
-import {
-    PlayerLoadRequestDto,
-    PlayerResolveResultDto,
-    PlayerSearchRequestDto,
-    PlayerSheetDto,
-    PlayerUpdateRequestDto,
-} from "@features/players/dto/player.dto";
-import {
-    PlayerResolveResult,
-    PlayerSearchPage,
-    PlayerSheet,
-} from "@features/players/models/player.model";
+import { PlayerUpdateRequestDto } from "@features/players/dto/player-update-request.dto";
+import { PlayerSheetDto } from "@features/players/dto/player-sheet.dto";
+import { PlayerSearchRequestDto } from "@features/players/dto/player-search-request.dto";
+import { PlayerResolveResultDto } from "@features/players/dto/player-resolve-result.dto";
+import { PlayerLoadRequestDto } from "@features/players/dto/player-load-request.dto";
+import { PlayerSheet } from "@features/players/models/player-sheet.model";
+import { PlayerSearchPage } from "@features/players/models/player-search-page.model";
+import { PlayerResolveResult } from "@features/players/models/player-resolve-result.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";
 

@@ -1,6 +1,6 @@
-import type { WidgetCatalog, WidgetPageVisibilityOption } from '@bari77/gc-widgets';
-import { GUILD_RANK_LEADER, GUILD_RANK_MEMBER, GUILD_RANK_OFFICER } from '@features/guilds/models/guild.model';
-import { POST_VISIBILITY_PUBLIC } from '@features/guilds/models/game-post.model';
+import { WidgetCatalog, WidgetPageVisibilityOption } from "@bari77/gc-widgets";
+import { GUILD_RANK_LEADER, GUILD_RANK_MEMBER, GUILD_RANK_OFFICER } from "@features/guilds/models/guild.model";
+import { POST_VISIBILITY_PUBLIC } from "@features/guilds/models/game-post.model";
 
 /** Audiences a guild page may be restricted to, reusing the ranks the wall already speaks. */
 export const GUILD_PAGE_VISIBILITY_OPTIONS: WidgetPageVisibilityOption[] = [
@@ -15,16 +15,16 @@ export const GUILD_PAGE_VISIBILITY_OPTIONS: WidgetPageVisibilityOption[] = [
  * so removing an entry retires it from every saved guild layout.
  */
 export const GUILD_WIDGETS = {
-    presentation: 'guild-presentation',
-    stats: 'guild-stats',
-    roster: 'guild-roster',
-    wall: 'guild-wall',
-    applications: 'guild-applications',
-    recruitment: 'guild-recruitment',
-    photos: 'guild-photos',
-    videos: 'guild-videos',
-    twitch: 'gc-twitch',
-    links: 'gc-links',
+    presentation: "guild-presentation",
+    stats: "guild-stats",
+    roster: "guild-roster",
+    wall: "guild-wall",
+    applications: "guild-applications",
+    recruitment: "guild-recruitment",
+    photos: "guild-photos",
+    videos: "guild-videos",
+    twitch: "gc-twitch",
+    links: "gc-links",
 } as const;
 
 export const gameWorkspaceRegistry = {
@@ -95,10 +95,10 @@ export const gameWorkspaceRegistry = {
             rows: 5,
             fields: [
                 {
-                    key: 'channel',
-                    type: 'url',
+                    key: "channel",
+                    type: "url",
                     label: $localize`:@@wow.guild.widget.twitch.channel:Channel or twitch.tv address`,
-                    placeholder: 'https://twitch.tv/…',
+                    placeholder: "https://twitch.tv/…",
                 },
             ],
         },

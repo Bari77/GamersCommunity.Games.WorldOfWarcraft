@@ -4,7 +4,7 @@ import { environment } from "environments/environment";
 
 const PARTS = `${environment.assetsUrl}/wow-crests`;
 
-const pad = (index: number) => String(index).padStart(2, "0");
+const pad = (index: number): string => String(index).padStart(2, "0");
 
 /**
  * Guild tabard, layered like the game builds it: faction ring, coloured cloth, hooks, border and

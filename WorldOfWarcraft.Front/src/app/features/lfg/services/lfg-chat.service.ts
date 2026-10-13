@@ -1,10 +1,8 @@
 import { Injectable } from "@angular/core";
-import {
-    CreateLfgMessageRequestDto,
-    ListLfgBeforeRequestDto,
-    LfgMessageDto,
-} from "@features/lfg/dto/lfg-message.dto";
-import { LfgKind, LfgMessage, PostableGuild } from "@features/lfg/models/lfg-message.model";
+import { LfgMessageDto } from "@features/lfg/dto/lfg-message.dto";
+import { ListLfgBeforeRequestDto } from "@features/lfg/dto/list-lfg-before-request.dto";
+import { CreateLfgMessageRequestDto } from "@features/lfg/dto/create-lfg-message-request.dto";
+import { LfgKind, LfgMessage } from "@features/lfg/models/lfg-message.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";
 
@@ -32,17 +30,5 @@ export class LfgChatService extends BaseService {
 
     public send(data: CreateLfgMessageRequestDto): Observable<LfgMessage> {
         return this.post<LfgMessageDto, LfgMessage>(LfgMessage, "actions/Create", data);
-    }
-}
-
-@Injectable()
-export class PostableGuildsService extends BaseService {
-    public constructor() {
-        super("/worldofwarcraft/Guilds");
-    }
-
-    /** Guilds the current player may post for, i.e. where one of their characters is officer or above. */
-    public listPostable(): Observable<PostableGuild[]> {
-        return this.postList(PostableGuild, "actions/ListPostable", {});
     }
 }

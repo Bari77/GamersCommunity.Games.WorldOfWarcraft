@@ -5,11 +5,7 @@ import { APPLICATION_PENDING } from "@features/guilds/models/guild-application.m
 import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbCardModule, NbSelectModule } from "@nebular/theme";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
-
-export interface GuildApplicationDraft {
-    characterPublicId: string;
-    message: string;
-}
+import { GuildApplicationDraft } from "./guild-application-draft.model";
 
 @Component({
     standalone: true,

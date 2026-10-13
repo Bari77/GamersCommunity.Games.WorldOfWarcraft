@@ -1,9 +1,10 @@
+import { Route } from "@angular/router";
 import { worldOfWarcraftRoutes } from "./world-of-warcraft.routes";
 
 describe("worldOfWarcraftRoutes", () => {
     const children = worldOfWarcraftRoutes[0]?.children ?? [];
 
-    function child(path: string) {
+    function child(path: string): Route | undefined {
         return children.find((entry) => entry.path === path);
     }
 

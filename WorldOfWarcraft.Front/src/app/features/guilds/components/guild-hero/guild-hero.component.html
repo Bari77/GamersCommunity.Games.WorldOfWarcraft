@@ -17,8 +17,10 @@
             <h1 class="guild-hero__handle gc-display">{{ sheet.handleLabel() }}</h1>
             <p class="guild-hero__meta">
                 {{ sheet.serverName | gameTerm }} · {{ orientationLabel() }} ·
-                <span i18n="@@wow.guild.level">Level</span> {{ sheet.level }} ·
-                <span i18n="@@wow.guild.since">Created</span> {{ sheet.creationDate | date: "mediumDate" }}
+                <span i18n="@@wow.guild.level">Level</span>
+                {{ sheet.level }} ·
+                <span i18n="@@wow.guild.since">Created</span>
+                {{ sheet.creationDate | date: "mediumDate" }}
             </p>
         </div>
     </div>
@@ -41,7 +43,7 @@
                     aria-controls="guild-settings"
                     (click)="settingsOpen.set(!settingsOpen())"
                 >
-                    <nb-icon [icon]="settingsOpen() ? 'close-outline' : 'edit-2-outline'"></nb-icon>
+                    <nb-icon [icon]="settingsOpen() ? 'close-outline' : 'edit-2-outline'" />
                     @if (settingsOpen()) {
                         <span i18n="@@wow.guild.hero.close">Close</span>
                     } @else {

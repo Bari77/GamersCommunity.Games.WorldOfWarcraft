@@ -1,5 +1,6 @@
 import { computed, inject, Injectable, resource, signal } from "@angular/core";
-import { GuildLinkCreateRequestDto, GuildLinkUpdateRequestDto } from "@features/guilds/dto/guild-link.dto";
+import { GuildLinkUpdateRequestDto } from "@features/guilds/dto/guild-link.dto";
+import { GuildLinkCreateRequestDto } from "@features/guilds/dto/guild-link-create-request.dto";
 import { GuildLink } from "@features/guilds/models/guild-link.model";
 import { GuildLinkService } from "@features/guilds/services/guild-link.service";
 import { firstValueFrom } from "rxjs";
@@ -11,28 +12,31 @@ import { firstValueFrom } from "rxjs";
 @Injectable()
 export class GuildLinkStore {
     public readonly items = resource({
-        params: () => this.guildPublicId(),
+        params: () => this.$guildPublicId(),
         loader: ({ params }) => firstValueFrom(this.service.list(params)),
         defaultValue: [] as GuildLink[],
     });
 
     public readonly loading = computed(() => this.items.isLoading());
-    public readonly saving = signal(false);
-    public readonly errorCode = signal<string | null>(null);
+    public readonly saving = computed(() => this.$saving());
+    public readonly errorCode = computed(() => this.$errorCode());
 
-    private readonly guildPublicId = signal<string | undefined>(undefined);
+    public readonly guildPublicId = computed(() => this.$guildPublicId());
     private readonly service = inject(GuildLinkService);
+    private readonly $saving = signal(false);
+    private readonly $errorCode = signal<string | null>(null);
+    private readonly $guildPublicId = signal<string | undefined>(undefined);
 
     public setContext(guildPublicId: string): void {
-        this.guildPublicId.set(guildPublicId);
+        this.$guildPublicId.set(guildPublicId);
     }
 
     public clearError(): void {
-        this.errorCode.set(null);
+        this.$errorCode.set(null);
     }
 
     public create(data: Omit<GuildLinkCreateRequestDto, "guildPublicId">): Promise<boolean> {
-        const guildPublicId = this.guildPublicId();
+        const guildPublicId = this.$guildPublicId();
         if (!guildPublicId) {
             return Promise.resolve(false);
         }
@@ -50,7 +54,7 @@ export class GuildLinkStore {
 
     /** Moves one link by `offset` places, keeping the rest of the order untouched. */
     public move(publicId: string, offset: number): Promise<boolean> {
-        const guildPublicId = this.guildPublicId();
+        const guildPublicId = this.$guildPublicId();
         const order = this.items.value().map((link) => link.publicId);
         const from = order.indexOf(publicId);
         const to = from + offset;
@@ -63,17 +67,17 @@ export class GuildLinkStore {
     }
 
     private async run(action: () => Promise<unknown>): Promise<boolean> {
-        this.saving.set(true);
-        this.errorCode.set(null);
+        this.$saving.set(true);
+        this.$errorCode.set(null);
         try {
             await action();
             this.items.reload();
             return true;
         } catch (err: unknown) {
-            this.errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");
+            this.$errorCode.set((err as { error?: { Code?: string } })?.error?.Code ?? "UNKNOWN");
             return false;
         } finally {
-            this.saving.set(false);
+            this.$saving.set(false);
         }
     }
 }

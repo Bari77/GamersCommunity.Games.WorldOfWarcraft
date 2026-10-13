@@ -1,4 +1,4 @@
-import { GamePostDto, GamePostPageDto } from "@features/guilds/dto/game-post.dto";
+import { GamePostDto } from "@features/guilds/dto/game-post.dto";
 import { GUILD_RANK_MEMBER } from "@features/guilds/models/guild.model";
 
 const EMPTY_GUID = "00000000-0000-0000-0000-000000000000";
@@ -76,16 +76,5 @@ export class GamePost {
 
     public isPublic(): boolean {
         return this.visibility === POST_VISIBILITY_PUBLIC;
-    }
-}
-
-export class GamePostPage {
-    public constructor(
-        public items: GamePost[],
-        public hasMore: boolean,
-    ) {}
-
-    public static fromDto(dto: GamePostPageDto): GamePostPage {
-        return new GamePostPage((dto.items ?? []).map((item) => GamePost.fromDto(item)), dto.hasMore ?? false);
     }
 }

@@ -161,9 +161,11 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
             query = query.Where(c => c.IdDirection == idDirection);
 
         if (request.IdClass is { } idClass)
+        {
             query = query.Where(c =>
                 c.IdMainSpecializationClassNavigation != null
                 && c.IdMainSpecializationClassNavigation.IdClass == idClass);
+        }
 
         if (request.MinLevel is { } minLevel)
             query = query.Where(c => c.Level >= minLevel);

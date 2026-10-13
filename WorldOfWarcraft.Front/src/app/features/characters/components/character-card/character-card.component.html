@@ -29,12 +29,7 @@
         @if (item.className) {
             <wow-icon kind="role" [slug]="role()" [label]="roleName()" [size]="18" />
             @if (specKey()) {
-                <wow-icon
-                    kind="spec"
-                    [slug]="specKey()"
-                    [label]="item.mainSpecializationName | gameTerm"
-                    [size]="18"
-                />
+                <wow-icon kind="spec" [slug]="specKey()" [label]="item.mainSpecializationName | gameTerm" [size]="18" />
             }
             {{ item.className | gameTerm }} {{ item.mainSpecializationName | gameTerm }}
         } @else {
@@ -85,7 +80,7 @@
                     }
                 </span>
             </span>
-            <nb-icon class="character-card__guild-go" icon="chevron-right-outline"></nb-icon>
+            <nb-icon class="character-card__guild-go" icon="chevron-right-outline" />
         </a>
     } @else if (editable()) {
         <a
@@ -93,7 +88,7 @@
             routerLink="/world-of-warcraft/guilds"
             [queryParams]="{ found: item.publicId }"
         >
-            <nb-icon icon="plus-circle-outline"></nb-icon>
+            <nb-icon icon="plus-circle-outline" />
             <span i18n="@@wow.character.foundGuild">Found a guild</span>
         </a>
     }
@@ -105,11 +100,11 @@
     @if (editable()) {
         <footer class="character-card__actions">
             <button nbButton ghost size="small" status="basic" (click)="edit.emit(item)">
-                <nb-icon icon="edit-2-outline"></nb-icon>
+                <nb-icon icon="edit-2-outline" />
                 <span i18n="@@wow.character.edit">Edit</span>
             </button>
             <button nbButton ghost size="small" status="danger" (click)="remove.emit(item)">
-                <nb-icon icon="trash-2-outline"></nb-icon>
+                <nb-icon icon="trash-2-outline" />
                 <span i18n="@@wow.character.delete">Delete</span>
             </button>
         </footer>

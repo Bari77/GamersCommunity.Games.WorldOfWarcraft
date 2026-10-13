@@ -1,10 +1,8 @@
 import { Injectable } from "@angular/core";
-import {
-    PlayerLinkCreateRequestDto,
-    PlayerLinkListRequestDto,
-    PlayerLinkReorderRequestDto,
-    PlayerLinkUpdateRequestDto,
-} from "@features/links/dto/player-link.dto";
+import { PlayerLinkUpdateRequestDto } from "@features/links/dto/player-link.dto";
+import { PlayerLinkReorderRequestDto } from "@features/links/dto/player-link-reorder-request.dto";
+import { PlayerLinkListRequestDto } from "@features/links/dto/player-link-list-request.dto";
+import { PlayerLinkCreateRequestDto } from "@features/links/dto/player-link-create-request.dto";
 import { PlayerLink } from "@features/links/models/player-link.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";

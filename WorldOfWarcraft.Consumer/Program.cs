@@ -1,4 +1,4 @@
-﻿using GamersCommunity.Core.Hosting;
+using GamersCommunity.Core.Hosting;
 using GamersCommunity.Core.Logging;
 using GamersCommunity.Core.Platform;
 using GamersCommunity.Core.Services;

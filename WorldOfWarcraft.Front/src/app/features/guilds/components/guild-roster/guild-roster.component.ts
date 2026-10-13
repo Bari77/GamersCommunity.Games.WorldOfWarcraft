@@ -11,24 +11,12 @@ import {
 import { NbSelectModule } from "@nebular/theme";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
-
-export interface RankChange {
-    characterPublicId: string;
-    rank: string;
-}
+import { RankChange } from "./rank-change.model";
+import { RankOption } from "./rank-option.model";
+import { PendingAction } from "./pending-action.model";
 
 const ACTION_REMOVE = "__remove__";
 const ACTION_LEAVE = "__leave__";
-
-type RankOption = { value: string; label: string };
-
-type PendingAction = {
-    characterPublicId: string;
-    value: string;
-    heading: string;
-    message: string;
-    primaryLabel: string;
-};
 
 @Component({
     standalone: true,

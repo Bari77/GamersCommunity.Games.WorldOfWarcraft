@@ -1,3 +1,4 @@
+using System.Text.Json;
 using GamersCommunity.Core.Enums;
 using GamersCommunity.Core.Exceptions;
 using GamersCommunity.Core.Html;
@@ -5,7 +6,6 @@ using GamersCommunity.Core.Rabbit;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
-using System.Text.Json;
 using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Security;
@@ -416,7 +416,9 @@ public class GuildsService(WorldOfWarcraftDbContext context, IGuildWhispers whis
 
         if (sent.Contains(nameof(GuildUpdateRequest.Entitled))
             || sent.Contains(nameof(GuildUpdateRequest.Crest)))
+        {
             await whispers.OnUpdatedAsync(guild, ct);
+        }
 
         return await GetSheetAsync(GuildMessageFor(message, guild.PublicId), ct);
     }

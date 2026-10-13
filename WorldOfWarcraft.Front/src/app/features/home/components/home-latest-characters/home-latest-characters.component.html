@@ -23,12 +23,7 @@
 
                 @if (hasSubtitleIcons(character)) {
                     <span rowSubtitleLeading>
-                        <wow-icon
-                            kind="role"
-                            [slug]="character.role()"
-                            [label]="character.roleName()"
-                            [size]="24"
-                        />
+                        <wow-icon kind="role" [slug]="character.role()" [label]="character.roleName()" [size]="24" />
                         <wow-icon
                             kind="spec"
                             [slug]="character.specKey()"

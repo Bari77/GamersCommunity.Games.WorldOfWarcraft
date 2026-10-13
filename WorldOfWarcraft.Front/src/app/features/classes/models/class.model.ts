@@ -9,11 +9,6 @@ export class WowClass {
     ) {}
 
     public static fromDto(dto: ClassDto): WowClass {
-        return new WowClass(
-            dto.id,
-            new Date(dto.creationDate),
-            new Date(dto.modificationDate),
-            dto.entitled,
-        );
+        return new WowClass(dto.id, new Date(dto.creationDate), new Date(dto.modificationDate), dto.entitled);
     }
 }

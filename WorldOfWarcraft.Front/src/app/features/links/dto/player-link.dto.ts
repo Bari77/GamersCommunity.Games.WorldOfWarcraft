@@ -1,3 +1,5 @@
+import { PlayerLinkCreateRequestDto } from "./player-link-create-request.dto";
+
 export interface PlayerLinkDto {
     publicId: string;
     playerPublicId: string;
@@ -7,18 +9,4 @@ export interface PlayerLinkDto {
     position: number;
 }
 
-export interface PlayerLinkListRequestDto {
-    playerPublicId: string;
-}
-
-export interface PlayerLinkCreateRequestDto {
-    url: string;
-    label: string;
-    icon: string | null;
-}
-
 export type PlayerLinkUpdateRequestDto = Partial<PlayerLinkCreateRequestDto>;
-
-export interface PlayerLinkReorderRequestDto {
-    publicIds: string[];
-}

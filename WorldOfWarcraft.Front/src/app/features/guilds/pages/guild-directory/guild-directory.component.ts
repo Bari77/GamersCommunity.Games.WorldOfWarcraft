@@ -4,9 +4,10 @@ import { ActivatedRoute, Router, RouterLink } from "@angular/router";
 import { RichContentComponent, SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
-import { Character, CharacterOptions } from "@features/characters/models/character.model";
+import { Character } from "@features/characters/models/character.model";
+import { CharacterOptions } from "@features/characters/models/character-options.model";
 import { CharactersService } from "@features/characters/services/characters.service";
-import { GuildCreateRequestDto } from "@features/guilds/dto/guild.dto";
+import { GuildCreateRequestDto } from "@features/guilds/dto/guild-create-request.dto";
 import { guildOrientationLabel } from "@features/guilds/models/guild-orientation";
 import { GuildApplication } from "@features/guilds/models/guild-application.model";
 import { GuildApplicationsService } from "@features/guilds/services/guild-applications.service";
@@ -71,13 +72,6 @@ export class GuildDirectoryComponent implements OnInit {
 
     protected readonly loadingOptions = computed(() => ResourceUtils.isPending(this.options));
 
-    /** Characters of the visitor, needed both to found a guild and to know none is free. */
-    private readonly myCharacters = resource({
-        params: () => this.membership.playerPublicId() ?? undefined,
-        loader: ({ params }) => firstValueFrom(this.characters.listByPlayer(params)),
-        defaultValue: [] as Character[],
-    });
-
     protected readonly candidates = computed(() =>
         this.myCharacters.value().filter((character) => character.guildPublicId === null),
     );
@@ -95,6 +89,13 @@ export class GuildDirectoryComponent implements OnInit {
     protected readonly pendingApplications = computed(() =>
         this.myApplications.value().filter((application) => application.isPending()),
     );
+
+    /** Characters of the visitor, needed both to found a guild and to know none is free. */
+    private readonly myCharacters = resource({
+        params: () => this.membership.playerPublicId() ?? undefined,
+        loader: ({ params }) => firstValueFrom(this.characters.listByPlayer(params)),
+        defaultValue: [] as Character[],
+    });
 
     private readonly applications = inject(GuildApplicationsService);
     private readonly characters = inject(CharactersService);

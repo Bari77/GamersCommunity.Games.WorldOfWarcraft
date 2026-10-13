@@ -1,12 +1,11 @@
-using GamersCommunity.Core.Realtime;
 using GamersCommunity.Core.Enums;
 using GamersCommunity.Core.Exceptions;
 using GamersCommunity.Core.Platform;
 using GamersCommunity.Core.Rabbit;
+using GamersCommunity.Core.Realtime;
 using GamersCommunity.Core.Serialization;
 using GamersCommunity.Core.Services;
 using Microsoft.EntityFrameworkCore;
-using WorldOfWarcraft.Consumer.Integration;
 using WorldOfWarcraft.Consumer.Models;
 using WorldOfWarcraft.Consumer.Realtime;
 using WorldOfWarcraft.Consumer.Security;

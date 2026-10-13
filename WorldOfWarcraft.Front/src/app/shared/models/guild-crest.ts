@@ -1,11 +1,4 @@
-export interface GuildCrestDto {
-    emblem: number;
-    emblemColor: string;
-    border: number;
-    borderColor: string;
-    backgroundColor: string;
-    faction?: string | null;
-}
+import { GuildCrestDto } from "./guild-crest.dto";
 
 /** Neutral tabard, matching the SQL defaults so a guild always has something to wear. */
 const DEFAULT_CREST: GuildCrestDto = {

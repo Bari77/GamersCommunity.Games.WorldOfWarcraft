@@ -1,10 +1,5 @@
-import {
-    GUILD_RANK_LEADER,
-    GUILD_RANK_MEMBER,
-    GUILD_RANK_OFFICER,
-    GuildSheet,
-    guildRankWeight,
-} from "./guild.model";
+import { GUILD_RANK_LEADER, GUILD_RANK_MEMBER, GUILD_RANK_OFFICER, guildRankWeight } from "./guild.model";
+import { GuildSheet } from "./guild-sheet.model";
 
 describe("guild ranks", () => {
     it("orders leader > officer > member", () => {

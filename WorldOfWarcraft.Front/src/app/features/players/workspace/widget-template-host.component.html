@@ -1,7 +1,7 @@
 <ng-template gcWidget="identity">
     <p class="widget-host__meta">
         <span i18n="@@wow.player.since">Member since</span>
-        {{ view().creationDate | date: 'mediumDate' }}
+        {{ view().creationDate | date: "mediumDate" }}
     </p>
     @if (!preview()) {
         <a

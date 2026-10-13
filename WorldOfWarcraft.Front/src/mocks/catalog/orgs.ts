@@ -1,6 +1,8 @@
 import { GamePostDto } from "@features/guilds/dto/game-post.dto";
 import { GuildApplicationDto } from "@features/guilds/dto/guild-application.dto";
-import { GuildMemberDto, GuildSheetDto, GuildSummaryDto } from "@features/guilds/dto/guild.dto";
+import { GuildMemberDto } from "@features/guilds/dto/guild.dto";
+import { GuildSummaryDto } from "@features/guilds/dto/guild-summary.dto";
+import { GuildSheetDto } from "@features/guilds/dto/guild-sheet.dto";
 import { mockCharacters } from "./characters";
 import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
 import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
@@ -198,10 +200,7 @@ const ASHEN = mockGuildSummaries[3];
 const STORMWATCH = mockGuildSummaries[4];
 const EMBERHOLD = mockGuildSummaries[5];
 
-function extraSheet(
-    summary: GuildSummaryDto,
-    members: GuildMemberDto[],
-): GuildSheetDto {
+function extraSheet(summary: GuildSummaryDto, members: GuildMemberDto[]): GuildSheetDto {
     return {
         publicId: summary.publicId,
         entitled: summary.entitled,
@@ -209,7 +208,14 @@ function extraSheet(
         level: summary.level,
         sentence: summary.sentence,
         layoutJson: null,
-        idServer: summary.serverName === "archimonde" ? 4 : summary.serverName === "elune" ? 3 : summary.serverName === "dalaran" ? 2 : 1,
+        idServer:
+            summary.serverName === "archimonde"
+                ? 4
+                : summary.serverName === "elune"
+                  ? 3
+                  : summary.serverName === "dalaran"
+                    ? 2
+                    : 1,
         serverName: summary.serverName,
         orientationName: summary.orientationName ?? "pve",
         crest: summary.crest!,

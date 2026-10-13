@@ -2,7 +2,8 @@ import { Component, effect, inject, input, output, signal, untracked } from "@an
 import { SkeletonComponent } from "@bari77/gc-ui";
 import { CharacterCardComponent } from "@features/characters/components/character-card/character-card.component";
 import { CharacterFormComponent } from "@features/characters/components/character-form/character-form.component";
-import { CharacterCreateRequestDto, CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterUpdateRequestDto } from "@features/characters/dto/character.dto";
+import { CharacterCreateRequestDto } from "@features/characters/dto/character-create-request.dto";
 import { Character } from "@features/characters/models/character.model";
 import { CharactersStore } from "@features/characters/stores/characters.store";
 import { NbButtonModule, NbIconModule } from "@nebular/theme";

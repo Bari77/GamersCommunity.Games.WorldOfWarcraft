@@ -7,7 +7,8 @@ import { GuildLinkStore } from "@features/guilds/stores/guild-link.store";
     standalone: true,
     selector: "wow-guild-link-board",
     imports: [LinkListComponent],
-    template: `<gc-link-list [links]="cards()" [emptyLabel]="emptyLabel" />`,
+    templateUrl: "./guild-link-board.component.html",
+    styleUrl: "./guild-link-board.component.scss",
 })
 export class GuildLinkBoardComponent {
     public readonly guildPublicId = input.required<string>();

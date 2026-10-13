@@ -1,31 +1,31 @@
-import { DatePipe } from '@angular/common';
-import { Component, computed, input, output } from '@angular/core';
-import { RouterLink } from '@angular/router';
-import { LinkListComponent, MediaGalleryComponent, TwitchEmbedComponent, WidgetDefDirective } from '@bari77/gc-widgets';
-import { CharacterCardComponent } from '@features/characters/components/character-card/character-card.component';
-import { CharacterListComponent } from '@features/characters/components/character-list/character-list.component';
-import { LinkAdminComponent } from '@features/links/components/link-admin/link-admin.component';
-import { LinkBoardComponent } from '@features/links/components/link-board/link-board.component';
-import { MediaAdminComponent } from '@features/media/components/media-admin/media-admin.component';
-import { MediaManagerComponent } from '@features/media/components/media-manager/media-manager.component';
-import { PlayerPresentationComponent } from '@features/players/components/player-presentation/player-presentation.component';
-import { PlayerStatsComponent } from '@features/players/components/player-stats/player-stats.component';
-import { PlayerUpdateRequestDto } from '@features/players/dto/player.dto';
-import { PlayerSheet } from '@features/players/models/player.model';
-import { WORKSPACE_PREVIEW_PLAYER } from '@features/players/workspace/preview-player';
+import { DatePipe } from "@angular/common";
+import { Component, computed, input, output } from "@angular/core";
+import { RouterLink } from "@angular/router";
+import { LinkListComponent, MediaGalleryComponent, TwitchEmbedComponent, WidgetDefDirective } from "@bari77/gc-widgets";
+import { CharacterCardComponent } from "@features/characters/components/character-card/character-card.component";
+import { CharacterListComponent } from "@features/characters/components/character-list/character-list.component";
+import { LinkAdminComponent } from "@features/links/components/link-admin/link-admin.component";
+import { LinkBoardComponent } from "@features/links/components/link-board/link-board.component";
+import { MediaAdminComponent } from "@features/media/components/media-admin/media-admin.component";
+import { MediaManagerComponent } from "@features/media/components/media-manager/media-manager.component";
+import { PlayerPresentationComponent } from "@features/players/components/player-presentation/player-presentation.component";
+import { PlayerStatsComponent } from "@features/players/components/player-stats/player-stats.component";
+import { PlayerUpdateRequestDto } from "@features/players/dto/player-update-request.dto";
+import { PlayerSheet } from "@features/players/models/player-sheet.model";
+import { WORKSPACE_PREVIEW_PLAYER } from "@features/players/workspace/preview-player";
 import {
     WORKSPACE_PREVIEW_CHARACTERS,
     WORKSPACE_PREVIEW_LINKS,
     WORKSPACE_PREVIEW_PHOTOS,
     WORKSPACE_PREVIEW_STREAMS,
     WORKSPACE_PREVIEW_VIDEOS,
-} from '@features/players/workspace/preview-player-data';
-import { NbButtonModule } from '@nebular/theme';
+} from "@features/players/workspace/preview-player-data";
+import { NbButtonModule } from "@nebular/theme";
 
 /** Declares every WoW widget template for the player sheet and the workspace editor. */
 @Component({
     standalone: true,
-    selector: 'wow-widget-template-host',
+    selector: "wow-widget-template-host",
     imports: [
         CharacterCardComponent,
         CharacterListComponent,
@@ -43,8 +43,8 @@ import { NbButtonModule } from '@nebular/theme';
         TwitchEmbedComponent,
         WidgetDefDirective,
     ],
-    templateUrl: './widget-template-host.component.html',
-    styleUrl: './widget-template-host.component.scss',
+    templateUrl: "./widget-template-host.component.html",
+    styleUrl: "./widget-template-host.component.scss",
 })
 export class WowWidgetTemplateHostComponent {
     public readonly preview = input(false);

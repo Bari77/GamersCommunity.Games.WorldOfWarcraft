@@ -3,7 +3,7 @@ import { FormsModule } from "@angular/forms";
 import { GamePost } from "@features/guilds/models/game-post.model";
 import { GUILD_RANK_MEMBER } from "@features/guilds/models/guild.model";
 import { POST_VISIBILITY_OPTIONS } from "@features/guilds/models/post-visibility";
-import { GamePostDraft } from "@features/guilds/stores/guild-wall.store";
+import { GamePostDraft } from "@features/guilds/models/game-post-draft.model";
 import { isRichHtmlBlank, RichEditorComponent } from "@bari77/gc-ui";
 import { NbButtonModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 

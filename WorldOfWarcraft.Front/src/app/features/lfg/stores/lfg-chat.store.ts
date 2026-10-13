@@ -1,9 +1,11 @@
 import { computed, Injectable, inject, signal } from "@angular/core";
-import { CreateLfgMessageRequestDto } from "@features/lfg/dto/lfg-message.dto";
-import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage, PostableGuild } from "@features/lfg/models/lfg-message.model";
+import { CreateLfgMessageRequestDto } from "@features/lfg/dto/create-lfg-message-request.dto";
+import { LFG_KIND_RECRUITMENT, LfgKind, LfgMessage } from "@features/lfg/models/lfg-message.model";
+import { PostableGuild } from "@features/lfg/models/postable-guild.model";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { PlatformAvatarStore } from "@core/stores/platform-avatar.store";
-import { LfgChatService, PostableGuildsService } from "@features/lfg/services/lfg-chat.service";
+import { LfgChatService } from "@features/lfg/services/lfg-chat.service";
+import { PostableGuildsService } from "@features/lfg/services/postable-guilds.service";
 import { LfgRealtimeService } from "@features/lfg/services/lfg-realtime.service";
 import { firstValueFrom } from "rxjs";
 
@@ -12,13 +14,13 @@ const POST_COOLDOWN_MS = 3 * 60 * 1000;
 
 @Injectable()
 export class LfgChatStore {
-    public readonly messages = signal<LfgMessage[]>([]);
-    public readonly loading = signal(true);
-    public readonly loadingOlder = signal(false);
-    public readonly hasMore = signal(true);
-    public readonly posting = signal(false);
-    public readonly cooldownUntil = signal(0);
-    public readonly cooldownSeconds = signal(0);
+    public readonly messages = computed(() => this.$messages());
+    public readonly loading = computed(() => this.$loading());
+    public readonly loadingOlder = computed(() => this.$loadingOlder());
+    public readonly hasMore = computed(() => this.$hasMore());
+    public readonly posting = computed(() => this.$posting());
+    public readonly cooldownUntil = computed(() => this.$cooldownUntil());
+    public readonly cooldownSeconds = computed(() => this.$cooldownSeconds());
 
     public readonly session = computed(() => this.membership.session());
     public readonly playerPublicId = computed(() => this.membership.playerPublicId());
@@ -31,24 +33,24 @@ export class LfgChatStore {
     public readonly needsSheet = computed(() => this.membership.needsSheet());
 
     /** Guilds the player may post for. Only loaded on the recruitment thread. */
-    public readonly postableGuilds = signal<PostableGuild[]>([]);
+    public readonly postableGuilds = computed(() => this.$postableGuilds());
 
     /** Public id of the guild the next ad is published for. Always null on the player thread. */
-    public readonly postingAs = signal<string | null>(null);
+    public readonly postingAs = computed(() => this.$postingAs());
 
     public readonly canSend = computed(
         () =>
             this.canPost() &&
             !this.isMuted() &&
-            !this.posting() &&
+            !this.$posting() &&
             // The recruitment thread stays disabled until the emitting guild is picked.
-            (this.kind !== LFG_KIND_RECRUITMENT || this.postingAs() !== null) &&
-            Date.now() >= this.cooldownUntil(),
+            (this.kind !== LFG_KIND_RECRUITMENT || this.$postingAs() !== null) &&
+            Date.now() >= this.$cooldownUntil(),
     );
 
     /** No guild grants the officer rank, so the recruitment composer can never be unlocked. */
     public readonly hasNoPostableGuild = computed(
-        () => this.kind === LFG_KIND_RECRUITMENT && this.canPost() && this.postableGuilds().length === 0,
+        () => this.kind === LFG_KIND_RECRUITMENT && this.canPost() && this.$postableGuilds().length === 0,
     );
 
     private kind: LfgKind = "lfg";
@@ -59,18 +61,29 @@ export class LfgChatStore {
     private readonly avatars = inject(PlatformAvatarStore);
     private readonly realtime = inject(LfgRealtimeService);
     private cooldownTimer: ReturnType<typeof setInterval> | null = null;
+    private readonly $messages = signal<LfgMessage[]>([]);
+    private readonly $loading = signal(true);
+    private readonly $loadingOlder = signal(false);
+    private readonly $hasMore = signal(true);
+    private readonly $posting = signal(false);
+    private readonly $cooldownUntil = signal(0);
+    private readonly $cooldownSeconds = signal(0);
+    private readonly $postableGuilds = signal<PostableGuild[]>([]);
+    private readonly $postingAs = signal<string | null>(null);
 
     public async init(kind: LfgKind): Promise<void> {
         this.kind = kind;
-        this.loading.set(true);
+        this.$loading.set(true);
         try {
             await this.loadSession();
             const messages = await firstValueFrom(this.chat.listRecent(kind));
-            this.messages.set(messages);
-            this.hasMore.set(messages.length >= PAGE_SIZE);
+            this.$messages.set(messages);
+            this.$hasMore.set(messages.length >= PAGE_SIZE);
             this.syncCooldownFromMessages(messages);
             await this.avatars.prefetchPublicIds(
-                messages.filter((message) => message.hasPlatformProfile()).map((message) => message.platformUserPublicId),
+                messages
+                    .filter((message) => message.hasPlatformProfile())
+                    .map((message) => message.platformUserPublicId),
             );
             // Both threads share one hub, so each store keeps only what belongs to its kind.
             await this.realtime.connect((message) => {
@@ -79,7 +92,7 @@ export class LfgChatStore {
                 }
             });
         } finally {
-            this.loading.set(false);
+            this.$loading.set(false);
         }
     }
 
@@ -90,9 +103,9 @@ export class LfgChatStore {
             return;
         }
 
-        this.posting.set(true);
+        this.$posting.set(true);
         try {
-            const guildPublicId = this.postingAs();
+            const guildPublicId = this.$postingAs();
             const payload: CreateLfgMessageRequestDto = {
                 body: trimmed,
                 platformUserId: session.id,
@@ -101,45 +114,45 @@ export class LfgChatStore {
             };
             const message = await firstValueFrom(this.chat.send(payload));
             this.appendMessage(message);
-            this.cooldownUntil.set(Date.now() + POST_COOLDOWN_MS);
+            this.$cooldownUntil.set(Date.now() + POST_COOLDOWN_MS);
             this.startCooldownTicker();
         } catch (err: unknown) {
             const code = (err as { error?: { Code?: string } })?.error?.Code;
             if (code === "COOLDOWN") {
-                this.cooldownUntil.set(Date.now() + POST_COOLDOWN_MS);
+                this.$cooldownUntil.set(Date.now() + POST_COOLDOWN_MS);
                 this.startCooldownTicker();
             }
             throw err;
         } finally {
-            this.posting.set(false);
+            this.$posting.set(false);
         }
     }
 
     public async loadOlder(): Promise<boolean> {
-        const current = this.messages();
-        if (!this.hasMore() || this.loadingOlder() || current.length === 0) {
+        const current = this.$messages();
+        if (!this.$hasMore() || this.$loadingOlder() || current.length === 0) {
             return false;
         }
 
         const oldest = current[0];
-        this.loadingOlder.set(true);
+        this.$loadingOlder.set(true);
         try {
             const page = await firstValueFrom(this.chat.listBefore(this.kind, oldest));
             if (page.length === 0) {
-                this.hasMore.set(false);
+                this.$hasMore.set(false);
                 return false;
             }
 
             const known = new Set(current.map((item) => item.publicId));
             const older = page.filter((item) => !known.has(item.publicId));
-            this.messages.set([...older, ...current]);
-            this.hasMore.set(page.length >= PAGE_SIZE);
+            this.$messages.set([...older, ...current]);
+            this.$hasMore.set(page.length >= PAGE_SIZE);
             await this.avatars.prefetchPublicIds(
                 older.filter((message) => message.hasPlatformProfile()).map((message) => message.platformUserPublicId),
             );
             return older.length > 0;
         } finally {
-            this.loadingOlder.set(false);
+            this.$loadingOlder.set(false);
         }
     }
 
@@ -148,21 +161,22 @@ export class LfgChatStore {
         void this.realtime.disconnect();
     }
 
+    public selectGuild(guildPublicId: string): void {
+        this.$postingAs.set(guildPublicId);
+    }
+
     /** Reading the chat must never create anything, so the sheet is only looked up, never loaded. */
     private async loadSession(): Promise<void> {
         await this.membership.whenResolved();
         const session = this.session();
         if (!session) {
-            this.postableGuilds.set([]);
-            this.postingAs.set(null);
+            this.$postableGuilds.set([]);
+            this.$postingAs.set(null);
             return;
         }
 
         if (session.avatarUrl && session.publicId) {
-            this.avatars.avatars.update((current) => ({
-                ...current,
-                [session.publicId]: session.avatarUrl,
-            }));
+            this.avatars.remember(session.publicId, session.avatarUrl);
         }
 
         if (this.kind !== LFG_KIND_RECRUITMENT || !this.canPost()) {
@@ -172,8 +186,8 @@ export class LfgChatStore {
         try {
             await this.loadPostableGuilds();
         } catch {
-            this.postableGuilds.set([]);
-            this.postingAs.set(null);
+            this.$postableGuilds.set([]);
+            this.$postingAs.set(null);
         }
     }
 
@@ -183,28 +197,21 @@ export class LfgChatStore {
      */
     private async loadPostableGuilds(): Promise<void> {
         const guilds = await firstValueFrom(this.guilds.listPostable());
-        this.postableGuilds.set(guilds);
-        this.postingAs.set(guilds.length === 1 ? guilds[0].publicId : null);
-    }
-
-    public selectGuild(guildPublicId: string): void {
-        this.postingAs.set(guildPublicId);
+        this.$postableGuilds.set(guilds);
+        this.$postingAs.set(guilds.length === 1 ? guilds[0].publicId : null);
     }
 
     private appendMessage(message: LfgMessage): void {
-        const current = this.messages();
+        const current = this.$messages();
         if (current.some((item) => item.publicId === message.publicId)) {
             return;
         }
-        this.messages.set([...current, message]);
+        this.$messages.set([...current, message]);
         if (message.isMine(this.session()?.publicId, this.playerPublicId())) {
             this.syncCooldownFromMessages([...current, message]);
         }
         if (message.senderAvatarUrl && message.hasPlatformProfile()) {
-            this.avatars.avatars.update((current) => ({
-                ...current,
-                [message.platformUserPublicId]: message.senderAvatarUrl,
-            }));
+            this.avatars.remember(message.platformUserPublicId, message.senderAvatarUrl);
         } else if (message.hasPlatformProfile()) {
             void this.avatars.ensure(message.platformUserPublicId);
         }
@@ -216,16 +223,14 @@ export class LfgChatStore {
             return;
         }
 
-        const lastMine = messages
-            .filter((message) => message.playerPublicId === playerPublicId)
-            .at(-1);
+        const lastMine = messages.filter((message) => message.playerPublicId === playerPublicId).at(-1);
         if (!lastMine) {
             return;
         }
 
         const until = lastMine.creationDate.getTime() + POST_COOLDOWN_MS;
         if (until > Date.now()) {
-            this.cooldownUntil.set(until);
+            this.$cooldownUntil.set(until);
             this.startCooldownTicker();
         }
     }
@@ -239,8 +244,8 @@ export class LfgChatStore {
     }
 
     private tickCooldown(): void {
-        const remaining = Math.max(0, Math.ceil((this.cooldownUntil() - Date.now()) / 1000));
-        this.cooldownSeconds.set(remaining);
+        const remaining = Math.max(0, Math.ceil((this.$cooldownUntil() - Date.now()) / 1000));
+        this.$cooldownSeconds.set(remaining);
         if (remaining === 0) {
             this.stopCooldownTicker();
         }

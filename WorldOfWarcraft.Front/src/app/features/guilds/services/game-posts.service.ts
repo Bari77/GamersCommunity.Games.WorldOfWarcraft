@@ -1,12 +1,11 @@
 import { Injectable } from "@angular/core";
-import {
-    GamePostCreateRequestDto,
-    GamePostDto,
-    GamePostModerateRequestDto,
-    GamePostUpdateRequestDto,
-    GuildWallRequestDto,
-} from "@features/guilds/dto/game-post.dto";
-import { GamePost, GamePostPage } from "@features/guilds/models/game-post.model";
+import { GamePostDto } from "@features/guilds/dto/game-post.dto";
+import { GuildWallRequestDto } from "@features/guilds/dto/guild-wall-request.dto";
+import { GamePostUpdateRequestDto } from "@features/guilds/dto/game-post-update-request.dto";
+import { GamePostModerateRequestDto } from "@features/guilds/dto/game-post-moderate-request.dto";
+import { GamePostCreateRequestDto } from "@features/guilds/dto/game-post-create-request.dto";
+import { GamePost } from "@features/guilds/models/game-post.model";
+import { GamePostPage } from "@features/guilds/models/game-post-page.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";
 

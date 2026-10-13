@@ -36,9 +36,7 @@ export class MySheetComponent {
             }
 
             const playerPublicId = this.membership.playerPublicId();
-            await this.router.navigate(
-                playerPublicId ? [`${WOW_GAME_URL}/players`, playerPublicId] : [WOW_GAME_URL],
-            );
+            await this.router.navigate(playerPublicId ? [`${WOW_GAME_URL}/players`, playerPublicId] : [WOW_GAME_URL]);
         } catch {
             this.needsLogin.set(true);
         } finally {

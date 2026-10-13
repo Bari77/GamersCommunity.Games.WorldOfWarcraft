@@ -1,4 +1,4 @@
-import type { GcGalleryItem, GcLink } from "@bari77/gc-widgets";
+import { GcGalleryItem, GcLink } from "@bari77/gc-widgets";
 import { Character } from "@features/characters/models/character.model";
 import { GuildMember } from "@features/guilds/models/guild.model";
 import { WORKSPACE_PREVIEW_GUILD } from "@features/guilds/workspace/preview-guild";
@@ -10,6 +10,7 @@ import {
     mockGuildWallPosts,
     mockPendingPosts,
 } from "../../../../mocks/catalog/orgs";
+import { WorkspacePreviewApplication } from "./workspace-preview-application";
 
 export const WORKSPACE_PREVIEW_GUILD_MEMBERS: GuildMember[] = WORKSPACE_PREVIEW_GUILD.members;
 
@@ -40,16 +41,6 @@ export interface WorkspacePreviewWallPost {
     date: Date;
     body: string;
     audience?: string;
-}
-
-export interface WorkspacePreviewApplication {
-    character: string;
-    spec: string;
-    level: number;
-    server: string;
-    player: string;
-    message: string;
-    date: Date;
 }
 
 export const WORKSPACE_PREVIEW_PENDING_POSTS: WorkspacePreviewWallPost[] = mockPendingPosts

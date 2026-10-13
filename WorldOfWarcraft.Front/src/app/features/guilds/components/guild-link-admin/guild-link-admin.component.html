@@ -69,9 +69,7 @@
                     <span i18n="@@wow.links.error.label">A label is required.</span>
                 }
                 @case ("TOO_MANY_ITEMS") {
-                    <span i18n="@@wow.guild.links.error.tooMany">
-                        This guild reached the maximum number of links.
-                    </span>
+                    <span i18n="@@wow.guild.links.error.tooMany">This guild reached the maximum number of links.</span>
                 }
                 @case ("GUILD_RANK_REQUIRED") {
                     <span i18n="@@wow.guild.links.error.rank">Only officers can change the guild links.</span>
@@ -84,9 +82,7 @@
     }
 
     @if (items().length === 0) {
-        <p class="link-admin__empty" i18n="@@wow.guild.links.admin.empty">
-            No link yet. Add your first one above.
-        </p>
+        <p class="link-admin__empty" i18n="@@wow.guild.links.admin.empty">No link yet. Add your first one above.</p>
     } @else {
         <ul class="link-admin__list">
             @for (item of items(); track item.publicId; let first = $first, last = $last) {

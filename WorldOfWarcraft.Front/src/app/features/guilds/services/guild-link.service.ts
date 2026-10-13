@@ -1,10 +1,8 @@
 import { Injectable } from "@angular/core";
-import {
-    GuildLinkCreateRequestDto,
-    GuildLinkListRequestDto,
-    GuildLinkReorderRequestDto,
-    GuildLinkUpdateRequestDto,
-} from "@features/guilds/dto/guild-link.dto";
+import { GuildLinkUpdateRequestDto } from "@features/guilds/dto/guild-link.dto";
+import { GuildLinkReorderRequestDto } from "@features/guilds/dto/guild-link-reorder-request.dto";
+import { GuildLinkListRequestDto } from "@features/guilds/dto/guild-link-list-request.dto";
+import { GuildLinkCreateRequestDto } from "@features/guilds/dto/guild-link-create-request.dto";
 import { GuildLink } from "@features/guilds/models/guild-link.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";

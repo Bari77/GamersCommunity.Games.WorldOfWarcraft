@@ -4,14 +4,11 @@ import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, ParamMap, Router, RouterLink } from "@angular/router";
 import { SkeletonComponent, SkeletonTextComponent, stripRichHtmlPlainText } from "@bari77/gc-ui";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
-import { CharacterOptions } from "@features/characters/models/character.model";
+import { CharacterOptions } from "@features/characters/models/character-options.model";
 import { CharactersService } from "@features/characters/services/characters.service";
-import {
-    GlobalSearchStore,
-    SearchCriteria,
-    SearchHit,
-    SearchScope,
-} from "@features/search/stores/global-search.store";
+import { GlobalSearchStore, SearchScope } from "@features/search/stores/global-search.store";
+import { SearchHit } from "@features/search/models/search-hit.model";
+import { SearchCriteria } from "@features/search/models/search-criteria.model";
 import { NbButtonModule, NbCardModule, NbInputModule, NbSelectModule } from "@nebular/theme";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
 import { GameTermPipe } from "@shared/pipes/game-term.pipe";
@@ -128,6 +125,14 @@ export class GlobalSearchComponent implements OnInit {
         return [`${WOW_GAME_URL}/players`, publicId];
     }
 
+    protected plainText(value: string | null | undefined): string {
+        return stripRichHtmlPlainText(value ?? "");
+    }
+
+    protected plainPresentation(value: string | null | undefined): string {
+        return this.plainText(value);
+    }
+
     private async runSearch(criteria: SearchCriteria): Promise<void> {
         await this.store.search(criteria);
 
@@ -150,14 +155,6 @@ export class GlobalSearchComponent implements OnInit {
             idClass: readNumber(params.get("class")),
             minLevel: readNumber(params.get("level")),
         };
-    }
-
-    protected plainText(value: string | null | undefined): string {
-        return stripRichHtmlPlainText(value ?? "");
-    }
-
-    protected plainPresentation(value: string | null | undefined): string {
-        return this.plainText(value);
     }
 
     private patchCriteria(patch: Record<string, string | number | null>): void {

@@ -1,8 +1,8 @@
 import { Component, computed, effect, input, output, signal, untracked } from "@angular/core";
 import { FormsModule } from "@angular/forms";
 import { GuildCrestEditorComponent } from "@features/guilds/components/guild-crest-editor/guild-crest-editor.component";
-import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
-import { GuildSheet } from "@features/guilds/models/guild.model";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild-update-request.dto";
+import { GuildSheet } from "@features/guilds/models/guild-sheet.model";
 import { NbButtonModule, NbCardModule, NbInputModule } from "@nebular/theme";
 import { GuildCrest } from "@shared/models/guild-crest";
 

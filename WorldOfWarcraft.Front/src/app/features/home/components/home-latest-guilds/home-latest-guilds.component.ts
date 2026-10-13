@@ -1,6 +1,6 @@
 import { Component, input } from "@angular/core";
-import { EntityRowComponent, type EntityRowFact } from "@bari77/gc-ui";
-import { GuildSummary } from "@features/guilds/models/guild.model";
+import { EntityRowComponent, EntityRowFact } from "@bari77/gc-ui";
+import { GuildSummary } from "@features/guilds/models/guild-summary.model";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { gameTerm } from "@shared/pipes/game-term.pipe";
 

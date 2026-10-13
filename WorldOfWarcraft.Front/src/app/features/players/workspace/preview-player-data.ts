@@ -1,15 +1,8 @@
-import type { GcGalleryItem, GcLink } from "@bari77/gc-widgets";
+import { GcGalleryItem, GcLink } from "@bari77/gc-widgets";
 import { Character } from "@features/characters/models/character.model";
-import {
-    mockCharacters,
-    PLAYER_PUBLIC_ID,
-} from "../../../../mocks/catalog/characters";
+import { mockCharacters, PLAYER_PUBLIC_ID } from "../../../../mocks/catalog/characters";
 import { mockPlayerLinks } from "../../../../mocks/catalog/links";
-import {
-    mockPlayerPictures,
-    mockPlayerStreams,
-    mockPlayerVideos,
-} from "../../../../mocks/catalog/media";
+import { mockPlayerPictures, mockPlayerStreams, mockPlayerVideos } from "../../../../mocks/catalog/media";
 
 function mediaToGallery(items: { url: string; caption?: string | null }[]): GcGalleryItem[] {
     return items.map((item) => ({ url: item.url, title: item.caption ?? undefined }));

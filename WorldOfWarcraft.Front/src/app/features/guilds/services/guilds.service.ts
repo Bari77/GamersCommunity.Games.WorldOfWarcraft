@@ -1,19 +1,15 @@
 import { Injectable } from "@angular/core";
-import {
-    GuildCreateRequestDto,
-    GuildDisbandRequestDto,
-    GuildMemberTargetRequestDto,
-    GuildSearchRequestDto,
-    GuildSetRankRequestDto,
-    GuildSheetDto,
-    GuildUpdateRequestDto,
-} from "@features/guilds/dto/guild.dto";
-import {
-    GuildDisbandResult,
-    GuildLeaveResult,
-    GuildSearchPage,
-    GuildSheet,
-} from "@features/guilds/models/guild.model";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild-update-request.dto";
+import { GuildSheetDto } from "@features/guilds/dto/guild-sheet.dto";
+import { GuildSetRankRequestDto } from "@features/guilds/dto/guild-set-rank-request.dto";
+import { GuildSearchRequestDto } from "@features/guilds/dto/guild-search-request.dto";
+import { GuildMemberTargetRequestDto } from "@features/guilds/dto/guild-member-target-request.dto";
+import { GuildDisbandRequestDto } from "@features/guilds/dto/guild-disband-request.dto";
+import { GuildCreateRequestDto } from "@features/guilds/dto/guild-create-request.dto";
+import { GuildSheet } from "@features/guilds/models/guild-sheet.model";
+import { GuildSearchPage } from "@features/guilds/models/guild-search-page.model";
+import { GuildLeaveResult } from "@features/guilds/models/guild-leave-result.model";
+import { GuildDisbandResult } from "@features/guilds/models/guild-disband-result.model";
 import { BaseService } from "@shared/services/base.service";
 import { Observable } from "rxjs";
 

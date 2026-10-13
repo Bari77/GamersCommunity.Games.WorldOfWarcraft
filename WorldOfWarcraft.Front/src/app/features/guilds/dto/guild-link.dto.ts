@@ -1,3 +1,5 @@
+import { GuildLinkCreateRequestDto } from "./guild-link-create-request.dto";
+
 export interface GuildLinkDto {
     publicId: string;
     guildPublicId: string;
@@ -7,20 +9,4 @@ export interface GuildLinkDto {
     position: number;
 }
 
-export interface GuildLinkListRequestDto {
-    guildPublicId: string;
-}
-
-export interface GuildLinkCreateRequestDto {
-    guildPublicId: string;
-    url: string;
-    label: string;
-    icon: string | null;
-}
-
 export type GuildLinkUpdateRequestDto = Partial<Omit<GuildLinkCreateRequestDto, "guildPublicId">>;
-
-export interface GuildLinkReorderRequestDto {
-    guildPublicId: string;
-    publicIds: string[];
-}

@@ -169,7 +169,9 @@
                                 @if (guild.alignmentName) {
                                     · {{ guild.alignmentName | gameTerm }}
                                 }
-                                · <span i18n="@@wow.guild.level">Level</span> {{ guild.level }} ·
+                                ·
+                                <span i18n="@@wow.guild.level">Level</span>
+                                {{ guild.level }} ·
                                 {{ guild.memberCount }}
                                 <span i18n="@@wow.search.memberCount">members</span>
                             </p>
@@ -206,7 +208,8 @@
                                 {{ character.pseudo }}
                             </a>
                             <p class="search-hit__meta">
-                                <span i18n="@@wow.character.level">Level</span> {{ character.level }} ·
+                                <span i18n="@@wow.character.level">Level</span>
+                                {{ character.level }} ·
                                 {{ character.raceName | gameTerm }}
                                 @if (character.className) {
                                     · {{ character.mainSpecializationName | gameTerm }}

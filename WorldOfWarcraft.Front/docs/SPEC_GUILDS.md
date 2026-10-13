@@ -50,28 +50,28 @@ Gouvernance de guilde, mur modéré par les officiers, board LFG avec filtres, e
 
 ## Gateway
 
-| Resource | Public | Private (auth) |
-|----------|--------|----------------|
-| Guilds | Get, Search | ListPostable, Create, Update, SetRank, Kick, Leave, TransferLeadership, Disband |
-| GuildApplications | — | Create, ListMine, Withdraw, List, Review |
-| GamePosts | ListGuildWall | Create, ListPending, Moderate, Delete |
-| LfgAds | ListRecent, ListBefore, Search | Create |
+| Resource          | Public                         | Private (auth)                                                                  |
+| ----------------- | ------------------------------ | ------------------------------------------------------------------------------- |
+| Guilds            | Get, Search                    | ListPostable, Create, Update, SetRank, Kick, Leave, TransferLeadership, Disband |
+| GuildApplications | —                              | Create, ListMine, Withdraw, List, Review                                        |
+| GamePosts         | ListGuildWall                  | Create, ListPending, Moderate, Delete                                           |
+| LfgAds            | ListRecent, ListBefore, Search | Create                                                                          |
 
 `Users.Sanctions` reste hors table de routage.
 
 ## Matrice de permissions
 
-| Action | Visiteur | Membre | Officier | Leader |
-|--------|----------|--------|----------|--------|
-| Voir la fiche et le mur | oui | oui | oui | oui |
-| Candidater | oui (connecté) | — | — | — |
-| Publier sur le mur | non | oui (`pending`) | oui (`approved`) | oui (`approved`) |
-| Modérer le mur | non | non | oui | oui |
-| Traiter les candidatures | non | non | oui | oui |
-| Exclure un membre | non | non | oui (rang inférieur) | oui |
-| Éditer la fiche | non | non | oui | oui |
-| Changer les rangs | non | non | non | oui |
-| Transférer / dissoudre | non | non | non | oui |
+| Action                   | Visiteur       | Membre          | Officier             | Leader           |
+| ------------------------ | -------------- | --------------- | -------------------- | ---------------- |
+| Voir la fiche et le mur  | oui            | oui             | oui                  | oui              |
+| Candidater               | oui (connecté) | —               | —                    | —                |
+| Publier sur le mur       | non            | oui (`pending`) | oui (`approved`)     | oui (`approved`) |
+| Modérer le mur           | non            | non             | oui                  | oui              |
+| Traiter les candidatures | non            | non             | oui                  | oui              |
+| Exclure un membre        | non            | non             | oui (rang inférieur) | oui              |
+| Éditer la fiche          | non            | non             | oui                  | oui              |
+| Changer les rangs        | non            | non             | non                  | oui              |
+| Transférer / dissoudre   | non            | non             | non                  | oui              |
 
 ## Hors scope
 

@@ -14,10 +14,10 @@ import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { Character } from "@features/characters/models/character.model";
 import { CharactersService } from "@features/characters/services/characters.service";
 import { GuildAdminComponent } from "@features/guilds/components/guild-admin/guild-admin.component";
-import { GuildApplicationDraft } from "@features/guilds/components/guild-apply-form/guild-apply-form.component";
+import { GuildApplicationDraft } from "@features/guilds/components/guild-apply-form/guild-application-draft.model";
 import { GuildHeroComponent } from "@features/guilds/components/guild-hero/guild-hero.component";
-import { RankChange } from "@features/guilds/components/guild-roster/guild-roster.component";
-import { GuildUpdateRequestDto } from "@features/guilds/dto/guild.dto";
+import { RankChange } from "@features/guilds/components/guild-roster/rank-change.model";
+import { GuildUpdateRequestDto } from "@features/guilds/dto/guild-update-request.dto";
 import { GuildLinkStore } from "@features/guilds/stores/guild-link.store";
 import { GuildSheetStore } from "@features/guilds/stores/guild-sheet.store";
 import {
@@ -75,13 +75,6 @@ export class GuildSheetComponent implements OnInit {
         ),
     );
 
-    /** Needed both to apply with a free character and to leave the guild with a member one. */
-    private readonly myCharacters = resource({
-        params: () => this.membership.playerPublicId() ?? undefined,
-        loader: ({ params }) => firstValueFrom(this.characters.listByPlayer(params)),
-        defaultValue: [] as Character[],
-    });
-
     protected readonly loadingCharacters = computed(
         () => this.membership.loading() || ResourceUtils.isPending(this.myCharacters),
     );
@@ -96,6 +89,13 @@ export class GuildSheetComponent implements OnInit {
             .filter((character) => character.guildPublicId === this.publicId())
             .map((character) => character.publicId),
     );
+
+    /** Needed both to apply with a free character and to leave the guild with a member one. */
+    private readonly myCharacters = resource({
+        params: () => this.membership.playerPublicId() ?? undefined,
+        loader: ({ params }) => firstValueFrom(this.characters.listByPlayer(params)),
+        defaultValue: [] as Character[],
+    });
 
     private readonly characters = inject(CharactersService);
     private readonly router = inject(Router);
