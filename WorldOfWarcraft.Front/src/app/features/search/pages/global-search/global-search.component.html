@@ -94,53 +94,59 @@
                 <div class="search__row">
                 <nb-form-field class="search__field" [class.search__field--set]="store.criteria().idServer !== null">
                     <nb-icon nbPrefix icon="pin-outline" />
-                    <nb-select
-                        fullWidth
-                        size="small"
-                        i18n-placeholder="@@wow.search.serverPlaceholder"
-                        placeholder="Server"
-                        [disabled]="loadingOptions()"
-                        [ngModel]="store.criteria().idServer"
-                        (ngModelChange)="setServer($event)"
-                        [ngModelOptions]="{ standalone: true }"
-                    >
-                        <nb-option [value]="null" i18n="@@wow.search.allServers">All servers</nb-option>
-                        @for (server of options.value().servers; track server.id) {
-                            <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
-                        }
-                    </nb-select>
+                    @if (optionsReady()) {
+                        <nb-select
+                            fullWidth
+                            size="small"
+                            i18n-placeholder="@@wow.search.serverPlaceholder"
+                            placeholder="Server"
+                            [ngModel]="store.criteria().idServer"
+                            (ngModelChange)="setServer($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                        >
+                            <nb-option [value]="null" i18n="@@wow.search.allServers">All servers</nb-option>
+                            @for (server of options.value().servers; track server.id) {
+                                <nb-option [value]="server.id">{{ server.entitled | gameTerm }}</nb-option>
+                            }
+                        </nb-select>
+                    } @else {
+                        <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.serverPlaceholder" placeholder="Server"></nb-select>
+                    }
                 </nb-form-field>
 
                 <nb-form-field class="search__field" [class.search__field--set]="store.criteria().idAlignment !== null">
                     <nb-icon nbPrefix icon="shield-outline" />
-                    <nb-select
-                        fullWidth
-                        size="small"
-                        i18n-placeholder="@@wow.search.factionPlaceholder"
-                        placeholder="Faction"
-                        [disabled]="loadingOptions()"
-                        [ngModel]="store.criteria().idAlignment"
-                        (ngModelChange)="setAlignment($event)"
-                        [ngModelOptions]="{ standalone: true }"
-                    >
-                        @if (optionById(options.value().alignments, store.criteria().idAlignment); as alignment) {
-                            <nb-select-label>
-                                <span class="gc-select-option">
-                                    <wow-icon kind="faction" [slug]="alignment.entitled" [size]="16" />
-                                    {{ alignment.entitled | gameTerm }}
-                                </span>
-                            </nb-select-label>
-                        }
-                        <nb-option [value]="null" i18n="@@wow.search.allFactions">All factions</nb-option>
-                        @for (alignment of options.value().alignments; track alignment.id) {
-                            <nb-option [value]="alignment.id">
-                                <span class="gc-select-option">
-                                    <wow-icon kind="faction" [slug]="alignment.entitled" [size]="18" />
-                                    {{ alignment.entitled | gameTerm }}
-                                </span>
-                            </nb-option>
-                        }
-                    </nb-select>
+                    @if (optionsReady()) {
+                        <nb-select
+                            fullWidth
+                            size="small"
+                            i18n-placeholder="@@wow.search.factionPlaceholder"
+                            placeholder="Faction"
+                            [ngModel]="store.criteria().idAlignment"
+                            (ngModelChange)="setAlignment($event)"
+                            [ngModelOptions]="{ standalone: true }"
+                        >
+                            @if (optionById(options.value().alignments, store.criteria().idAlignment); as alignment) {
+                                <nb-select-label>
+                                    <span class="gc-select-option">
+                                        <wow-icon kind="faction" [slug]="alignment.entitled" [size]="16" />
+                                        {{ alignment.entitled | gameTerm }}
+                                    </span>
+                                </nb-select-label>
+                            }
+                            <nb-option [value]="null" i18n="@@wow.search.allFactions">All factions</nb-option>
+                            @for (alignment of options.value().alignments; track alignment.id) {
+                                <nb-option [value]="alignment.id">
+                                    <span class="gc-select-option">
+                                        <wow-icon kind="faction" [slug]="alignment.entitled" [size]="18" />
+                                        {{ alignment.entitled | gameTerm }}
+                                    </span>
+                                </nb-option>
+                            }
+                        </nb-select>
+                    } @else {
+                        <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.factionPlaceholder" placeholder="Faction"></nb-select>
+                    }
                 </nb-form-field>
 
                 @if (showsGuilds() && !showsCharacterOrPlayer()) {
@@ -179,66 +185,72 @@
                 @if (showsCharacterOrPlayer()) {
                     <nb-form-field class="search__field" [class.search__field--set]="store.criteria().idClass !== null">
                         <nb-icon nbPrefix icon="book-open-outline" />
-                        <nb-select
-                            fullWidth
-                            size="small"
-                            i18n-placeholder="@@wow.search.classPlaceholder"
-                            placeholder="Class"
-                            [disabled]="loadingOptions()"
-                            [ngModel]="store.criteria().idClass"
-                            (ngModelChange)="setClass($event)"
-                            [ngModelOptions]="{ standalone: true }"
-                        >
-                            @if (optionById(options.value().classes, store.criteria().idClass); as gameClass) {
-                                <nb-select-label>
-                                    <span class="gc-select-option">
-                                        <wow-icon kind="class" [slug]="gameClass.entitled" [size]="16" />
-                                        {{ gameClass.entitled | gameTerm }}
-                                    </span>
-                                </nb-select-label>
-                            }
-                            <nb-option [value]="null" i18n="@@wow.search.allClasses">All classes</nb-option>
-                            @for (gameClass of options.value().classes; track gameClass.id) {
-                                <nb-option [value]="gameClass.id">
-                                    <span class="gc-select-option">
-                                        <wow-icon kind="class" [slug]="gameClass.entitled" [size]="18" />
-                                        {{ gameClass.entitled | gameTerm }}
-                                    </span>
-                                </nb-option>
-                            }
-                        </nb-select>
+                        @if (optionsReady()) {
+                            <nb-select
+                                fullWidth
+                                size="small"
+                                i18n-placeholder="@@wow.search.classPlaceholder"
+                                placeholder="Class"
+                                [ngModel]="store.criteria().idClass"
+                                (ngModelChange)="setClass($event)"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                @if (optionById(options.value().classes, store.criteria().idClass); as gameClass) {
+                                    <nb-select-label>
+                                        <span class="gc-select-option">
+                                            <wow-icon kind="class" [slug]="gameClass.entitled" [size]="16" />
+                                            {{ gameClass.entitled | gameTerm }}
+                                        </span>
+                                    </nb-select-label>
+                                }
+                                <nb-option [value]="null" i18n="@@wow.search.allClasses">All classes</nb-option>
+                                @for (gameClass of options.value().classes; track gameClass.id) {
+                                    <nb-option [value]="gameClass.id">
+                                        <span class="gc-select-option">
+                                            <wow-icon kind="class" [slug]="gameClass.entitled" [size]="18" />
+                                            {{ gameClass.entitled | gameTerm }}
+                                        </span>
+                                    </nb-option>
+                                }
+                            </nb-select>
+                        } @else {
+                            <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.classPlaceholder" placeholder="Class"></nb-select>
+                        }
                     </nb-form-field>
 
                     <nb-form-field class="search__field" [class.search__field--set]="store.criteria().idDirection !== null">
                         <nb-icon nbPrefix icon="activity-outline" />
-                        <nb-select
-                            fullWidth
-                            size="small"
-                            i18n-placeholder="@@wow.search.rolePlaceholder"
-                            placeholder="Role"
-                            [disabled]="loadingOptions()"
-                            [ngModel]="store.criteria().idDirection"
-                            (ngModelChange)="setDirection($event)"
-                            [ngModelOptions]="{ standalone: true }"
-                        >
-                            @if (optionById(options.value().directions, store.criteria().idDirection); as direction) {
-                                <nb-select-label>
-                                    <span class="gc-select-option">
-                                        <wow-icon kind="role" [slug]="direction.entitled" [size]="16" />
-                                        {{ direction.entitled | gameTerm }}
-                                    </span>
-                                </nb-select-label>
-                            }
-                            <nb-option [value]="null" i18n="@@wow.search.allRoles">All roles</nb-option>
-                            @for (direction of options.value().directions; track direction.id) {
-                                <nb-option [value]="direction.id">
-                                    <span class="gc-select-option">
-                                        <wow-icon kind="role" [slug]="direction.entitled" [size]="18" />
-                                        {{ direction.entitled | gameTerm }}
-                                    </span>
-                                </nb-option>
-                            }
-                        </nb-select>
+                        @if (optionsReady()) {
+                            <nb-select
+                                fullWidth
+                                size="small"
+                                i18n-placeholder="@@wow.search.rolePlaceholder"
+                                placeholder="Role"
+                                [ngModel]="store.criteria().idDirection"
+                                (ngModelChange)="setDirection($event)"
+                                [ngModelOptions]="{ standalone: true }"
+                            >
+                                @if (optionById(options.value().directions, store.criteria().idDirection); as direction) {
+                                    <nb-select-label>
+                                        <span class="gc-select-option">
+                                            <wow-icon kind="role" [slug]="direction.entitled" [size]="16" />
+                                            {{ direction.entitled | gameTerm }}
+                                        </span>
+                                    </nb-select-label>
+                                }
+                                <nb-option [value]="null" i18n="@@wow.search.allRoles">All roles</nb-option>
+                                @for (direction of options.value().directions; track direction.id) {
+                                    <nb-option [value]="direction.id">
+                                        <span class="gc-select-option">
+                                            <wow-icon kind="role" [slug]="direction.entitled" [size]="18" />
+                                            {{ direction.entitled | gameTerm }}
+                                        </span>
+                                    </nb-option>
+                                }
+                            </nb-select>
+                        } @else {
+                            <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.rolePlaceholder" placeholder="Role"></nb-select>
+                        }
                     </nb-form-field>
                 }
 
@@ -263,12 +275,21 @@
                             }
                         }
                     </button>
-                    @if (hasFilters()) {
-                        <button class="search__clear" nbButton ghost size="small" status="basic" type="button" (click)="clearFilters()">
-                            <nb-icon icon="close-outline" />
-                            <span i18n="@@wow.search.clear">Clear</span>
-                        </button>
-                    }
+                    <button
+                        class="search__clear"
+                        [class.search__clear--idle]="!hasFilters()"
+                        nbButton
+                        ghost
+                        size="small"
+                        status="basic"
+                        type="button"
+                        [attr.aria-hidden]="hasFilters() ? null : true"
+                        [tabindex]="hasFilters() ? 0 : -1"
+                        (click)="clearFilters()"
+                    >
+                        <nb-icon icon="close-outline" />
+                        <span i18n="@@wow.search.clear">Clear</span>
+                    </button>
                 </div>
                 </div>
 
@@ -328,34 +349,37 @@
                         @if (showsCharacterOrPlayer()) {
                             <nb-form-field class="search__field" [class.search__field--set]="store.criteria().idRace !== null">
                                 <nb-icon nbPrefix icon="person-outline" />
-                                <nb-select
-                                    fullWidth
-                                    size="small"
-                                    i18n-placeholder="@@wow.search.racePlaceholder"
-                                    placeholder="Race"
-                                    [disabled]="loadingOptions()"
-                                    [ngModel]="store.criteria().idRace"
-                                    (ngModelChange)="setRace($event)"
-                                    [ngModelOptions]="{ standalone: true }"
-                                >
-                                    @if (optionById(options.value().races, store.criteria().idRace); as race) {
-                                        <nb-select-label>
-                                            <span class="gc-select-option">
-                                                <wow-icon kind="race" [slug]="race.entitled" [size]="16" />
-                                                {{ race.entitled | gameTerm }}
-                                            </span>
-                                        </nb-select-label>
-                                    }
-                                    <nb-option [value]="null" i18n="@@wow.search.allRaces">All races</nb-option>
-                                    @for (race of options.value().races; track race.id) {
-                                        <nb-option [value]="race.id">
-                                            <span class="gc-select-option">
-                                                <wow-icon kind="race" [slug]="race.entitled" [size]="18" />
-                                                {{ race.entitled | gameTerm }}
-                                            </span>
-                                        </nb-option>
-                                    }
-                                </nb-select>
+                                @if (optionsReady()) {
+                                    <nb-select
+                                        fullWidth
+                                        size="small"
+                                        i18n-placeholder="@@wow.search.racePlaceholder"
+                                        placeholder="Race"
+                                        [ngModel]="store.criteria().idRace"
+                                        (ngModelChange)="setRace($event)"
+                                        [ngModelOptions]="{ standalone: true }"
+                                    >
+                                        @if (optionById(options.value().races, store.criteria().idRace); as race) {
+                                            <nb-select-label>
+                                                <span class="gc-select-option">
+                                                    <wow-icon kind="race" [slug]="race.entitled" [size]="16" />
+                                                    {{ race.entitled | gameTerm }}
+                                                </span>
+                                            </nb-select-label>
+                                        }
+                                        <nb-option [value]="null" i18n="@@wow.search.allRaces">All races</nb-option>
+                                        @for (race of options.value().races; track race.id) {
+                                            <nb-option [value]="race.id">
+                                                <span class="gc-select-option">
+                                                    <wow-icon kind="race" [slug]="race.entitled" [size]="18" />
+                                                    {{ race.entitled | gameTerm }}
+                                                </span>
+                                            </nb-option>
+                                        }
+                                    </nb-select>
+                                } @else {
+                                    <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.racePlaceholder" placeholder="Race"></nb-select>
+                                }
                             </nb-form-field>
 
                             <nb-form-field
@@ -363,34 +387,37 @@
                                 [class.search__field--set]="store.criteria().idSpecializationClass !== null"
                             >
                                 <nb-icon nbPrefix icon="star-outline" />
-                                <nb-select
-                                    fullWidth
-                                    size="small"
-                                    i18n-placeholder="@@wow.search.specPlaceholder"
-                                    placeholder="Specialization"
-                                    [disabled]="loadingOptions()"
-                                    [ngModel]="store.criteria().idSpecializationClass"
-                                    (ngModelChange)="setSpec($event)"
-                                    [ngModelOptions]="{ standalone: true }"
-                                >
-                                    @if (optionById(specs(), store.criteria().idSpecializationClass); as spec) {
-                                        <nb-select-label>
-                                            <span class="gc-select-option">
-                                                <wow-icon kind="spec" [slug]="spec.entitled" [size]="16" />
-                                                {{ spec.specializationEntitled | gameTerm }}
-                                            </span>
-                                        </nb-select-label>
-                                    }
-                                    <nb-option [value]="null" i18n="@@wow.search.allSpecs">All specializations</nb-option>
-                                    @for (spec of specs(); track spec.id) {
-                                        <nb-option [value]="spec.id">
-                                            <span class="gc-select-option">
-                                                <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
-                                                {{ spec.specializationEntitled | gameTerm }}
-                                            </span>
-                                        </nb-option>
-                                    }
-                                </nb-select>
+                                @if (optionsReady()) {
+                                    <nb-select
+                                        fullWidth
+                                        size="small"
+                                        i18n-placeholder="@@wow.search.specPlaceholder"
+                                        placeholder="Specialization"
+                                        [ngModel]="store.criteria().idSpecializationClass"
+                                        (ngModelChange)="setSpec($event)"
+                                        [ngModelOptions]="{ standalone: true }"
+                                    >
+                                        @if (optionById(specs(), store.criteria().idSpecializationClass); as spec) {
+                                            <nb-select-label>
+                                                <span class="gc-select-option">
+                                                    <wow-icon kind="spec" [slug]="spec.entitled" [size]="16" />
+                                                    {{ spec.specializationEntitled | gameTerm }}
+                                                </span>
+                                            </nb-select-label>
+                                        }
+                                        <nb-option [value]="null" i18n="@@wow.search.allSpecs">All specializations</nb-option>
+                                        @for (spec of specs(); track spec.id) {
+                                            <nb-option [value]="spec.id">
+                                                <span class="gc-select-option">
+                                                    <wow-icon kind="spec" [slug]="spec.entitled" [size]="18" />
+                                                    {{ spec.specializationEntitled | gameTerm }}
+                                                </span>
+                                            </nb-option>
+                                        }
+                                    </nb-select>
+                                } @else {
+                                    <nb-select fullWidth size="small" disabled i18n-placeholder="@@wow.search.specPlaceholder" placeholder="Specialization"></nb-select>
+                                }
                             </nb-form-field>
 
                             <nb-form-field class="search__field" [class.search__field--set]="store.criteria().minIlvl !== null">
@@ -734,7 +761,7 @@
         }
 
         @if (store.hasMore()) {
-            <div class="search__more">
+            <div class="search__loadMore">
                 <button nbButton ghost status="basic" [disabled]="store.loadingMore()" (click)="store.loadMore()">
                     <span i18n="@@wow.search.loadMore">Load more</span>
                 </button>

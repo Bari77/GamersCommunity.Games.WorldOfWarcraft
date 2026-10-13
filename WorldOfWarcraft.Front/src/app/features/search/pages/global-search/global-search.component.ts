@@ -1,5 +1,5 @@
-import { Component, computed, DestroyRef, effect, inject, OnInit, resource, signal } from "@angular/core";
-import { takeUntilDestroyed } from "@angular/core/rxjs-interop";
+import { Component, computed, effect, inject, resource, signal } from "@angular/core";
+import { toSignal } from "@angular/core/rxjs-interop";
 import { FormsModule } from "@angular/forms";
 import { ActivatedRoute, ParamMap, Router, RouterLink } from "@angular/router";
 import { SkeletonComponent, SkeletonTextComponent } from "@bari77/gc-ui";
@@ -98,7 +98,7 @@ function readText(value: string | null): string | null {
     templateUrl: "./global-search.component.html",
     styleUrl: "./global-search.component.scss",
 })
-export class GlobalSearchComponent implements OnInit {
+export class GlobalSearchComponent {
     protected readonly store = inject(GlobalSearchStore);
     protected readonly membership = inject(GameMembershipStore);
 
@@ -128,6 +128,12 @@ export class GlobalSearchComponent implements OnInit {
     });
 
     protected readonly loadingOptions = computed(() => ResourceUtils.isPending(this.options));
+
+    /**
+     * Nebular drops a value written while only the empty option exists and never retries.
+     * Options are rendered once the catalog is actually loaded.
+     */
+    protected readonly optionsReady = computed(() => this.options.hasValue() && !this.loadingOptions());
 
     protected readonly scope = computed(() => this.store.criteria().scope);
 
@@ -216,9 +222,17 @@ export class GlobalSearchComponent implements OnInit {
     private readonly characters = inject(CharactersService);
     private readonly applications = inject(GuildApplicationsService);
     private readonly guilds = inject(GuildsService);
-    private readonly destroyRef = inject(DestroyRef);
     private readonly route = inject(ActivatedRoute);
     private readonly router = inject(Router);
+    private readonly queryParams = toSignal(this.route.queryParamMap);
+
+    /** Set once the visitor clears a deduced filter, so it does not snap back during this visit. */
+    private readonly suppressDefaults = signal(false);
+
+    private readonly viewerCharacters = resource({
+        params: () => this.membership.playerPublicId() ?? undefined,
+        loader: ({ params }) => firstValueFrom(this.characters.listByPlayer(params)),
+    });
 
     private readonly resetMoreDismissal = effect(() => {
         if (this.extraCount() === 0) {
@@ -239,18 +253,37 @@ export class GlobalSearchComponent implements OnInit {
         defaultValue: [] as GuildApplication[],
     });
 
-    public ngOnInit(): void {
-        this.route.queryParamMap.pipe(takeUntilDestroyed(this.destroyRef)).subscribe((params) => {
-            const criteria = this.readCriteria(params);
-            this.term.set(criteria.query);
-            const founder = params.get("found");
-            this.founder.set(founder);
-            if (founder && criteria.scope === "guilds") {
-                this.formOpen.set(true);
+    /**
+     * The URL stays the source of truth. When it does not name a server yet, and every character
+     * of the visitor sits on the same one, that server is written in before the search runs.
+     */
+    private readonly applyDefaults = effect(() => {
+        const params = this.queryParams();
+        if (!params) {
+            return;
+        }
+
+        const criteria = this.readCriteria(params);
+        this.term.set(criteria.query);
+        const founder = params.get("found");
+        this.founder.set(founder);
+        if (founder && criteria.scope === "guilds") {
+            this.formOpen.set(true);
+        }
+
+        if (!params.has("server") && !this.suppressDefaults()) {
+            const serverId = this.inferredServer();
+            if (serverId === undefined) {
+                return;
             }
-            void this.runSearch(criteria);
-        });
-    }
+            if (serverId !== null) {
+                this.patchCriteria({ server: serverId });
+                return;
+            }
+        }
+
+        void this.runSearch(criteria);
+    });
 
     protected toggleMore(): void {
         const open = !this.showMore();
@@ -273,6 +306,9 @@ export class GlobalSearchComponent implements OnInit {
     }
 
     protected setServer(idServer: number | null): void {
+        if (idServer === null) {
+            this.suppressDefaults.set(true);
+        }
         this.patchCriteria({ server: idServer });
     }
 
@@ -362,6 +398,7 @@ export class GlobalSearchComponent implements OnInit {
     }
 
     protected clearFilters(): void {
+        this.suppressDefaults.set(true);
         this.patchCriteria({
             server: null,
             faction: null,
@@ -420,6 +457,27 @@ export class GlobalSearchComponent implements OnInit {
 
     private hitLink(hit: SearchHit): string[] {
         return hit.kind === "guild" ? this.guildLink(hit.publicId) : this.playerLink(hit.publicId);
+    }
+
+    /**
+     * `undefined` while the roster is still loading, `null` when the visitor has no single server.
+     */
+    private inferredServer(): number | null | undefined {
+        if (this.membership.loading()) {
+            return undefined;
+        }
+        if (!this.membership.playerPublicId()) {
+            return null;
+        }
+        if (!this.viewerCharacters.hasValue()) {
+            return this.viewerCharacters.status() === "error" ? null : undefined;
+        }
+
+        const servers = new Set(this.viewerCharacters.value().map((character) => character.idServer));
+        if (servers.size !== 1) {
+            return null;
+        }
+        return [...servers][0];
     }
 
     private readCriteria(params: ParamMap): SearchCriteria {
