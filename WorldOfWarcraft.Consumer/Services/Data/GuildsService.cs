@@ -36,36 +36,36 @@ public class GuildsService(WorldOfWarcraftDbContext context, IGuildWhispers whis
 
     public async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
-        switch (message.Action)
+        switch (message.Action?.ToUpperInvariant())
         {
-            case "Get":
+            case "GET":
                 return JsonSafe.Serialize(await GetSheetAsync(message, ct));
 
-            case "Search":
+            case "SEARCH":
                 return JsonSafe.Serialize(await SearchAsync(message, ct));
 
-            case "ListPostable":
+            case "LISTPOSTABLE":
                 return JsonSafe.Serialize(await ListPostableAsync(message, ct));
 
-            case "Create":
+            case "CREATE":
                 return JsonSafe.Serialize(await CreateAsync(message, ct));
 
-            case "Update":
+            case "UPDATE":
                 return JsonSafe.Serialize(await UpdateAsync(message, ct));
 
-            case "SetRank":
+            case "SETRANK":
                 return JsonSafe.Serialize(await SetRankAsync(message, ct));
 
-            case "Kick":
+            case "KICK":
                 return JsonSafe.Serialize(await KickAsync(message, ct));
 
-            case "Leave":
+            case "LEAVE":
                 return JsonSafe.Serialize(await LeaveAsync(message, ct));
 
-            case "TransferLeadership":
+            case "TRANSFERLEADERSHIP":
                 return JsonSafe.Serialize(await TransferLeadershipAsync(message, ct));
 
-            case "Disband":
+            case "DISBAND":
                 return JsonSafe.Serialize(await DisbandAsync(message, ct));
         }
 

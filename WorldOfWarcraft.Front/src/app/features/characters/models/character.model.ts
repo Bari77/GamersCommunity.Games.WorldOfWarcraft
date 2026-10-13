@@ -1,6 +1,7 @@
 import {
     CharacterDto,
     CharacterOptionsDto,
+    CharacterSearchResultDto,
     CharacterSummaryDto,
     RaceClassOptionDto,
     ReferenceItemDto,
@@ -149,6 +150,20 @@ export class CharacterSummary {
     public roleName(): string {
         const role = this.role();
         return role ? roleLabel(role) : "";
+    }
+}
+
+export class CharacterSearchPage {
+    public constructor(
+        public items: CharacterSummary[],
+        public hasMore: boolean,
+    ) {}
+
+    public static fromDto(dto: CharacterSearchResultDto): CharacterSearchPage {
+        return new CharacterSearchPage(
+            (dto.items ?? []).map((item) => CharacterSummary.fromDto(item)),
+            dto.hasMore ?? false,
+        );
     }
 }
 

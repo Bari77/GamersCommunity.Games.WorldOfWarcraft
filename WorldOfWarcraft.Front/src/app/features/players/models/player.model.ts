@@ -1,6 +1,7 @@
 import {
     PlayerGuildDto,
     PlayerResolveResultDto,
+    PlayerSearchResultDto,
     PlayerSheetDto,
     PlayerSummaryDto,
 } from "@features/players/dto/player.dto";
@@ -103,6 +104,20 @@ export class PlayerSummary {
 
     public initials(): string {
         return this.nickname.charAt(0) || "?";
+    }
+}
+
+export class PlayerSearchPage {
+    public constructor(
+        public items: PlayerSummary[],
+        public hasMore: boolean,
+    ) {}
+
+    public static fromDto(dto: PlayerSearchResultDto): PlayerSearchPage {
+        return new PlayerSearchPage(
+            (dto.items ?? []).map((item) => PlayerSummary.fromDto(item)),
+            dto.hasMore ?? false,
+        );
     }
 }
 

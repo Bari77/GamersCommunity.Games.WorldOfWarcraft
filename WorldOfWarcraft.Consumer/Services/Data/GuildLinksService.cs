@@ -188,7 +188,7 @@ public sealed class GuildLinksService(WorldOfWarcraftDbContext context)
             throw new BadRequestException("ID_MANDATORY", "Id mandatory");
 
         var link = await Context.GuildLinks.FirstOrDefaultAsync(l => l.PublicId == publicId, ct)
-            ?? throw new NotFoundException("NOT_FOUND", "Cannot find ressource");
+            ?? throw new NotFoundException("NOT_FOUND", "Link not found");
 
         var guild = await Context.Guilds.AsNoTracking().FirstAsync(g => g.Id == link.IdGuild, ct);
         await RequireOfficerAsync(message, guild.Id, ct);

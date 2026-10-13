@@ -1,14 +1,13 @@
 import { Injectable } from "@angular/core";
 import {
     PlayerLinkCreateRequestDto,
-    PlayerLinkDto,
     PlayerLinkListRequestDto,
     PlayerLinkReorderRequestDto,
     PlayerLinkUpdateRequestDto,
 } from "@features/links/dto/player-link.dto";
 import { PlayerLink } from "@features/links/models/player-link.model";
 import { BaseService } from "@shared/services/base.service";
-import { map, Observable } from "rxjs";
+import { Observable } from "rxjs";
 
 const RESOURCE = "PlayerLinks";
 
@@ -20,31 +19,23 @@ export class PlayerLinkService extends BaseService {
 
     public list(playerPublicId: string): Observable<PlayerLink[]> {
         const payload: PlayerLinkListRequestDto = { playerPublicId };
-        return this.http
-            .post<PlayerLinkDto[]>(this.getURL(`${RESOURCE}/actions/List`), payload)
-            .pipe(map((dtos) => dtos.map((dto) => PlayerLink.fromDto(dto))));
+        return this.postList(PlayerLink, `${RESOURCE}/actions/List`, payload);
     }
 
     public create(data: PlayerLinkCreateRequestDto): Observable<PlayerLink> {
-        return this.http
-            .post<PlayerLinkDto>(this.getURL(`${RESOURCE}/actions/Create`), data)
-            .pipe(map((dto) => PlayerLink.fromDto(dto)));
+        return this.post(PlayerLink, `${RESOURCE}/actions/Create`, data);
     }
 
     public update(publicId: string, data: PlayerLinkUpdateRequestDto): Observable<PlayerLink> {
-        return this.http
-            .put<PlayerLinkDto>(this.getURL(`${RESOURCE}/${publicId}`), data)
-            .pipe(map((dto) => PlayerLink.fromDto(dto)));
+        return this.put(PlayerLink, `${RESOURCE}/${publicId}`, data);
     }
 
     public remove(publicId: string): Observable<void> {
-        return this.http.delete<void>(this.getURL(`${RESOURCE}/${publicId}`));
+        return this.delete(`${RESOURCE}/${publicId}`);
     }
 
     public reorder(publicIds: string[]): Observable<PlayerLink[]> {
         const payload: PlayerLinkReorderRequestDto = { publicIds };
-        return this.http
-            .post<PlayerLinkDto[]>(this.getURL(`${RESOURCE}/actions/Reorder`), payload)
-            .pipe(map((dtos) => dtos.map((dto) => PlayerLink.fromDto(dto))));
+        return this.postList(PlayerLink, `${RESOURCE}/actions/Reorder`, payload);
     }
 }

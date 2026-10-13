@@ -32,24 +32,24 @@ public class GamePostsService(
 
     public async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
-        switch (message.Action)
+        switch (message.Action?.ToUpperInvariant())
         {
-            case "ListGuildWall":
+            case "LISTGUILDWALL":
                 return JsonSafe.Serialize(await ListGuildWallAsync(message, ct));
 
-            case "ListPending":
+            case "LISTPENDING":
                 return JsonSafe.Serialize(await ListPendingAsync(message, ct));
 
-            case "Create":
+            case "CREATE":
                 return JsonSafe.Serialize(await CreateAsync(message, ct));
 
-            case "Update":
+            case "UPDATE":
                 return JsonSafe.Serialize(await UpdateAsync(message, ct));
 
-            case "Moderate":
+            case "MODERATE":
                 return JsonSafe.Serialize(await ModerateAsync(message, ct));
 
-            case "Delete":
+            case "DELETE":
                 return JsonSafe.Serialize(await DeleteAsync(message, ct));
         }
 

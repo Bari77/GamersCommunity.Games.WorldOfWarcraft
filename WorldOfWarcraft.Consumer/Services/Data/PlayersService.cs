@@ -31,21 +31,21 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
 
     public override async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
-        switch (message.Action)
+        switch (message.Action?.ToUpperInvariant())
         {
-            case "Load":
+            case "LOAD":
                 return JsonSafe.Serialize(await LoadAsync(message, ct));
 
-            case "Resolve":
+            case "RESOLVE":
                 return JsonSafe.Serialize(await ResolveByPlatformUserAsync(message, ct));
 
-            case "Search":
+            case "SEARCH":
                 return JsonSafe.Serialize(await SearchAsync(message, ct));
 
-            case "Get":
+            case "GET":
                 return JsonSafe.Serialize(await GetSheetAsync(message, ct));
 
-            case "Update":
+            case "UPDATE":
                 return JsonSafe.Serialize(await UpdateSheetAsync(message, ct));
         }
 

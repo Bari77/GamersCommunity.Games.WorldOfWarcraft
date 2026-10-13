@@ -3,14 +3,12 @@ import {
     GamePostCreateRequestDto,
     GamePostDto,
     GamePostModerateRequestDto,
-    GamePostPageDto,
-    GamePostTargetRequestDto,
     GamePostUpdateRequestDto,
     GuildWallRequestDto,
 } from "@features/guilds/dto/game-post.dto";
 import { GamePost, GamePostPage } from "@features/guilds/models/game-post.model";
 import { BaseService } from "@shared/services/base.service";
-import { map, Observable } from "rxjs";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class GamePostsService extends BaseService {
@@ -20,12 +18,12 @@ export class GamePostsService extends BaseService {
 
     /** Approved posts of a guild, readable by anyone. */
     public listGuildWall(request: GuildWallRequestDto): Observable<GamePostPage> {
-        return this.pageAt("actions/ListGuildWall", request);
+        return this.post(GamePostPage, "actions/ListGuildWall", request);
     }
 
     /** Posts awaiting a decision, reserved to the guild leader and officers. */
     public listPending(request: GuildWallRequestDto): Observable<GamePostPage> {
-        return this.pageAt("actions/ListPending", request);
+        return this.post(GamePostPage, "actions/ListPending", request);
     }
 
     public create(request: GamePostCreateRequestDto): Observable<GamePost> {
@@ -41,13 +39,7 @@ export class GamePostsService extends BaseService {
         return this.post<GamePostDto, GamePost>(GamePost, "actions/Moderate", request);
     }
 
-    public remove(request: GamePostTargetRequestDto): Observable<GamePostTargetRequestDto> {
-        return this.http.post<GamePostTargetRequestDto>(this.getURL("actions/Delete"), request);
-    }
-
-    private pageAt(action: string, payload: GuildWallRequestDto): Observable<GamePostPage> {
-        return this.http
-            .post<GamePostPageDto>(this.getURL(action), payload)
-            .pipe(map((dto) => GamePostPage.fromDto(dto)));
+    public remove(request: { publicId: string }): Observable<void> {
+        return this.postVoid("actions/Delete", request);
     }
 }

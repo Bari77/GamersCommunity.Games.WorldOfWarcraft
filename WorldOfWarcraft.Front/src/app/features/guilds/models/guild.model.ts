@@ -1,4 +1,11 @@
-import { GuildMemberDto, GuildSheetDto, GuildSummaryDto } from "@features/guilds/dto/guild.dto";
+import {
+    GuildDisbandResultDto,
+    GuildLeaveResultDto,
+    GuildMemberDto,
+    GuildSearchResultDto,
+    GuildSheetDto,
+    GuildSummaryDto,
+} from "@features/guilds/dto/guild.dto";
 import { classColor } from "@features/characters/models/class-colors";
 import { roleLabel, specKey, specRole, WowRole } from "@features/characters/models/spec-roles";
 import { WowIconKind } from "@shared/components/wow-icon/wow-icon.component";
@@ -190,5 +197,41 @@ export class GuildSummary {
 
     public handleLabel(): string {
         return `${this.entitled}#${this.discriminator}`;
+    }
+}
+
+export class GuildSearchPage {
+    public constructor(
+        public items: GuildSummary[],
+        public hasMore: boolean,
+    ) {}
+
+    public static fromDto(dto: GuildSearchResultDto): GuildSearchPage {
+        return new GuildSearchPage(
+            (dto.items ?? []).map((item) => GuildSummary.fromDto(item)),
+            dto.hasMore ?? false,
+        );
+    }
+}
+
+export class GuildLeaveResult {
+    public constructor(
+        public guildPublicId: string,
+        public characterPublicId: string,
+    ) {}
+
+    public static fromDto(dto: GuildLeaveResultDto): GuildLeaveResult {
+        return new GuildLeaveResult(dto.guildPublicId, dto.characterPublicId);
+    }
+}
+
+export class GuildDisbandResult {
+    public constructor(
+        public publicId: string,
+        public handle: string,
+    ) {}
+
+    public static fromDto(dto: GuildDisbandResultDto): GuildDisbandResult {
+        return new GuildDisbandResult(dto.publicId, dto.handle);
     }
 }

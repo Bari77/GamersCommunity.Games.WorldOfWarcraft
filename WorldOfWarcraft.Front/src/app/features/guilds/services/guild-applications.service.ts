@@ -8,7 +8,7 @@ import {
 } from "@features/guilds/dto/guild-application.dto";
 import { GuildApplication } from "@features/guilds/models/guild-application.model";
 import { BaseService } from "@shared/services/base.service";
-import { map, Observable } from "rxjs";
+import { Observable } from "rxjs";
 
 @Injectable()
 export class GuildApplicationsService extends BaseService {
@@ -22,12 +22,12 @@ export class GuildApplicationsService extends BaseService {
 
     /** Applications sent by the current player, whatever their status. */
     public listMine(): Observable<GuildApplication[]> {
-        return this.listAt("actions/ListMine", {});
+        return this.postList(GuildApplication, "actions/ListMine", {});
     }
 
     /** Review queue of a guild, reserved to its leader and officers. */
     public listForGuild(request: GuildApplicationListRequestDto): Observable<GuildApplication[]> {
-        return this.listAt("actions/List", request);
+        return this.postList(GuildApplication, "actions/List", request);
     }
 
     public review(request: GuildApplicationReviewRequestDto): Observable<GuildApplication> {
@@ -36,11 +36,5 @@ export class GuildApplicationsService extends BaseService {
 
     public withdraw(request: GuildApplicationTargetRequestDto): Observable<GuildApplication> {
         return this.post<GuildApplicationDto, GuildApplication>(GuildApplication, "actions/Withdraw", request);
-    }
-
-    private listAt(action: string, payload: object): Observable<GuildApplication[]> {
-        return this.http
-            .post<GuildApplicationDto[]>(this.getURL(action), payload)
-            .pipe(map((dtos) => dtos.map((dto) => GuildApplication.fromDto(dto))));
     }
 }

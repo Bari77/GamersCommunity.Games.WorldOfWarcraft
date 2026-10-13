@@ -27,21 +27,21 @@ public class GuildApplicationsService(
 
     public async Task<string> HandleAsync(BusMessage message, CancellationToken ct = default)
     {
-        switch (message.Action)
+        switch (message.Action?.ToUpperInvariant())
         {
-            case "Create":
+            case "CREATE":
                 return JsonSafe.Serialize(await CreateAsync(message, ct));
 
-            case "ListMine":
+            case "LISTMINE":
                 return JsonSafe.Serialize(await ListMineAsync(message, ct));
 
-            case "List":
+            case "LIST":
                 return JsonSafe.Serialize(await ListForGuildAsync(message, ct));
 
-            case "Review":
+            case "REVIEW":
                 return JsonSafe.Serialize(await ReviewAsync(message, ct));
 
-            case "Withdraw":
+            case "WITHDRAW":
                 return JsonSafe.Serialize(await WithdrawAsync(message, ct));
         }
 

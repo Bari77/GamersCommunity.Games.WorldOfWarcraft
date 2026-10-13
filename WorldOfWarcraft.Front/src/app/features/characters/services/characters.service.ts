@@ -5,17 +5,11 @@ import {
     CharacterListRequestDto,
     CharacterOptionsDto,
     CharacterSearchRequestDto,
-    CharacterSearchResultDto,
     CharacterUpdateRequestDto,
 } from "@features/characters/dto/character.dto";
-import { Character, CharacterOptions, CharacterSummary } from "@features/characters/models/character.model";
+import { Character, CharacterOptions, CharacterSearchPage } from "@features/characters/models/character.model";
 import { BaseService } from "@shared/services/base.service";
-import { map, Observable } from "rxjs";
-
-export interface CharacterSearchPage {
-    items: CharacterSummary[];
-    hasMore: boolean;
-}
+import { Observable } from "rxjs";
 
 @Injectable()
 export class CharactersService extends BaseService {
@@ -25,9 +19,7 @@ export class CharactersService extends BaseService {
 
     public listByPlayer(playerPublicId: string): Observable<Character[]> {
         const payload: CharacterListRequestDto = { playerPublicId };
-        return this.http
-            .post<CharacterDto[]>(this.getURL("actions/List"), payload)
-            .pipe(map((dtos) => dtos.map((dto) => Character.fromDto(dto))));
+        return this.postList(Character, "actions/List", payload);
     }
 
     public getByPublicId(publicId: string): Observable<Character> {
@@ -35,12 +27,7 @@ export class CharactersService extends BaseService {
     }
 
     public search(request: CharacterSearchRequestDto): Observable<CharacterSearchPage> {
-        return this.http.post<CharacterSearchResultDto>(this.getURL("actions/Search"), request).pipe(
-            map((dto) => ({
-                items: (dto.items ?? []).map((item) => CharacterSummary.fromDto(item)),
-                hasMore: dto.hasMore ?? false,
-            })),
-        );
+        return this.post(CharacterSearchPage, "actions/Search", request);
     }
 
     public options(): Observable<CharacterOptions> {
@@ -56,6 +43,6 @@ export class CharactersService extends BaseService {
     }
 
     public remove(publicId: string): Observable<void> {
-        return this.http.delete<void>(this.getURL(publicId));
+        return this.delete(publicId);
     }
 }
