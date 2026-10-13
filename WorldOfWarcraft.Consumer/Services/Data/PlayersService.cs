@@ -137,6 +137,36 @@ public class PlayersService(WorldOfWarcraftDbContext context, IPlatformFriendsCl
         if (request.IdServer is { } idServer)
             query = query.Where(p => p.Characters.Any(c => c.IdServer == idServer));
 
+        if (request.IdAlignment is { } idAlignment)
+            query = query.Where(p => p.Characters.Any(c => c.IdAlignment == idAlignment));
+
+        if (request.IdClass is { } idClass)
+        {
+            query = query.Where(p => p.Characters.Any(c =>
+                c.IdMainSpecializationClassNavigation != null
+                && c.IdMainSpecializationClassNavigation.IdClass == idClass));
+        }
+
+        if (request.IdRace is { } idRace)
+            query = query.Where(p => p.Characters.Any(c => c.IdRace == idRace));
+
+        if (request.IdDirection is { } idDirection)
+            query = query.Where(p => p.Characters.Any(c => c.IdDirection == idDirection));
+
+        if (request.IdSpecializationClass is { } idSpecializationClass)
+            query = query.Where(p => p.Characters.Any(c => c.IdMainSpecializationClass == idSpecializationClass));
+
+        if (request.MinLevel is { } minLevel)
+            query = query.Where(p => p.Characters.Any(c => c.Level >= minLevel));
+
+        if (request.MinIlvl is { } minIlvl)
+            query = query.Where(p => p.Characters.Any(c => c.Ilvl >= minIlvl));
+
+        if (request.InGuild is true)
+            query = query.Where(p => p.Characters.Any(c => c.GuildMembers.Any()));
+        else if (request.InGuild is false)
+            query = query.Where(p => p.Characters.Any() && !p.Characters.Any(c => c.GuildMembers.Any()));
+
         if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
         {
             query = query.Where(p =>

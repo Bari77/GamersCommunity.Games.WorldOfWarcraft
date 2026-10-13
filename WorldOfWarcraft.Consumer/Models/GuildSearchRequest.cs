@@ -10,6 +10,13 @@ public sealed class GuildSearchRequest
 
     public int? IdAlignment { get; init; }
 
+    /// <summary>Playstyle code seeded on the guild: <c>pve</c>, <c>pvp</c> or <c>pvpe</c>.</summary>
+    public string? Orientation { get; init; }
+
+    public int? MinLevel { get; init; }
+
+    public int? MinMembers { get; init; }
+
     // Cursor, both parts required together: creation date alone is not unique.
     public DateTime? BeforeCreationDate { get; init; }
     public Guid? BeforePublicId { get; init; }

@@ -257,6 +257,76 @@ export const extraGuildSheets: Record<string, GuildSheetDto> = {
     ]),
 };
 
+const FILL_GUILDS = [
+    "Silverwake",
+    "Duskwell Order",
+    "Runehold",
+    "Cinder March",
+    "Pale Banner",
+    "Thornpeak",
+    "Nightglass",
+    "Amber Vow",
+    "Frostspire",
+    "Redfen Company",
+    "Moonshard",
+    "Ironveil",
+    "Starforged",
+    "Hollow Crown",
+    "Brightmaw",
+    "Ashen Tide",
+    "Wyrmrest Watch",
+    "Gloam Pact",
+    "Sunken Hall",
+    "Verdant Spear",
+    "Blackwater Kin",
+    "Oathbreakers",
+    "Lark and Lance",
+    "Emberfen",
+    "Quiet Rampart",
+    "Goldleaf Circle",
+    "Ravenmark",
+    "Saltwind",
+    "Deepbarrow",
+    "Kindled Oath",
+    "Mistwall",
+    "Hearthbound",
+    "Crimson Loom",
+    "Northglass",
+    "Wilder Covenant",
+    "Last Lantern",
+];
+
+const FILL_SERVERS = ["hyjal", "dalaran", "elune", "archimonde"] as const;
+const FILL_ORIENTATIONS = ["pve", "pvp", "pvpe"] as const;
+
+for (const [index, entitled] of FILL_GUILDS.entries()) {
+    const faction = index % 2 === 0 ? "alliance" : "horde";
+    const summary: GuildSummaryDto = {
+        publicId: mockUuid(`wow:guild:${entitled}`),
+        entitled,
+        discriminator: String(1100 + index).padStart(4, "0"),
+        level: 6 + (index % 22),
+        creationDate: new Date(Date.UTC(2023, index % 12, 1 + (index % 27), 16, 0, 0)).toISOString(),
+        serverName: FILL_SERVERS[index % FILL_SERVERS.length],
+        memberCount: 5 + (index % 28),
+        sentence: null,
+        alignmentName: faction,
+        orientationName: FILL_ORIENTATIONS[index % FILL_ORIENTATIONS.length],
+        crest: {
+            emblem: (index % 40) + 1,
+            emblemColor: faction === "alliance" ? "#d7e6ff" : "#ffd0a0",
+            border: (index % 5) + 1,
+            borderColor: faction === "alliance" ? "#6e8cff" : "#c45a2a",
+            backgroundColor: faction === "alliance" ? "#152038" : "#2a120c",
+            faction,
+        },
+    };
+    mockGuildSummaries.push(summary);
+    const sheet = extraSheet(summary, []);
+    sheet.memberCount = summary.memberCount;
+    extraGuildSheets[summary.publicId] = sheet;
+}
+
 export function guildSheetByPublicId(publicId: string, current: GuildSheetDto): GuildSheetDto | null {
     if (publicId === current.publicId) {
         return current;

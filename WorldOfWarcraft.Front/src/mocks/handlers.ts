@@ -38,6 +38,7 @@ import {
     mockGuildWallPosts,
     mockPendingPosts,
 } from "./catalog/orgs";
+import { pageByCursor } from "./catalog/search-page";
 import { mockGuildLinks } from "./catalog/guild-links";
 import { mockHomeFeed, mockLfgMessages, mockPostableGuilds, mockRecruitmentMessages } from "./catalog/home-feed";
 import { mockPlayerLinks } from "./catalog/links";
@@ -50,6 +51,54 @@ const playersUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players");
 const linksUrl = gatewayUrl(environment.apiUrl, "worldofwarcraft", "PlayerLinks");
 
 let characters: CharacterDto[] = [...mockCharacters];
+
+interface CharacterSearchBody {
+    query?: string;
+    idServer?: number;
+    idAlignment?: number;
+    idDirection?: number;
+    idClass?: number;
+    idRace?: number;
+    idSpecializationClass?: number;
+    minLevel?: number;
+    minIlvl?: number;
+    mainOnly?: boolean;
+    inGuild?: boolean;
+    take?: number;
+    beforeCreationDate?: string;
+    beforePublicId?: string;
+}
+
+function hasCharacterFacet(body: CharacterSearchBody): boolean {
+    return (
+        body.idServer != null ||
+        body.idAlignment != null ||
+        body.idDirection != null ||
+        body.idClass != null ||
+        body.idRace != null ||
+        body.idSpecializationClass != null ||
+        body.minLevel != null ||
+        body.minIlvl != null ||
+        body.mainOnly === true
+    );
+}
+
+function matchesCharacter(character: CharacterDto, body: CharacterSearchBody): boolean {
+    const needle = body.query?.trim().toLowerCase();
+    return (
+        (!needle || character.pseudo.toLowerCase().includes(needle)) &&
+        (body.idServer == null || character.idServer === body.idServer) &&
+        (body.idAlignment == null || character.idAlignment === body.idAlignment) &&
+        (body.idDirection == null || character.idDirection === body.idDirection) &&
+        (body.idClass == null || character.idClass === body.idClass) &&
+        (body.idRace == null || character.idRace === body.idRace) &&
+        (body.idSpecializationClass == null || character.idMainSpecializationClass === body.idSpecializationClass) &&
+        (body.minLevel == null || character.level >= body.minLevel) &&
+        (body.minIlvl == null || character.ilvl >= body.minIlvl) &&
+        (body.mainOnly !== true || character.main) &&
+        (body.inGuild == null || (body.inGuild ? !!character.guildPublicId : !character.guildPublicId))
+    );
+}
 let player = { ...mockPlayerSheet };
 
 /** `?noSheet` in the URL browses as a logged-in visitor who has no player sheet yet. */
@@ -110,12 +159,33 @@ let pendingPosts: GamePostDto[] = [...mockPendingPosts];
 
 const guildHandlers = [
     http.post(`${guildsUrl}/actions/Search`, async ({ request }) => {
-        const { query } = (await request.json()) as { query?: string };
-        const needle = query?.trim().toLowerCase();
-        const items = needle
-            ? mockGuildSummaries.filter((guild) => guild.entitled.toLowerCase().includes(needle))
-            : mockGuildSummaries;
-        return HttpResponse.json({ items, hasMore: false });
+        const body = (await request.json()) as {
+            query?: string;
+            idServer?: number;
+            idAlignment?: number;
+            orientation?: string;
+            minLevel?: number;
+            minMembers?: number;
+            take?: number;
+            beforeCreationDate?: string;
+            beforePublicId?: string;
+        };
+        const needle = body.query?.trim().toLowerCase();
+        const server = mockCharacterOptions.servers.find((item) => item.id === body.idServer)?.entitled;
+        const faction = mockCharacterOptions.alignments.find((item) => item.id === body.idAlignment)?.entitled;
+        const items = mockGuildSummaries.filter((guild) => {
+            const handle = `${guild.entitled}#${guild.discriminator}`.toLowerCase();
+            const matchesQuery = !needle || guild.entitled.toLowerCase().includes(needle) || handle.includes(needle);
+            return (
+                matchesQuery &&
+                (!server || guild.serverName === server) &&
+                (!faction || guild.alignmentName === faction) &&
+                (!body.orientation || guild.orientationName === body.orientation) &&
+                (body.minLevel == null || guild.level >= body.minLevel) &&
+                (body.minMembers == null || guild.memberCount >= body.minMembers)
+            );
+        });
+        return HttpResponse.json(pageByCursor(items, body));
     }),
     http.post(`${guildsUrl}/actions/ListPostable`, () => HttpResponse.json(mockPostableGuilds)),
     http.get(`${guildsUrl}/:publicId`, ({ params }) => {
@@ -466,23 +536,37 @@ export const handlers = [
     http.post(
         gatewayUrl(environment.apiUrl, "worldofwarcraft", "Characters", "actions", "Search"),
         async ({ request }) => {
-            const { query } = (await request.json()) as { query?: string };
-            const needle = query?.trim().toLowerCase();
-            const items = characters
-                .filter((character) => !needle || character.pseudo.toLowerCase().includes(needle))
-                .map(toCharacterSummary);
-            return HttpResponse.json({ items, hasMore: false });
+            const body = (await request.json()) as CharacterSearchBody;
+            const items = characters.filter((character) => matchesCharacter(character, body)).map(toCharacterSummary);
+            return HttpResponse.json(pageByCursor(items, body));
         },
     ),
     http.post(
         gatewayUrl(environment.apiUrl, "worldofwarcraft", "Players", "actions", "Search"),
         async ({ request }) => {
-            const { query } = (await request.json()) as { query?: string };
-            const needle = query?.trim().toLowerCase().split("#")[0];
+            const body = (await request.json()) as CharacterSearchBody;
+            const needle = body.query?.trim().toLowerCase().split("#")[0];
+            const narrowed = hasCharacterFacet(body);
             const items = allPlayerSheets(player)
                 .map(toPlayerSummary)
-                .filter((item) => !needle || item.nickname.toLowerCase().includes(needle));
-            return HttpResponse.json({ items, hasMore: false });
+                .filter((item) => {
+                    const matchesQuery = !needle || item.nickname.toLowerCase().includes(needle);
+                    if (!matchesQuery) {
+                        return false;
+                    }
+                    const owned = characters.filter((character) => character.playerPublicId === item.publicId);
+                    if (!narrowed && body.inGuild == null) {
+                        return true;
+                    }
+                    if (body.inGuild === false) {
+                        const guildless = owned.filter((character) => !character.guildPublicId);
+                        return guildless.some((character) =>
+                            matchesCharacter(character, { ...body, inGuild: undefined, query: undefined }),
+                        );
+                    }
+                    return owned.some((character) => matchesCharacter(character, { ...body, query: undefined }));
+                });
+            return HttpResponse.json(pageByCursor(items, body));
         },
     ),
     http.post(

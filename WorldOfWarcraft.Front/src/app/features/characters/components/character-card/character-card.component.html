@@ -85,8 +85,8 @@
     } @else if (editable()) {
         <a
             class="character-card__guild character-card__guild--found"
-            routerLink="/world-of-warcraft/guilds"
-            [queryParams]="{ found: item.publicId }"
+            routerLink="/world-of-warcraft/search"
+            [queryParams]="{ type: 'guilds', found: item.publicId }"
         >
             <nb-icon icon="plus-circle-outline" />
             <span i18n="@@wow.character.foundGuild">Found a guild</span>

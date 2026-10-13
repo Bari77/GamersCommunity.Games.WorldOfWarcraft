@@ -17,6 +17,18 @@ public sealed class CharacterSearchRequest
 
     public int? MinLevel { get; init; }
 
+    public int? IdRace { get; init; }
+
+    /// <summary>Main specialization row, which is what a character actually plays.</summary>
+    public int? IdSpecializationClass { get; init; }
+
+    public int? MinIlvl { get; init; }
+
+    public bool? MainOnly { get; init; }
+
+    /// <summary>True keeps guilded characters, false keeps characters still looking for a guild.</summary>
+    public bool? InGuild { get; init; }
+
     // Cursor, both parts required together: creation date alone is not unique.
     public DateTime? BeforeCreationDate { get; init; }
     public Guid? BeforePublicId { get; init; }

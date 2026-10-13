@@ -13,11 +13,12 @@ describe("worldOfWarcraftRoutes", () => {
         expect(child("")?.loadComponent).toBeTruthy();
     });
 
-    it("keeps the sheet, directory, and search entry points", () => {
+    it("keeps the sheet and search entry points, and folds the guild directory into search", () => {
         expect(child("sheet")?.loadComponent).toBeTruthy();
         expect(child("players/:publicId")?.loadComponent).toBeTruthy();
         expect(child("search")?.loadComponent).toBeTruthy();
-        expect(child("guilds")?.loadComponent).toBeTruthy();
+        expect(child("guilds")?.redirectTo).toBeTruthy();
+        expect(child("guilds")?.pathMatch).toBe("full");
         expect(child("guilds/:publicId")?.loadComponent).toBeTruthy();
     });
 });

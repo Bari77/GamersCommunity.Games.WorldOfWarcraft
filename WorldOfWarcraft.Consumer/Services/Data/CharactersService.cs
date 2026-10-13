@@ -170,6 +170,23 @@ public class CharactersService(WorldOfWarcraftDbContext context, IOptions<AppSet
         if (request.MinLevel is { } minLevel)
             query = query.Where(c => c.Level >= minLevel);
 
+        if (request.IdRace is { } idRace)
+            query = query.Where(c => c.IdRace == idRace);
+
+        if (request.IdSpecializationClass is { } idSpecializationClass)
+            query = query.Where(c => c.IdMainSpecializationClass == idSpecializationClass);
+
+        if (request.MinIlvl is { } minIlvl)
+            query = query.Where(c => c.Ilvl >= minIlvl);
+
+        if (request.MainOnly is true)
+            query = query.Where(c => c.Main);
+
+        if (request.InGuild is true)
+            query = query.Where(c => c.GuildMembers.Any());
+        else if (request.InGuild is false)
+            query = query.Where(c => !c.GuildMembers.Any());
+
         if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
         {
             query = query.Where(c =>

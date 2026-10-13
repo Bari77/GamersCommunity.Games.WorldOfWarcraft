@@ -155,10 +155,10 @@ export class GuildSheetComponent implements OnInit {
         void this.store.withdrawApplication();
     }
 
-    /** The sheet no longer exists once disbanded, so the visitor lands back on the directory. */
+    /** The sheet no longer exists once disbanded, so the visitor lands back on the guild search. */
     protected async onDisband(confirmation: string): Promise<void> {
         if (await this.store.disband(confirmation)) {
-            await this.router.navigate([`${WOW_GAME_URL}/guilds`]);
+            await this.router.navigate([`${WOW_GAME_URL}/search`], { queryParams: { type: "guilds" } });
         }
     }
 

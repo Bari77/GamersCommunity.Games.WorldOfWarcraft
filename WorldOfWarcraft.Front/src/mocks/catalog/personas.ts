@@ -142,6 +142,44 @@ export const MOCK_PERSONAS: MockPersona[] = [
     },
 ];
 
+/** Older cast so a dedicated search tab has a second page. Dates stay behind the handwritten sheets. */
+const SEARCH_FILL_NAMES = [
+    "Brialla",
+    "Corvyn",
+    "Duskara",
+    "Elandor",
+    "Faelith",
+    "Glimric",
+    "Harrowen",
+    "Iskara",
+    "Jorveth",
+    "Kelthas",
+    "Lirien",
+    "Morvane",
+    "Nythera",
+    "Oswin",
+    "Pyrelle",
+    "Quenra",
+    "Ralvek",
+    "Sableth",
+    "Thrynn",
+    "Ulvara",
+    "Veyra",
+    "Wylorn",
+    "Xerathis",
+    "Ysolda",
+];
+
+for (const [index, nickname] of SEARCH_FILL_NAMES.entries()) {
+    MOCK_PERSONAS.push({
+        id: nickname,
+        platformUserPublicId: mockUuid(`wow:platform:${nickname}`),
+        playerPublicId: mockUuid(`wow:player:${nickname}`),
+        nickname,
+        discriminator: String(2001 + index).padStart(4, "0"),
+    });
+}
+
 export const DEFAULT_PERSONA_ID = "Aelindra";
 
 export function persona(nickname: string): MockPersona {

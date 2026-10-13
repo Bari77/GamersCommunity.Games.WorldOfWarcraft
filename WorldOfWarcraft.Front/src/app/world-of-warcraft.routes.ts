@@ -56,6 +56,20 @@ const wowRemoteProviders = [
     ClassesStore,
 ];
 
+/** Keeps old directory links working, including `?found=` from a character card. */
+function redirectToSearch(type: string) {
+    return ({ queryParams }: { queryParams: Record<string, unknown> }) => {
+        const params = new URLSearchParams();
+        params.set("type", type);
+        for (const [key, value] of Object.entries(queryParams)) {
+            if (key !== "type" && typeof value === "string" && value.length > 0) {
+                params.set(key, value);
+            }
+        }
+        return `${WOW_GAME_URL}/search?${params.toString()}`;
+    };
+}
+
 export const worldOfWarcraftRoutes: Routes = [
     {
         path: "",
@@ -90,11 +104,8 @@ export const worldOfWarcraftRoutes: Routes = [
             },
             {
                 path: "guilds",
-                data: { breadcrumb: $localize`:@@wow.breadcrumb.guilds:Guilds` },
-                loadComponent: () =>
-                    import("@features/guilds/pages/guild-directory/guild-directory.component").then(
-                        (m) => m.GuildDirectoryComponent,
-                    ),
+                pathMatch: "full",
+                redirectTo: redirectToSearch("guilds"),
             },
             {
                 path: "guilds/:publicId",

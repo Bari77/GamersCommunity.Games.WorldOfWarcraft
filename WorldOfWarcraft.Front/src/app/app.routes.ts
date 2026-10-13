@@ -15,8 +15,21 @@ export const routes: Routes = [
                     label: $localize`:@@wow.playground.nav.sheet:My profile`,
                 },
                 {
-                    path: `${WOW_GAME_URL}/guilds`,
+                    path: `${WOW_GAME_URL}/search`,
+                    queryParams: { type: "guilds" },
+                    activePrefix: `${WOW_GAME_URL}/guilds`,
                     label: $localize`:@@wow.playground.nav.guilds:Guilds`,
+                },
+                {
+                    path: `${WOW_GAME_URL}/search`,
+                    queryParams: { type: "characters" },
+                    label: $localize`:@@wow.playground.nav.characters:Characters`,
+                },
+                {
+                    path: `${WOW_GAME_URL}/search`,
+                    queryParams: { type: "players" },
+                    activePrefix: `${WOW_GAME_URL}/players`,
+                    label: $localize`:@@wow.playground.nav.players:Players`,
                 },
             ],
             gameSearch: {

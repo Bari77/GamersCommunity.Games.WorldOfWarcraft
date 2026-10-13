@@ -19,7 +19,15 @@ export const EMPTY_CRITERIA: SearchCriteria = {
     idServer: null,
     idAlignment: null,
     idClass: null,
+    idRace: null,
+    idDirection: null,
+    idSpecializationClass: null,
     minLevel: null,
+    minIlvl: null,
+    orientation: null,
+    minMembers: null,
+    mainOnly: false,
+    inGuild: null,
 };
 
 /** Rows per type on the overview, which hands over to a dedicated tab rather than paginating. */
@@ -235,6 +243,9 @@ export class GlobalSearchStore {
             ...(query ? { query } : {}),
             ...(criteria.idServer !== null ? { idServer: criteria.idServer } : {}),
             ...(criteria.idAlignment !== null ? { idAlignment: criteria.idAlignment } : {}),
+            ...(criteria.orientation ? { orientation: criteria.orientation } : {}),
+            ...(criteria.minLevel !== null ? { minLevel: criteria.minLevel } : {}),
+            ...(criteria.minMembers !== null ? { minMembers: criteria.minMembers } : {}),
         };
     }
 
@@ -245,7 +256,15 @@ export class GlobalSearchStore {
             ...(criteria.idServer !== null ? { idServer: criteria.idServer } : {}),
             ...(criteria.idAlignment !== null ? { idAlignment: criteria.idAlignment } : {}),
             ...(criteria.idClass !== null ? { idClass: criteria.idClass } : {}),
+            ...(criteria.idRace !== null ? { idRace: criteria.idRace } : {}),
+            ...(criteria.idDirection !== null ? { idDirection: criteria.idDirection } : {}),
+            ...(criteria.idSpecializationClass !== null
+                ? { idSpecializationClass: criteria.idSpecializationClass }
+                : {}),
             ...(criteria.minLevel !== null ? { minLevel: criteria.minLevel } : {}),
+            ...(criteria.minIlvl !== null ? { minIlvl: criteria.minIlvl } : {}),
+            ...(criteria.mainOnly ? { mainOnly: true } : {}),
+            ...(criteria.inGuild !== null ? { inGuild: criteria.inGuild } : {}),
         };
     }
 
@@ -254,6 +273,16 @@ export class GlobalSearchStore {
         return {
             ...(query ? { query } : {}),
             ...(criteria.idServer !== null ? { idServer: criteria.idServer } : {}),
+            ...(criteria.idAlignment !== null ? { idAlignment: criteria.idAlignment } : {}),
+            ...(criteria.idClass !== null ? { idClass: criteria.idClass } : {}),
+            ...(criteria.idRace !== null ? { idRace: criteria.idRace } : {}),
+            ...(criteria.idDirection !== null ? { idDirection: criteria.idDirection } : {}),
+            ...(criteria.idSpecializationClass !== null
+                ? { idSpecializationClass: criteria.idSpecializationClass }
+                : {}),
+            ...(criteria.minLevel !== null ? { minLevel: criteria.minLevel } : {}),
+            ...(criteria.minIlvl !== null ? { minIlvl: criteria.minIlvl } : {}),
+            ...(criteria.inGuild !== null ? { inGuild: criteria.inGuild } : {}),
         };
     }
 }

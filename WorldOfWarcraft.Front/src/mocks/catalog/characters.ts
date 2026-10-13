@@ -956,6 +956,50 @@ export const mockCharacters: CharacterDto[] = [
     }),
 ];
 
+const FILL_BUILDS: {
+    race: [number, string];
+    server: [number, string];
+    direction: [number, string];
+    alignment: [number, string];
+    klass: [number, string];
+    mainSpec: [number, string];
+    guild: GuildBind | null;
+}[] = [
+    { race: [1, "human"], server: [1, "hyjal"], direction: [3, "dps"], alignment: [1, "alliance"], klass: [1, "warrior"], mainSpec: [1, "arms"], guild: guardians("member") },
+    { race: [4, "night_elf"], server: [3, "elune"], direction: [2, "heal"], alignment: [1, "alliance"], klass: [10, "druid"], mainSpec: [31, "restoration"], guild: moonwell("member") },
+    { race: [2, "orc"], server: [4, "archimonde"], direction: [1, "tank"], alignment: [2, "horde"], klass: [1, "warrior"], mainSpec: [3, "protection"], guild: blackrock("member") },
+    { race: [9, "blood_elf"], server: [2, "dalaran"], direction: [3, "dps"], alignment: [2, "horde"], klass: [8, "mage"], mainSpec: [17, "fire"], guild: ashen("member") },
+    { race: [6, "tauren"], server: [2, "dalaran"], direction: [3, "dps"], alignment: [2, "horde"], klass: [3, "hunter"], mainSpec: [7, "beast_mastery"], guild: null },
+    { race: [29, "void_elf"], server: [1, "hyjal"], direction: [3, "dps"], alignment: [1, "alliance"], klass: [4, "rogue"], mainSpec: [12, "subtlety"], guild: stormwatch("member") },
+    { race: [5, "undead"], server: [4, "archimonde"], direction: [3, "dps"], alignment: [2, "horde"], klass: [9, "warlock"], mainSpec: [21, "destruction"], guild: emberhold("member") },
+    { race: [3, "dwarf"], server: [3, "elune"], direction: [2, "heal"], alignment: [1, "alliance"], klass: [2, "paladin"], mainSpec: [4, "holy"], guild: null },
+];
+
+for (const [index, who] of MOCK_PERSONAS.filter(
+    (persona) => !mockCharacters.some((item) => item.playerPublicId === persona.playerPublicId),
+).entries()) {
+    const build = FILL_BUILDS[index % FILL_BUILDS.length];
+    mockCharacters.push(
+        character({
+            id: cid(`fill:${who.nickname}`),
+            player: who.nickname,
+            pseudo: who.nickname,
+            level: 60 + (index % 21),
+            ilvl: 280 + index * 12,
+            achievement: 2000 + index * 80,
+            main: true,
+            created: new Date(Date.UTC(2023, index % 12, 1 + (index % 27), 15, 0, 0)).toISOString(),
+            race: build.race,
+            server: build.server,
+            direction: build.direction,
+            alignment: build.alignment,
+            klass: build.klass,
+            mainSpec: build.mainSpec,
+            ...(build.guild ? { guild: build.guild } : {}),
+        }),
+    );
+}
+
 function sheet(opts: SheetSeed): PlayerSheetDto {
     const who = persona(opts.who);
     return {
@@ -1235,6 +1279,22 @@ const SHEET_SEEDS: SheetSeed[] = [
         },
     },
 ];
+
+const seeded = new Set(SHEET_SEEDS.map((seed) => seed.who));
+for (const [index, who] of MOCK_PERSONAS.entries()) {
+    if (seeded.has(who.nickname)) {
+        continue;
+    }
+    SHEET_SEEDS.push({
+        who: who.nickname,
+        presentationIrl: "Evenings and weekends, happy to fill a key.",
+        presentationIg: "Still gearing, looking for a steady group.",
+        nbMount: 10 + index,
+        successPoints: 800 + index * 35,
+        creationDate: new Date(Date.UTC(2023, index % 12, 1 + (index % 27), 18, 0, 0)).toISOString(),
+        guild: null,
+    });
+}
 
 if (SHEET_SEEDS.length !== MOCK_PERSONAS.length) {
     throw new Error(`WoW mock sheet seeds (${SHEET_SEEDS.length}) must match personas (${MOCK_PERSONAS.length}).`);

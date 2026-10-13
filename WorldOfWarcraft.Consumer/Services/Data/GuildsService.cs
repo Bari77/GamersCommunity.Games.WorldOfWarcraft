@@ -242,6 +242,15 @@ public class GuildsService(WorldOfWarcraftDbContext context, IGuildWhispers whis
         if (request.IdAlignment is { } idAlignment)
             query = query.Where(g => g.IdLeaderNavigation.IdAlignment == idAlignment);
 
+        if (!string.IsNullOrWhiteSpace(request.Orientation))
+            query = query.Where(g => g.IdOrientationNavigation.Entitled == request.Orientation);
+
+        if (request.MinLevel is { } minLevel)
+            query = query.Where(g => g.Level >= minLevel);
+
+        if (request.MinMembers is { } minMembers)
+            query = query.Where(g => g.GuildMembers.Count >= minMembers);
+
         if (request.BeforePublicId is { } beforePublicId && request.BeforeCreationDate is { } beforeDate)
         {
             query = query.Where(g =>
