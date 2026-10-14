@@ -4,6 +4,17 @@ import { GuildMemberDto } from "@features/guilds/dto/guild.dto";
 import { GuildSummaryDto } from "@features/guilds/dto/guild-summary.dto";
 import { GuildSheetDto } from "@features/guilds/dto/guild-sheet.dto";
 import { mockCharacters } from "./characters";
+import {
+    ASHEN_CREST,
+    BLACKROCK_CREST,
+    EMBERHOLD_CREST,
+    GUARDIANS_CREST,
+    MOONWELL_CREST,
+    mockCrest,
+    mockRandom,
+    pickOne,
+    STORMWATCH_CREST,
+} from "./guild-crests";
 import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
 import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
 
@@ -54,14 +65,7 @@ export const mockGuildSheet: GuildSheetDto = {
     idServer: 1,
     serverName: "hyjal",
     orientationName: "pvpe",
-    crest: {
-        emblem: 42,
-        emblemColor: "#f0e6c8",
-        border: 3,
-        borderColor: "#c8a95a",
-        backgroundColor: "#1e2a4a",
-        faction: "alliance",
-    },
+    crest: GUARDIANS_CREST,
     creationDate: new Date("2024-11-02T18:00:00Z").toISOString(),
     memberCount: 4,
     viewerRank: "leader",
@@ -103,14 +107,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         sentence: "Casual PvP, Horde side.",
         alignmentName: "horde",
         orientationName: "pvp",
-        crest: {
-            emblem: 7,
-            emblemColor: "#e8c23a",
-            border: 1,
-            borderColor: "#7a1414",
-            backgroundColor: "#3c0d0d",
-            faction: "horde",
-        },
+        crest: BLACKROCK_CREST,
     },
     {
         publicId: MOONWELL_ID,
@@ -123,14 +120,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         sentence: "Social PvE, Alliance, Elune.",
         alignmentName: "alliance",
         orientationName: "pve",
-        crest: {
-            emblem: 19,
-            emblemColor: "#b8e0ff",
-            border: 2,
-            borderColor: "#6ec8ff",
-            backgroundColor: "#123348",
-            faction: "alliance",
-        },
+        crest: MOONWELL_CREST,
     },
     {
         publicId: ASHEN_ID,
@@ -143,14 +133,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         sentence: "Heroic raids, Horde, Dalaran.",
         alignmentName: "horde",
         orientationName: "pvpe",
-        crest: {
-            emblem: 11,
-            emblemColor: "#d9b38c",
-            border: 4,
-            borderColor: "#5c4030",
-            backgroundColor: "#2a1c14",
-            faction: "horde",
-        },
+        crest: ASHEN_CREST,
     },
     {
         publicId: STORMWATCH_ID,
@@ -163,14 +146,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         sentence: "Alliance heroic + M+, Hyjal evenings.",
         alignmentName: "alliance",
         orientationName: "pvpe",
-        crest: {
-            emblem: 28,
-            emblemColor: "#e8f0ff",
-            border: 2,
-            borderColor: "#7a9cc8",
-            backgroundColor: "#1a2438",
-            faction: "alliance",
-        },
+        crest: STORMWATCH_CREST,
     },
     {
         publicId: EMBERHOLD_ID,
@@ -183,14 +159,7 @@ export const mockGuildSummaries: GuildSummaryDto[] = [
         sentence: "Horde progress raids, Archimonde.",
         alignmentName: "horde",
         orientationName: "pve",
-        crest: {
-            emblem: 15,
-            emblemColor: "#ffb060",
-            border: 3,
-            borderColor: "#a04020",
-            backgroundColor: "#2c1408",
-            faction: "horde",
-        },
+        crest: EMBERHOLD_CREST,
     },
 ];
 
@@ -296,30 +265,74 @@ const FILL_GUILDS = [
     "Last Lantern",
 ];
 
-const FILL_SERVERS = ["hyjal", "dalaran", "elune", "archimonde"] as const;
-const FILL_ORIENTATIONS = ["pve", "pvp", "pvpe"] as const;
+/**
+ * Alliance / Horde seats per realm for the fill guilds. Together with the handcrafted guilds every
+ * realm hosts both factions and the whole directory lands on an even split.
+ */
+const FILL_REALM_SEATS: Record<string, [alliance: number, horde: number]> = {
+    hyjal: [4, 5],
+    dalaran: [5, 4],
+    elune: [4, 5],
+    archimonde: [5, 4],
+};
+
+const FILL_ORIENTATIONS = ["pve", "pve", "pve", "pvpe", "pvpe", "pvpe", "pvp", "pvp"] as const;
+
+const FILL_SENTENCES = [
+    "Chill raiding twice a week, no drama, lots of bad jokes on voice.",
+    "AOTC every tier, CE when the stars align. Wed/Thu 20:45-23:30.",
+    "Mythic+ crew pushing 12s and above. Bring your own snacks.",
+    "Family guild since Wrath. Alts welcome, parents with toddlers too.",
+    "Rated BGs on Friday nights, world PvP whenever someone pings.",
+    "Looking for a resto shaman and a ranged DPS for heroic progress!",
+    "Small group of friends, we level alts and farm mounts.",
+    "Semi-hardcore. Logs are checked, but we still laugh at wipes.",
+    "French / English speaking, raid leader is patient (most days).",
+    "Weekend warriors: Saturday heroic, Sunday keys.",
+    "Old school RP-PvE guild. Tavern nights every first Friday.",
+    "Recruiting all roles for next season, apply on Discord.",
+    "Transmog addicts and pet battle enjoyers.",
+    "Cutting edge focused, 3 nights, attendance matters.",
+    "We just reformed after a break, rebuilding the roster from scratch.",
+    "Arena 2v2/3v3 practice, coaching for newer players.",
+    "Mostly night owls, raids start at 22:00 server time.",
+    "Achievement hunters. Yes, we still do old raids for the mounts.",
+];
+
+const randomSeats = mockRandom("wow:fill-guild-seats");
+const fillSeats = Object.entries(FILL_REALM_SEATS)
+    .flatMap(([serverName, [alliance, horde]]) => [
+        ...Array.from({ length: alliance }, () => ({ serverName, faction: "alliance" })),
+        ...Array.from({ length: horde }, () => ({ serverName, faction: "horde" })),
+    ])
+    .map((seat) => ({ seat, order: randomSeats() }))
+    .sort((left, right) => left.order - right.order)
+    .map(({ seat }) => seat);
+
+if (fillSeats.length !== FILL_GUILDS.length) {
+    throw new Error(`Fill guild seats (${fillSeats.length}) must match fill guilds (${FILL_GUILDS.length})`);
+}
+
+const FILL_START = Date.UTC(2019, 0, 1);
+const FILL_END = Date.UTC(2026, 8, 30);
 
 for (const [index, entitled] of FILL_GUILDS.entries()) {
-    const faction = index % 2 === 0 ? "alliance" : "horde";
+    const { serverName, faction } = fillSeats[index];
+    const random = mockRandom(`wow:fill-guild:${entitled}`);
+    const created = new Date(FILL_START + Math.floor(random() * (FILL_END - FILL_START)));
+    created.setUTCHours(8 + Math.floor(random() * 16), Math.floor(random() * 60), 0, 0);
     const summary: GuildSummaryDto = {
         publicId: mockUuid(`wow:guild:${entitled}`),
         entitled,
-        discriminator: String(1100 + index).padStart(4, "0"),
-        level: 6 + (index % 22),
-        creationDate: new Date(Date.UTC(2023, index % 12, 1 + (index % 27), 16, 0, 0)).toISOString(),
-        serverName: FILL_SERVERS[index % FILL_SERVERS.length],
-        memberCount: 5 + (index % 28),
-        sentence: null,
+        discriminator: String(1 + Math.floor(random() * 9998)).padStart(4, "0"),
+        level: 1 + Math.floor(random() * 30),
+        creationDate: created.toISOString(),
+        serverName,
+        memberCount: Math.round(3 + random() ** 2.2 * 220),
+        sentence: random() < 0.2 ? null : pickOne(random, FILL_SENTENCES),
         alignmentName: faction,
-        orientationName: FILL_ORIENTATIONS[index % FILL_ORIENTATIONS.length],
-        crest: {
-            emblem: (index % 40) + 1,
-            emblemColor: faction === "alliance" ? "#d7e6ff" : "#ffd0a0",
-            border: (index % 5) + 1,
-            borderColor: faction === "alliance" ? "#6e8cff" : "#c45a2a",
-            backgroundColor: faction === "alliance" ? "#152038" : "#2a120c",
-            faction,
-        },
+        orientationName: pickOne(random, FILL_ORIENTATIONS),
+        crest: mockCrest(entitled, faction),
     };
     mockGuildSummaries.push(summary);
     const sheet = extraSheet(summary, []);

@@ -6,6 +6,15 @@ import { SpecializationClassOptionDto } from "@features/characters/dto/specializ
 import { PlayerSummaryDto } from "@features/players/dto/player-summary.dto";
 import { PlayerSheetDto } from "@features/players/dto/player-sheet.dto";
 import { GuildCrestDto } from "@shared/models/guild-crest.dto";
+import {
+    ASHEN_CREST,
+    BLACKROCK_CREST,
+    EMBERHOLD_CREST,
+    GUARDIANS_CREST,
+    MOONWELL_CREST,
+    mockRandom,
+    STORMWATCH_CREST,
+} from "./guild-crests";
 import { characterPublicId, mockUuid, WOW_GUILD_IDS } from "./ids";
 import { MOCK_PERSONAS, mockPortraitUrl, persona } from "./personas";
 import { getSessionPersona } from "./session";
@@ -22,60 +31,6 @@ const MOONWELL_ID = WOW_GUILD_IDS.moonwell;
 const ASHEN_ID = WOW_GUILD_IDS.ashen;
 const STORMWATCH_ID = WOW_GUILD_IDS.stormwatch;
 const EMBERHOLD_ID = WOW_GUILD_IDS.emberhold;
-
-const GUARDIANS_CREST: GuildCrestDto = {
-    emblem: 42,
-    emblemColor: "#f0e6c8",
-    border: 3,
-    borderColor: "#c8a95a",
-    backgroundColor: "#1e2a4a",
-    faction: "alliance",
-};
-
-const BLACKROCK_CREST: GuildCrestDto = {
-    emblem: 7,
-    emblemColor: "#e8c23a",
-    border: 1,
-    borderColor: "#7a1414",
-    backgroundColor: "#3c0d0d",
-    faction: "horde",
-};
-
-const MOONWELL_CREST: GuildCrestDto = {
-    emblem: 19,
-    emblemColor: "#b8e0ff",
-    border: 2,
-    borderColor: "#6ec8ff",
-    backgroundColor: "#123348",
-    faction: "alliance",
-};
-
-const ASHEN_CREST: GuildCrestDto = {
-    emblem: 11,
-    emblemColor: "#d9b38c",
-    border: 4,
-    borderColor: "#5c4030",
-    backgroundColor: "#2a1c14",
-    faction: "horde",
-};
-
-const STORMWATCH_CREST: GuildCrestDto = {
-    emblem: 28,
-    emblemColor: "#e8f0ff",
-    border: 2,
-    borderColor: "#7a9cc8",
-    backgroundColor: "#1a2438",
-    faction: "alliance",
-};
-
-const EMBERHOLD_CREST: GuildCrestDto = {
-    emblem: 15,
-    emblemColor: "#ffb060",
-    border: 3,
-    borderColor: "#a04020",
-    backgroundColor: "#2c1408",
-    faction: "horde",
-};
 
 export const mockCharacterOptions: CharacterOptionsDto = {
     maxLevel: 120,
@@ -888,7 +843,7 @@ export const mockCharacters: CharacterDto[] = [
         level: 80,
         ilvl: 602,
         achievement: 8800,
-        sentence: "Unholy vibes on a frost mage — do not ask.",
+        sentence: "Unholy vibes on a frost mage â€” do not ask.",
         main: true,
         created: "2025-08-07T21:00:00Z",
         race: [5, "undead"],
@@ -1043,16 +998,20 @@ for (const [index, who] of MOCK_PERSONAS.filter(
     (persona) => !mockCharacters.some((item) => item.playerPublicId === persona.playerPublicId),
 ).entries()) {
     const build = FILL_BUILDS[index % FILL_BUILDS.length];
+    const random = mockRandom(`wow:fill-character:${who.nickname}`);
+    const level = random() < 0.7 ? 80 : 60 + Math.floor(random() * 20);
     mockCharacters.push(
         character({
             id: cid(`fill:${who.nickname}`),
             player: who.nickname,
             pseudo: who.nickname,
-            level: 60 + (index % 21),
-            ilvl: 280 + index * 12,
-            achievement: 2000 + index * 80,
+            level,
+            ilvl: level === 80 ? 560 + Math.floor(random() * 100) : 380 + Math.floor(random() * 120),
+            achievement: 800 + Math.floor(random() ** 1.5 * 24000),
             main: true,
-            created: new Date(Date.UTC(2023, index % 12, 1 + (index % 27), 15, 0, 0)).toISOString(),
+            created: new Date(
+                Date.UTC(2019, 0, 1) + Math.floor(random() * (Date.UTC(2026, 6, 1) - Date.UTC(2019, 0, 1))),
+            ).toISOString(),
             race: build.race,
             server: build.server,
             direction: build.direction,
