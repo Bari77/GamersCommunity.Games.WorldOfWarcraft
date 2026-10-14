@@ -5,7 +5,7 @@ import { provideGameRemoteKernel } from "@bari77/gc-sdk";
 import { WOW_GAME_ID, WOW_GAME_URL } from "@core/constants/game.constants";
 import { PlayersService } from "@features/players/services/players.service";
 import { environment } from "../environments/environment";
-import { providePlaygroundUi } from "./playground/provide-playground-ui";
+import { providePlaygroundUi } from "@bari77/gc-playground/ui";
 import { routes } from "./app.routes";
 
 export const appConfig: ApplicationConfig = {

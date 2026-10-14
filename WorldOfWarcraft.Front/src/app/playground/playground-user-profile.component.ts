@@ -3,12 +3,13 @@ import { RouterLink } from "@angular/router";
 import { WOW_GAME_URL } from "@core/constants/game.constants";
 import { NbButtonModule, NbCardModule } from "@nebular/theme";
 import { mockPortraitUrl, personaByPlatformId } from "../../mocks/catalog/personas";
+import { PlaygroundSessionComponent } from "./playground-session.component";
 
 /** Stand-in for the Platform community profile while the game runs on its own playground. */
 @Component({
     standalone: true,
     selector: "wow-playground-user-profile",
-    imports: [RouterLink, NbButtonModule, NbCardModule],
+    imports: [RouterLink, NbButtonModule, NbCardModule, PlaygroundSessionComponent],
     templateUrl: "./playground-user-profile.component.html",
     styleUrl: "./playground-user-profile.component.scss",
 })

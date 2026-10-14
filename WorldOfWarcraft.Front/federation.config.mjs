@@ -60,6 +60,8 @@ export default withNativeFederation({
         // Ships raw .ts: the Angular compiler must see it, the federation bundler cannot.
         "@bari77/gc-sdk",
         "@bari77/gc-widgets",
+        "@bari77/gc-playground",
+        /^@bari77\/gc-playground\//,
         // SCSS-only package — bundled via angular.json styles, not federation.
         "@bari77/gc-theme",
         "rxjs/ajax",
