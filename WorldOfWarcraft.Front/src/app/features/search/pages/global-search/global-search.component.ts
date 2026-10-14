@@ -17,7 +17,14 @@ import { GuildsService } from "@features/guilds/services/guilds.service";
 import { SearchHit } from "@features/search/models/search-hit.model";
 import { SearchCriteria } from "@features/search/models/search-criteria.model";
 import { GlobalSearchStore, SearchScope } from "@features/search/stores/global-search.store";
-import { NbButtonModule, NbCardModule, NbFormFieldModule, NbIconModule, NbInputModule, NbSelectModule } from "@nebular/theme";
+import {
+    NbButtonModule,
+    NbCardModule,
+    NbFormFieldModule,
+    NbIconModule,
+    NbInputModule,
+    NbSelectModule,
+} from "@nebular/theme";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GuildCrestComponent } from "@shared/components/guild-crest/guild-crest.component";
 import { WowIconComponent } from "@shared/components/wow-icon/wow-icon.component";
@@ -116,7 +123,6 @@ export class GlobalSearchComponent {
     /** Bound to the in-page field, which only commits to the URL on submit. */
     protected readonly term = signal("");
     protected readonly moreOpen = signal(false);
-    private readonly moreDismissed = signal(false);
     protected readonly creating = signal(false);
     protected readonly createErrorCode = signal<string | null>(null);
     protected readonly formOpen = signal(false);
@@ -219,6 +225,7 @@ export class GlobalSearchComponent {
             : [],
     );
 
+    private readonly moreDismissed = signal(false);
     private readonly characters = inject(CharactersService);
     private readonly applications = inject(GuildApplicationsService);
     private readonly guilds = inject(GuildsService);
@@ -321,7 +328,10 @@ export class GlobalSearchComponent {
         const stillValid =
             idClass === null ||
             spec === null ||
-            this.options.value().specializationsForClass(idClass).some((item) => item.id === spec);
+            this.options
+                .value()
+                .specializationsForClass(idClass)
+                .some((item) => item.id === spec);
         this.patchCriteria({
             class: idClass,
             ...(stillValid ? {} : { spec: null }),

@@ -3,7 +3,6 @@ import { DecisionPromptComponent, SkeletonTextComponent } from "@bari77/gc-ui";
 import { CreateSheetWallComponent } from "@shared/components/create-sheet-wall/create-sheet-wall.component";
 import { GameMembershipStore } from "@core/stores/game-membership.store";
 import { HomeLatestCharactersComponent } from "@features/home/components/home-latest-characters/home-latest-characters.component";
-import { HomeLatestPlayersComponent } from "@features/home/components/home-latest-players/home-latest-players.component";
 import { HomeLatestGuildsComponent } from "@features/home/components/home-latest-guilds/home-latest-guilds.component";
 import { LfgChatComponent } from "@features/lfg/components/lfg-chat/lfg-chat.component";
 import { HomeFeedStore } from "@features/home/stores/home-feed.store";
@@ -15,7 +14,6 @@ import { NbCardModule } from "@nebular/theme";
     imports: [
         NbCardModule,
         LfgChatComponent,
-        HomeLatestPlayersComponent,
         HomeLatestCharactersComponent,
         HomeLatestGuildsComponent,
         CreateSheetWallComponent,

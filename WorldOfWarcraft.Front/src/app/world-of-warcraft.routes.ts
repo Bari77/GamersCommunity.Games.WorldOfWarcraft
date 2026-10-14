@@ -58,7 +58,7 @@ const wowRemoteProviders = [
 
 /** Keeps old directory links working, including `?found=` from a character card. */
 function redirectToSearch(type: string) {
-    return ({ queryParams }: { queryParams: Record<string, unknown> }) => {
+    return ({ queryParams }: { queryParams: Record<string, unknown> }): string => {
         const params = new URLSearchParams();
         params.set("type", type);
         for (const [key, value] of Object.entries(queryParams)) {

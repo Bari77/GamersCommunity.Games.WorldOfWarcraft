@@ -10,17 +10,6 @@
 
     <div class="wow-home__grid" [attr.aria-busy]="feedLoading() ? 'true' : null">
         <nb-card class="wow-home__rail">
-            <nb-card-header i18n="@@wow.home.players">Latest player</nb-card-header>
-            <nb-card-body>
-                @if (feedLoading()) {
-                    <gc-skeleton-text [lines]="2" lineHeight="1.1rem" />
-                } @else if (store.feed.value(); as feed) {
-                    <wow-home-latest-players [players]="feed.latestPlayers" />
-                }
-            </nb-card-body>
-        </nb-card>
-
-        <nb-card class="wow-home__rail">
             <nb-card-header i18n="@@wow.home.characters">Latest characters</nb-card-header>
             <nb-card-body>
                 @if (feedLoading()) {
