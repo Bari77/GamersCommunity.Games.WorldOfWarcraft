@@ -23,18 +23,13 @@ export const routes: Routes = [
                 {
                     path: `${WOW_GAME_URL}/search`,
                     queryParams: { type: "characters" },
-                    label: $localize`:@@wow.playground.nav.characters:Characters`,
-                },
-                {
-                    path: `${WOW_GAME_URL}/search`,
-                    queryParams: { type: "players" },
                     activePrefix: `${WOW_GAME_URL}/players`,
-                    label: $localize`:@@wow.playground.nav.players:Players`,
+                    label: $localize`:@@wow.playground.nav.characters:Characters`,
                 },
             ],
             gameSearch: {
                 path: `${WOW_GAME_URL}/search`,
-                label: $localize`:@@wow.playground.search:Search a character, a player or a guild`,
+                label: $localize`:@@wow.playground.search:Search a character or a guild`,
             },
         },
         loadChildren: () => import("./world-of-warcraft.routes").then((m) => m.worldOfWarcraftRoutes),

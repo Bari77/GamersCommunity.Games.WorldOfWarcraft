@@ -4,7 +4,7 @@
             <div>
                 <h1 class="search__title gc-display" i18n="@@wow.search.title">Search</h1>
                 <p class="search__subtitle" i18n="@@wow.search.subtitle">
-                    Find a guild, a character or a player. Type a full handle such as Name#1234 to jump straight to it.
+                    Find a guild or a character. Type a full handle such as Name#1234 to jump straight to it.
                 </p>
             </div>
 
@@ -59,17 +59,6 @@
                 >
                     <nb-icon icon="person-outline" />
                     <span i18n="@@wow.search.tab.characters">Characters</span>
-                </button>
-                <button
-                    class="search__tab"
-                    nbButton
-                    size="small"
-                    [status]="scope() === 'players' ? 'primary' : 'basic'"
-                    [ghost]="scope() !== 'players'"
-                    (click)="setScope('players')"
-                >
-                    <nb-icon icon="people-outline" />
-                    <span i18n="@@wow.search.tab.players">Players</span>
                 </button>
             </nav>
 
@@ -170,7 +159,7 @@
                         }
                     </nb-form-field>
 
-                    @if (showsGuilds() && !showsCharacterOrPlayer()) {
+                    @if (showsGuilds() && !showsCharacters()) {
                         <nb-form-field
                             class="search__field"
                             [class.search__field--set]="store.criteria().orientation !== null"
@@ -206,7 +195,7 @@
                         </nb-form-field>
                     }
 
-                    @if (showsCharacterOrPlayer()) {
+                    @if (showsCharacters()) {
                         <nb-form-field
                             class="search__field"
                             [class.search__field--set]="store.criteria().idClass !== null"
@@ -340,7 +329,7 @@
 
                 @if (showMore()) {
                     <div class="search__row">
-                        @if (showsGuilds() && showsCharacterOrPlayer()) {
+                        @if (showsGuilds() && showsCharacters()) {
                             <nb-form-field
                                 class="search__field"
                                 [class.search__field--set]="store.criteria().orientation !== null"
@@ -399,7 +388,7 @@
                             </nb-form-field>
                         }
 
-                        @if (showsCharacterOrPlayer()) {
+                        @if (showsCharacters()) {
                             <nb-form-field
                                 class="search__field"
                                 [class.search__field--set]="store.criteria().idRace !== null"
@@ -807,49 +796,6 @@
                                     {{ character.guildHandle }}
                                 </a>
                             }
-                        </li>
-                    }
-                </ul>
-            </section>
-        }
-
-        @if (showsPlayers() && store.players().length > 0) {
-            <section class="search__group">
-                <header class="search__groupHead">
-                    <h2 class="search__groupTitle gc-display" i18n="@@wow.search.group.players">Players</h2>
-                    @if (scope() === "all") {
-                        <button nbButton ghost size="small" status="basic" (click)="setScope('players')">
-                            <span i18n="@@wow.search.seeAll">See all</span>
-                        </button>
-                    }
-                </header>
-
-                <ul class="search__results">
-                    @for (player of store.players(); track player.publicId) {
-                        <li class="search-hit">
-                            <a
-                                class="search-hit__cover"
-                                [routerLink]="playerLink(player.publicId)"
-                                [attr.aria-label]="player.handleLabel()"
-                            ></a>
-                            <div class="search-hit__head">
-                                <span class="search-hit__avatar">
-                                    @if (player.avatarUrl) {
-                                        <img [src]="player.avatarUrl" alt="" />
-                                    } @else {
-                                        <span class="search-hit__initials">{{ player.initials() }}</span>
-                                    }
-                                </span>
-                                <span class="search-hit__who">
-                                    <span class="search-hit__name gc-display">{{ player.handleLabel() }}</span>
-                                </span>
-                            </div>
-                            <ul class="search-hit__facts">
-                                <li>
-                                    {{ player.characterCount }}
-                                    <span i18n="@@wow.search.characterCount">characters</span>
-                                </li>
-                            </ul>
                         </li>
                     }
                 </ul>

@@ -14,7 +14,6 @@ import { GuildApplication } from "@features/guilds/models/guild-application.mode
 import { GUILD_ORIENTATION_OPTIONS, guildOrientationLabel } from "@features/guilds/models/guild-orientation";
 import { GuildApplicationsService } from "@features/guilds/services/guild-applications.service";
 import { GuildsService } from "@features/guilds/services/guilds.service";
-import { SearchHit } from "@features/search/models/search-hit.model";
 import { SearchCriteria } from "@features/search/models/search-criteria.model";
 import { GlobalSearchStore, SearchScope } from "@features/search/stores/global-search.store";
 import {
@@ -34,7 +33,7 @@ import { firstValueFrom } from "rxjs";
 
 const NO_OPTIONS = new CharacterOptions([], [], [], [], [], [], [], 0, 0);
 
-const SCOPES: readonly SearchScope[] = ["all", "guilds", "characters", "players"];
+const SCOPES: readonly SearchScope[] = ["all", "guilds", "characters"];
 
 function readScope(value: string | null): SearchScope {
     return SCOPES.includes(value as SearchScope) ? (value as SearchScope) : "all";
@@ -145,8 +144,6 @@ export class GlobalSearchComponent {
 
     protected readonly showsGuilds = computed(() => this.scope() === "all" || this.scope() === "guilds");
     protected readonly showsCharacters = computed(() => this.scope() === "all" || this.scope() === "characters");
-    protected readonly showsPlayers = computed(() => this.scope() === "all" || this.scope() === "players");
-    protected readonly showsCharacterOrPlayer = computed(() => this.showsCharacters() || this.showsPlayers());
 
     protected readonly specs = computed(() => {
         const idClass = this.store.criteria().idClass;
@@ -157,7 +154,7 @@ export class GlobalSearchComponent {
     /** Secondary filters stay behind the toggle unless one of them is already set. */
     protected readonly extraCount = computed(() => {
         const criteria = this.store.criteria();
-        const guildsShareTheRow = this.showsGuilds() && this.showsCharacterOrPlayer();
+        const guildsShareTheRow = this.showsGuilds() && this.showsCharacters();
         let count = 0;
         if (criteria.minLevel !== null) {
             count += 1;
@@ -168,7 +165,7 @@ export class GlobalSearchComponent {
         if (guildsShareTheRow && criteria.orientation !== null) {
             count += 1;
         }
-        if (!this.showsCharacterOrPlayer()) {
+        if (!this.showsCharacters()) {
             return count;
         }
         if (criteria.idRace !== null) {
@@ -267,6 +264,11 @@ export class GlobalSearchComponent {
     private readonly applyDefaults = effect(() => {
         const params = this.queryParams();
         if (!params) {
+            return;
+        }
+
+        if (params.get("type") === "players") {
+            this.patchCriteria({ type: null });
             return;
         }
 
@@ -459,14 +461,10 @@ export class GlobalSearchComponent {
     private async runSearch(criteria: SearchCriteria): Promise<void> {
         await this.store.search(criteria);
 
-        const hit = this.store.handleMatch();
-        if (hit) {
-            await this.router.navigate(this.hitLink(hit), { replaceUrl: true });
+        const guildPublicId = this.store.handleMatch();
+        if (guildPublicId) {
+            await this.router.navigate(this.guildLink(guildPublicId), { replaceUrl: true });
         }
-    }
-
-    private hitLink(hit: SearchHit): string[] {
-        return hit.kind === "guild" ? this.guildLink(hit.publicId) : this.playerLink(hit.publicId);
     }
 
     /**
