@@ -62,4 +62,4 @@ src/locale/
 
 When a message id is also the prefix of a longer id, its text lives on `.label` (`wow.home.lfg.label` next to `wow.home.lfg.empty`). A JSON object cannot be both a string and a group.
 
-Babelary (`gc-wow`) reads the folders. The token stays in `BABELARY_TOKEN`. `npm run i18n:push:sources`, `npm run i18n:push:translations`, and `npm run i18n:pull` sync `src/locale`.
+Babelary (`gc-wow`) reads the folders with `files: "{locale}/{name}.json"`. The token stays in `BABELARY_TOKEN`. `npm run i18n:push:sources`, `npm run i18n:push:translations`, and `npm run i18n:pull` sync `src/locale`.
