@@ -57,8 +57,8 @@ export class LfgChatComponent implements OnInit, OnDestroy {
 
     protected readonly title = computed(() =>
         this.isRecruitment()
-            ? $localize`:@@wow.home.recruit:Guild recruitment`
-            : $localize`:@@wow.home.lfg:Looking for group`,
+            ? $localize`:@@wow.home.recruit.label:Guild recruitment`
+            : $localize`:@@wow.home.lfg.label:Looking for group`,
     );
 
     protected readonly viewMessages = computed((): GcLfgChatMessage[] => {

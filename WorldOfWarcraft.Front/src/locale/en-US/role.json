@@ -1,0 +1,9 @@
+{
+    "wow": {
+        "role": {
+            "dps": "DPS",
+            "healer": "Healer",
+            "tank": "Tank"
+        }
+    }
+}

@@ -1,0 +1,256 @@
+{
+    "wow": {
+        "guild": {
+            "admin": {
+                "disbandAction": "Disband",
+                "disbandConfirm": " Type the guild handle to confirm ",
+                "disbandText": " The wall, applications, ads and roster are deleted for good. ",
+                "disbandTitle": "Disband the guild",
+                "save": "Save",
+                "title": "Guild settings"
+            },
+            "applications": {
+                "accept": "Accept",
+                "empty": " No pending application. ",
+                "error": {
+                    "alreadyInGuild": " This character joined another guild in the meantime. ",
+                    "closed": " This application has already been handled. ",
+                    "unknown": "The decision could not be saved."
+                },
+                "reject": "Reject",
+                "title": "Applications"
+            },
+            "apply": {
+                "character": "Applying character",
+                "error": {
+                    "alreadyPending": " This character already has a pending application to this guild. ",
+                    "muted": " You are muted and cannot apply for now. ",
+                    "unknown": "The application could not be sent."
+                },
+                "message": "Message",
+                "messagePlaceholder": "Introduce yourself to the officers…",
+                "noCandidate": " All your characters already belong to a guild. A character may only join one. ",
+                "sent": " Your application is waiting for an officer's decision. ",
+                "submit": "Send application",
+                "title": "Apply to this guild",
+                "withdraw": "Withdraw"
+            },
+            "crest": {
+                "background": "Cloth",
+                "borderColor": "Border",
+                "borderOption": "Border",
+                "borders": "Border shape",
+                "emblemColor": "Emblem",
+                "emblemOption": "Emblem",
+                "emblems": "Emblem"
+            },
+            "directory": {
+                "createCharacter": "Create a character",
+                "found": "Found a guild",
+                "loginToFound": "Log in to found a guild",
+                "noCharacter": " A guild is founded by a character. Create one on your profile first. ",
+                "noFreeCharacter": " All your characters already belong to a guild. Create a new one to found a guild. ",
+                "pendingTitle": " Applications awaiting an answer ",
+                "pendingWith": "with",
+                "sheetWall": "Create your player profile to found a guild or apply to one."
+            },
+            "error": {
+                "characterInGuild": " This character already belongs to a guild. A character may only join one. ",
+                "characterNotOwned": "This character is not one of yours.",
+                "confirmation": " The typed handle does not match the guild. ",
+                "createFailed": "The guild could not be created.",
+                "invalidCrest": "This crest cannot be used.",
+                "invalidLevel": "The level must be between 1 and 100.",
+                "invalidName": " The guild name must be between 3 and 50 characters. ",
+                "invalidOrientation": "Pick PvE, PvP or both for the guild.",
+                "invalidServer": "This server cannot be used.",
+                "leaderCannotLeave": " Transfer the leadership before leaving the guild. ",
+                "nameExhausted": " Too many guilds share this name. Please pick another one. ",
+                "rankRequired": " Your rank does not allow this action anymore. ",
+                "saveFailed": "The change could not be saved."
+            },
+            "form": {
+                "cancel": "Cancel",
+                "crest": "Guild crest",
+                "crestLater": " The crest is designed later, from the guild settings. ",
+                "founder": "Founding character",
+                "founderHint": " The guild inherits its server and faction from this character, which becomes its leader. ",
+                "level": "Guild level",
+                "linksLater": " Discord, forum and social links are added later, from the links widget on the guild page. ",
+                "name": "Guild name",
+                "nameHint": " A number is appended to the name to keep the handle unique, like Nightfall#1274. ",
+                "orientation": "What the guild plays",
+                "sentence": "Catchphrase",
+                "sentencePlaceholder": "Guild catchphrase…",
+                "submit": "Found the guild"
+            },
+            "founded": "Founded",
+            "hero": {
+                "close": "Close",
+                "edit": "Edit",
+                "kicker": "Guild sheet"
+            },
+            "layout": {
+                "cancel": "Cancel",
+                "edit": "Edit",
+                "hint": "Drag a widget by its header to move it, or grab its bottom-right corner to resize it.",
+                "save": "Save",
+                "saveFailed": " Your layout could not be saved. Please try again. "
+            },
+            "level": "Level",
+            "links": {
+                "admin": {
+                    "empty": "No link yet. Add your first one above."
+                },
+                "empty": "No link shared yet.",
+                "error": {
+                    "rank": "Only officers can change the guild links.",
+                    "tooMany": "This guild reached the maximum number of links."
+                },
+                "field": {
+                    "label": {
+                        "hint": "Our Discord"
+                    }
+                }
+            },
+            "members": {
+                "empty": "No members yet.",
+                "label": "Members"
+            },
+            "nav": "Guild pages",
+            "noSentence": "This guild has not written a presentation yet.",
+            "notFound": "Guild not found.",
+            "orientation": {
+                "pve": "PvE",
+                "pvp": "PvP",
+                "pvpe": "PvE and PvP"
+            },
+            "page": {
+                "add": "New page",
+                "empty": "This page has no widget yet.",
+                "moveDown": "Move down",
+                "moveUp": "Move up",
+                "remove": "Delete page",
+                "visibility": "Who can see this page"
+            },
+            "rank": {
+                "leader": "Leader",
+                "member": "Member",
+                "officer": "Officer"
+            },
+            "roster": {
+                "cancel": "Cancel",
+                "confirm": {
+                    "leave": {
+                        "heading": "Leave guild?",
+                        "message": "Leave this guild with {$name}?"
+                    },
+                    "rank": {
+                        "action": "Change rank",
+                        "heading": "Change rank?",
+                        "message": "Set {$name} to {$rank}?"
+                    },
+                    "remove": {
+                        "heading": "Remove member?",
+                        "message": "Remove {$name} from the guild?"
+                    },
+                    "transfer": {
+                        "heading": "Transfer leadership?",
+                        "message": "Make {$name} the new guild leader? You will become an officer."
+                    }
+                },
+                "contact": "Open the player profile to send a friend request",
+                "kick": "Remove",
+                "leave": "Leave",
+                "rank": "Rank",
+                "transfer": "Make leader"
+            },
+            "sheetWall": "Create your player profile to apply to this guild.",
+            "since": "Created",
+            "wall": {
+                "approve": "Approve",
+                "audience": "Readable from",
+                "body": "Write a post for the guild…",
+                "bodyPlaceholder": "Share something with the guild…",
+                "delete": "Delete",
+                "edit": "Edit",
+                "empty": "The wall is empty for now.",
+                "error": {
+                    "banned": "Your account is banned.",
+                    "media": "The image link must start with http:// or https://.",
+                    "muted": "You are muted and cannot publish for now.",
+                    "unavailable": " Publishing is unavailable right now. Please try again later. ",
+                    "unknown": "The post could not be sent.",
+                    "visibility": "That visibility is not one of the choices."
+                },
+                "loadMore": "Load more",
+                "mediaPlaceholder": "Image link (optional)",
+                "moderationHint": " Your posts are reviewed by an officer before they appear on the wall. ",
+                "publish": "Publish",
+                "queue": "Awaiting review",
+                "queueEmpty": "Nothing waiting for a decision.",
+                "queued": "Sent. An officer will review it shortly.",
+                "reject": "Reject",
+                "saveEdit": "Save changes",
+                "title": "Guild wall",
+                "visibility": {
+                    "hint": " Anything but “Public” stays inside the guild, readable from that rank upwards. ",
+                    "label": "Visibility",
+                    "leader": "Leader only",
+                    "member": "Members",
+                    "officer": "Officers",
+                    "public": "Public"
+                }
+            },
+            "widget": {
+                "add": "Add a widget",
+                "applications": {
+                    "desc": "Only officers ever see this one.",
+                    "hidden": " Only the leader and the officers see the applications. ",
+                    "label": "Applications"
+                },
+                "done": "Done",
+                "editData": "Edit data",
+                "links": {
+                    "desc": "Discord, forum, social networks…",
+                    "label": "Links"
+                },
+                "media": {
+                    "add": "Add a media",
+                    "empty": "Nothing here yet.",
+                    "title": "Caption"
+                },
+                "photos": "Photo gallery",
+                "presentation": {
+                    "desc": "The catchphrase visitors read, edited from the widget.",
+                    "label": "Presentation"
+                },
+                "recruitment": {
+                    "desc": "Lets a visitor apply with one of their characters.",
+                    "label": "Recruitment"
+                },
+                "remove": "Remove widget",
+                "roster": "Roster",
+                "settings": "Configure this widget",
+                "stats": {
+                    "desc": "Level, playstyle, server, roster size and founding date.",
+                    "label": "Stats"
+                },
+                "title": {
+                    "hint": "Leave empty to drop the header.",
+                    "label": "Widget title"
+                },
+                "twitch": {
+                    "channel": "Channel or twitch.tv address",
+                    "desc": "Embeds the channel the guild streams on.",
+                    "label": "Twitch player"
+                },
+                "videos": {
+                    "desc": "YouTube, Vimeo, Twitch clips and VODs.",
+                    "label": "Video gallery"
+                },
+                "wall": "Guild wall"
+            }
+        }
+    }
+}

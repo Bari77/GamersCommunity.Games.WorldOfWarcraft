@@ -1,0 +1,51 @@
+{
+    "wow": {
+        "search": {
+            "allClasses": "All classes",
+            "allFactions": "All factions",
+            "allOrientations": "All playstyles",
+            "allRaces": "All races",
+            "allRoles": "All roles",
+            "allServers": "All servers",
+            "allSpecs": " All specializations ",
+            "anyCharacter": "Any character",
+            "anyGuild": "Guild or not",
+            "classPlaceholder": "Class",
+            "clear": "Clear",
+            "empty": "Nothing matches these criteria.",
+            "factionPlaceholder": "Faction",
+            "fewerFilters": "Fewer filters",
+            "group": {
+                "characters": "Characters",
+                "guilds": "Guilds"
+            },
+            "guildPlaceholder": "Guild",
+            "inGuild": "In a guild",
+            "loadMore": "Load more",
+            "lookingForGuild": "Looking for a guild",
+            "mainPlaceholder": "Character",
+            "mainsOnly": "Mains only",
+            "memberCount": "members",
+            "minIlvl": "Min. item level",
+            "minLevel": "Min. level",
+            "minMembers": "Min. members",
+            "moreFilters": "More filters",
+            "orientationPlaceholder": "Playstyle",
+            "placeholder": "Name, or Name#1234",
+            "racePlaceholder": "Race",
+            "rolePlaceholder": "Role",
+            "seeAll": "See all",
+            "serverPlaceholder": "Server",
+            "specPlaceholder": "Specialization",
+            "submit": "Search",
+            "subtitle": " Find a guild or a character. Type a full handle such as Name#1234 to jump straight to it. ",
+            "tab": {
+                "all": "All",
+                "characters": "Characters",
+                "guilds": "Guilds"
+            },
+            "tabsLabel": "Result type",
+            "title": "Search"
+        }
+    }
+}

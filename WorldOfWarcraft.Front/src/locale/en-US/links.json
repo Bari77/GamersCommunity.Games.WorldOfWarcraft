@@ -1,0 +1,30 @@
+{
+    "wow": {
+        "links": {
+            "add": "Add",
+            "admin": {
+                "empty": "No link yet. Add your first one above."
+            },
+            "empty": "No link shared yet.",
+            "error": {
+                "label": "A label is required.",
+                "tooMany": "You reached the maximum number of links.",
+                "unknown": "This link could not be saved.",
+                "url": "Enter a full http(s) address."
+            },
+            "field": {
+                "icon": "Icon",
+                "label": {
+                    "hint": "My channel",
+                    "label": "Label"
+                }
+            },
+            "icon": {
+                "auto": "Automatic"
+            },
+            "moveDown": "Move down",
+            "moveUp": "Move up",
+            "remove": "Delete"
+        }
+    }
+}

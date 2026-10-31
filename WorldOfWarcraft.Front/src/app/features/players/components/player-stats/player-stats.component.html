@@ -18,7 +18,7 @@
         </div>
 
         <div class="stats__field">
-            <label for="player-stats-points" i18n="@@wow.player.successPoints">Achievement points</label>
+            <label for="player-stats-points" i18n="@@wow.player.successPoints.label">Achievement points</label>
             <input
                 id="player-stats-points"
                 nbInput
@@ -54,7 +54,7 @@
         </li>
         @if (player.successPoints !== null) {
             <li>
-                <span i18n="@@wow.player.successPoints">Achievement points</span>
+                <span i18n="@@wow.player.successPoints.label">Achievement points</span>
                 <strong>{{ player.successPoints }}</strong>
             </li>
         }

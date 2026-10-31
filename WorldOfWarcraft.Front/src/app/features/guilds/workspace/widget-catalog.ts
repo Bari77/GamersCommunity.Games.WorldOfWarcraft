@@ -31,14 +31,14 @@ export const gameWorkspaceRegistry = {
     catalog: [
         {
             type: GUILD_WIDGETS.presentation,
-            label: $localize`:@@wow.guild.widget.presentation:Presentation`,
+            label: $localize`:@@wow.guild.widget.presentation.label:Presentation`,
             description: $localize`:@@wow.guild.widget.presentation.desc:The catchphrase visitors read, edited from the widget.`,
             cols: 8,
             rows: 3,
         },
         {
             type: GUILD_WIDGETS.stats,
-            label: $localize`:@@wow.guild.widget.stats:Stats`,
+            label: $localize`:@@wow.guild.widget.stats.label:Stats`,
             description: $localize`:@@wow.guild.widget.stats.desc:Level, playstyle, server, roster size and founding date.`,
             cols: 4,
             rows: 3,
@@ -60,7 +60,7 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: GUILD_WIDGETS.applications,
-            label: $localize`:@@wow.guild.widget.applications:Applications`,
+            label: $localize`:@@wow.guild.widget.applications.label:Applications`,
             description: $localize`:@@wow.guild.widget.applications.desc:Only officers ever see this one.`,
             cols: 6,
             rows: 6,
@@ -68,7 +68,7 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: GUILD_WIDGETS.recruitment,
-            label: $localize`:@@wow.guild.widget.recruitment:Recruitment`,
+            label: $localize`:@@wow.guild.widget.recruitment.label:Recruitment`,
             description: $localize`:@@wow.guild.widget.recruitment.desc:Lets a visitor apply with one of their characters.`,
             cols: 6,
             rows: 6,
@@ -82,14 +82,14 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: GUILD_WIDGETS.videos,
-            label: $localize`:@@wow.guild.widget.videos:Video gallery`,
+            label: $localize`:@@wow.guild.widget.videos.label:Video gallery`,
             description: $localize`:@@wow.guild.widget.videos.desc:YouTube, Vimeo, Twitch clips and VODs.`,
             cols: 12,
             rows: 6,
         },
         {
             type: GUILD_WIDGETS.twitch,
-            label: $localize`:@@wow.guild.widget.twitch:Twitch player`,
+            label: $localize`:@@wow.guild.widget.twitch.label:Twitch player`,
             description: $localize`:@@wow.guild.widget.twitch.desc:Embeds the channel the guild streams on.`,
             cols: 6,
             rows: 5,
@@ -104,7 +104,7 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: GUILD_WIDGETS.links,
-            label: $localize`:@@wow.guild.widget.links:Links`,
+            label: $localize`:@@wow.guild.widget.links.label:Links`,
             description: $localize`:@@wow.guild.widget.links.desc:Discord, forum, social networks…`,
             cols: 6,
             rows: 4,

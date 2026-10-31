@@ -10,7 +10,7 @@
 
     <div class="wow-home__grid" [attr.aria-busy]="feedLoading() ? 'true' : null">
         <nb-card class="wow-home__rail">
-            <nb-card-header i18n="@@wow.home.characters">Latest characters</nb-card-header>
+            <nb-card-header i18n="@@wow.home.characters.label">Latest characters</nb-card-header>
             <nb-card-body>
                 @if (feedLoading()) {
                     <gc-skeleton-text [lines]="4" />
@@ -21,7 +21,7 @@
         </nb-card>
 
         <nb-card class="wow-home__rail">
-            <nb-card-header i18n="@@wow.home.guilds">Latest guilds</nb-card-header>
+            <nb-card-header i18n="@@wow.home.guilds.label">Latest guilds</nb-card-header>
             <nb-card-body>
                 @if (feedLoading()) {
                     <gc-skeleton-text [lines]="4" />

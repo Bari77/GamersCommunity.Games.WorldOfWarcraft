@@ -1,0 +1,49 @@
+{
+    "wow": {
+        "character": {
+            "achievements": "Achievements",
+            "confirmCancel": "Cancel",
+            "confirmDelete": "Permanently delete this character?",
+            "confirmDeleteAction": "Delete",
+            "delete": "Delete",
+            "edit": "Edit",
+            "empty": "No character registered yet.",
+            "error": {
+                "guildLeader": " Transfer guild leadership before deleting this character. ",
+                "level": "The level is out of range.",
+                "pseudoTaken": " You already own a character with that name on this server. ",
+                "raceClass": "This class is not available to that race.",
+                "specMismatch": " Both specializations must belong to the same class. ",
+                "tooMany": "You reached the maximum number of characters.",
+                "unknown": "The character could not be saved."
+            },
+            "form": {
+                "achievements": "Achievement points",
+                "cancel": "Cancel",
+                "class": "Class",
+                "createTitle": "New character",
+                "editTitle": "Edit character",
+                "faction": "Faction",
+                "ilvl": "Item level",
+                "level": "Level",
+                "main": "Set as main character",
+                "mainSpec": "Main specialization",
+                "pseudo": "Name",
+                "race": "Race",
+                "role": "Role",
+                "save": "Save",
+                "secondarySpec": "Secondary specialization",
+                "sentence": "Catchphrase",
+                "sentencePlaceholder": "Character catchphrase…",
+                "server": "Server"
+            },
+            "foundGuild": "Found a guild",
+            "ilvl": "Item level",
+            "ilvlShort": "iLvl",
+            "level": "Level",
+            "main": "Main",
+            "new": "New character",
+            "noSpec": "No specialization"
+        }
+    }
+}

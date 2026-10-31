@@ -1,0 +1,256 @@
+{
+    "wow": {
+        "guild": {
+            "admin": {
+                "disbandAction": "Dissoudre",
+                "disbandConfirm": "Saisissez l'identifiant de la guilde pour confirmer",
+                "disbandText": "Le mur, les candidatures, les annonces et l'effectif sont supprimés définitivement.",
+                "disbandTitle": "Dissoudre la guilde",
+                "save": "Enregistrer",
+                "title": "Réglages de la guilde"
+            },
+            "applications": {
+                "accept": "Accepter",
+                "empty": "Aucune candidature en attente.",
+                "error": {
+                    "alreadyInGuild": "Ce personnage a rejoint une autre guilde entre-temps.",
+                    "closed": "Cette candidature a déjà été traitée.",
+                    "unknown": "La décision n'a pas pu être enregistrée."
+                },
+                "reject": "Refuser",
+                "title": "Candidatures"
+            },
+            "apply": {
+                "character": "Personnage candidat",
+                "error": {
+                    "alreadyPending": "Ce personnage a déjà une candidature en attente pour cette guilde.",
+                    "muted": "Vous êtes réduit au silence et ne pouvez pas candidater pour le moment.",
+                    "unknown": "La candidature n'a pas pu être envoyée."
+                },
+                "message": "Message",
+                "messagePlaceholder": "Présentez-vous aux officiers…",
+                "noCandidate": "Tous vos personnages appartiennent déjà à une guilde. Un personnage ne peut en rejoindre qu'une.",
+                "sent": "Votre candidature attend la décision d'un officier.",
+                "submit": "Envoyer la candidature",
+                "title": "Candidater à cette guilde",
+                "withdraw": "Retirer"
+            },
+            "crest": {
+                "background": "Étoffe",
+                "borderColor": "Bordure",
+                "borderOption": "Bordure",
+                "borders": "Forme de la bordure",
+                "emblemColor": "Emblème",
+                "emblemOption": "Emblème",
+                "emblems": "Emblème"
+            },
+            "directory": {
+                "createCharacter": "Créer un personnage",
+                "found": "Fonder une guilde",
+                "loginToFound": "Connectez-vous pour fonder une guilde",
+                "noCharacter": "Une guilde est fondée par un personnage. Créez-en un sur votre fiche d'abord.",
+                "noFreeCharacter": "Tous vos personnages appartiennent déjà à une guilde. Créez-en un nouveau pour fonder une guilde.",
+                "pendingTitle": "Candidatures en attente de réponse",
+                "pendingWith": "avec",
+                "sheetWall": "Créez votre fiche joueur pour fonder une guilde ou candidater."
+            },
+            "error": {
+                "characterInGuild": "Ce personnage appartient déjà à une guilde. Un personnage ne peut en rejoindre qu'une.",
+                "characterNotOwned": "Ce personnage ne vous appartient pas.",
+                "confirmation": "L'identifiant saisi ne correspond pas à la guilde.",
+                "createFailed": "La guilde n'a pas pu être créée.",
+                "invalidCrest": "Ce blason ne peut pas être utilisé.",
+                "invalidLevel": "Le niveau doit être compris entre 1 et 100.",
+                "invalidName": "Le nom de la guilde doit compter entre 3 et 50 caractères.",
+                "invalidOrientation": "Choisissez PvE, PvP ou les deux pour la guilde.",
+                "invalidServer": "Ce serveur ne peut pas être utilisé.",
+                "leaderCannotLeave": "Transférez le commandement avant de quitter la guilde.",
+                "nameExhausted": "Trop de guildes portent ce nom. Veuillez en choisir un autre.",
+                "rankRequired": "Votre rang ne permet plus cette action.",
+                "saveFailed": "La modification n'a pas pu être enregistrée."
+            },
+            "form": {
+                "cancel": "Annuler",
+                "crest": "Blason de la guilde",
+                "crestLater": "Le blason se dessine plus tard, depuis les réglages de la guilde.",
+                "founder": "Personnage fondateur",
+                "founderHint": "La guilde hérite du serveur et de la faction de ce personnage, qui en devient le chef.",
+                "level": "Niveau de la guilde",
+                "linksLater": "Les liens Discord, forum et réseaux sociaux s'ajoutent ensuite, depuis le widget liens de la page de guilde.",
+                "name": "Nom de la guilde",
+                "nameHint": "Un numéro est ajouté au nom pour garder l'identifiant unique, comme Nightfall#1274.",
+                "orientation": "Orientation de la guilde",
+                "sentence": "Phrase d'accroche",
+                "sentencePlaceholder": "Accroche de la guilde…",
+                "submit": "Fonder la guilde"
+            },
+            "founded": "Fondée le",
+            "hero": {
+                "close": "Fermer",
+                "edit": "Modifier",
+                "kicker": "Fiche de guilde"
+            },
+            "layout": {
+                "cancel": "Annuler",
+                "edit": "Modifier",
+                "hint": "Glissez un widget par son en-tête pour le déplacer, ou attrapez son coin inférieur droit pour le redimensionner.",
+                "save": "Enregistrer",
+                "saveFailed": "Votre mise en page n'a pas pu être enregistrée. Veuillez réessayer."
+            },
+            "level": "Niveau",
+            "links": {
+                "admin": {
+                    "empty": "Aucun lien. Ajoutez le premier ci-dessus."
+                },
+                "empty": "Aucun lien partagé pour le moment.",
+                "error": {
+                    "rank": "Seuls les officiers peuvent modifier les liens de la guilde.",
+                    "tooMany": "Cette guilde a atteint le nombre maximum de liens."
+                },
+                "field": {
+                    "label": {
+                        "hint": "Notre Discord"
+                    }
+                }
+            },
+            "members": {
+                "empty": "Aucun membre pour le moment.",
+                "label": "Membres"
+            },
+            "nav": "Pages de la guilde",
+            "noSentence": "Cette guilde n'a pas encore rédigé de présentation.",
+            "notFound": "Guilde introuvable.",
+            "orientation": {
+                "pve": "PvE",
+                "pvp": "PvP",
+                "pvpe": "PvE et PvP"
+            },
+            "page": {
+                "add": "Nouvelle page",
+                "empty": "Cette page n'a encore aucun widget.",
+                "moveDown": "Descendre",
+                "moveUp": "Monter",
+                "remove": "Supprimer la page",
+                "visibility": "Qui peut voir cette page"
+            },
+            "rank": {
+                "leader": "Chef",
+                "member": "Membre",
+                "officer": "Officier"
+            },
+            "roster": {
+                "cancel": "Annuler",
+                "confirm": {
+                    "leave": {
+                        "heading": "Quitter la guilde ?",
+                        "message": "Quitter cette guilde avec {$name} ?"
+                    },
+                    "rank": {
+                        "action": "Changer le rang",
+                        "heading": "Changer le rang ?",
+                        "message": "Passer {$name} en {$rank} ?"
+                    },
+                    "remove": {
+                        "heading": "Retirer le membre ?",
+                        "message": "Retirer {$name} de la guilde ?"
+                    },
+                    "transfer": {
+                        "heading": "Transférer le commandement ?",
+                        "message": "Nommer {$name} chef de guilde ? Vous passerez officier."
+                    }
+                },
+                "contact": "Ouvrir la fiche du joueur pour envoyer une demande d'ami",
+                "kick": "Exclure",
+                "leave": "Quitter",
+                "rank": "Rang",
+                "transfer": "Nommer chef"
+            },
+            "sheetWall": "Créez votre fiche joueur pour candidater à cette guilde.",
+            "since": "Créée le",
+            "wall": {
+                "approve": "Approuver",
+                "audience": "Lisible à partir de",
+                "body": "Écrire un message pour la guilde…",
+                "bodyPlaceholder": "Partagez quelque chose avec la guilde…",
+                "delete": "Supprimer",
+                "edit": "Modifier",
+                "empty": "Le mur est vide pour le moment.",
+                "error": {
+                    "banned": "Votre compte est banni.",
+                    "media": "Le lien de l'image doit commencer par http:// ou https://.",
+                    "muted": "Vous êtes réduit au silence et ne pouvez pas publier pour le moment.",
+                    "unavailable": "La publication est indisponible pour l'instant. Veuillez réessayer plus tard.",
+                    "unknown": "La publication n'a pas pu être envoyée.",
+                    "visibility": "Cette visibilité ne fait pas partie des choix."
+                },
+                "loadMore": "Charger plus",
+                "mediaPlaceholder": "Lien d'une image (optionnel)",
+                "moderationHint": "Vos publications sont validées par un officier avant d'apparaître sur le mur.",
+                "publish": "Publier",
+                "queue": "En attente de validation",
+                "queueEmpty": "Rien en attente de décision.",
+                "queued": "Envoyé. Un officier le validera sous peu.",
+                "reject": "Refuser",
+                "saveEdit": "Enregistrer les modifications",
+                "title": "Mur de la guilde",
+                "visibility": {
+                    "hint": "Tout autre choix que « Publique » reste dans la guilde, lisible à partir de ce rang.",
+                    "label": "Visibilité",
+                    "leader": "Chef uniquement",
+                    "member": "Membre",
+                    "officer": "Officier",
+                    "public": "Publique"
+                }
+            },
+            "widget": {
+                "add": "Ajouter un widget",
+                "applications": {
+                    "desc": "Seuls les officiers le voient.",
+                    "hidden": "Seuls le chef et les officiers voient les candidatures.",
+                    "label": "Candidatures"
+                },
+                "done": "Terminé",
+                "editData": "Modifier les données",
+                "links": {
+                    "desc": "Discord, forum, réseaux sociaux…",
+                    "label": "Liens"
+                },
+                "media": {
+                    "add": "Ajouter un média",
+                    "empty": "Rien pour le moment.",
+                    "title": "Légende"
+                },
+                "photos": "Galerie photo",
+                "presentation": {
+                    "desc": "La phrase d'accroche que les visiteurs lisent, éditée depuis le widget.",
+                    "label": "Présentation"
+                },
+                "recruitment": {
+                    "desc": "Permet à un visiteur de candidater avec l'un de ses personnages.",
+                    "label": "Recrutement"
+                },
+                "remove": "Retirer le widget",
+                "roster": "Effectif",
+                "settings": "Configurer ce widget",
+                "stats": {
+                    "desc": "Niveau, style de jeu, serveur, effectif et date de fondation.",
+                    "label": "Statistiques"
+                },
+                "title": {
+                    "hint": "Laissez vide pour masquer l'en-tête.",
+                    "label": "Titre du widget"
+                },
+                "twitch": {
+                    "channel": "Chaîne ou adresse twitch.tv",
+                    "desc": "Intègre la chaîne sur laquelle la guilde diffuse.",
+                    "label": "Lecteur Twitch"
+                },
+                "videos": {
+                    "desc": "YouTube, Vimeo, clips et VOD Twitch.",
+                    "label": "Galerie vidéo"
+                },
+                "wall": "Mur de la guilde"
+            }
+        }
+    }
+}

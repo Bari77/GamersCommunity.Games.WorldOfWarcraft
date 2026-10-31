@@ -1,0 +1,37 @@
+{
+    "wow": {
+        "home": {
+            "characters": {
+                "empty": "Aucun personnage pour le moment.",
+                "label": "Derniers personnages"
+            },
+            "guilds": {
+                "empty": "Aucune guilde pour le moment.",
+                "label": "Dernières guildes"
+            },
+            "lfg": {
+                "bodyPlaceholder": "Saisissez un message…",
+                "cooldown": "Veuillez patienter",
+                "cooldownHint": "avant de publier à nouveau.",
+                "empty": "Aucun message pour le moment. Dites bonjour !",
+                "label": "Recherche de groupe",
+                "live": "En direct",
+                "loadingOlder": "Chargement des messages plus anciens…",
+                "login": "Connectez-vous",
+                "loginHint": "pour rejoindre le chat de recherche de groupe.",
+                "muted": "Vous êtes réduit au silence et ne pouvez pas publier de messages de recrutement.",
+                "newMessages": "Nouveaux messages",
+                "realtime": {
+                    "connecting": "Connexion au chat en direct…",
+                    "offline": "Les mises à jour en direct sont indisponibles. Les nouveaux messages peuvent apparaître avec du retard."
+                }
+            },
+            "recruit": {
+                "guildPicker": "Publier en tant que…",
+                "label": "Recrutement de guilde",
+                "noGuild": "Seuls les officiers de guilde peuvent publier ici.",
+                "pickGuild": "Choisissez la guilde pour laquelle vous publiez pour activer la saisie."
+            }
+        }
+    }
+}

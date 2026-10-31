@@ -1,0 +1,9 @@
+{
+    "wow": {
+        "breadcrumb": {
+            "guild": "Guild",
+            "player": "Player",
+            "search": "Search"
+        }
+    }
+}

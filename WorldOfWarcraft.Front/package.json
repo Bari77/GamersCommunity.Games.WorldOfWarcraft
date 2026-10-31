@@ -7,6 +7,7 @@
         "prestart:mocks": "msw init public --save",
         "start:mocks": "ng serve --port 4201",
         "start:api": "ng serve --port 4201 --configuration api",
+        "prebuild": "node prebuild.js",
         "build": "ng build",
         "lint": "prettier --check . && eslint .",
         "lint:fix": "prettier --write . && eslint . --fix",
@@ -14,10 +15,13 @@
         "workspace:edit": "gc-workspace edit",
         "icons": "node scripts/fetch-wow-icons.mjs",
         "crests": "node scripts/fetch-wow-crests.mjs",
-        "watch": "ng build --watch --configuration development",
+        "watch": "node prebuild.js && ng build --watch --configuration development",
         "test": "ng test --watch=false --browsers=ChromeHeadless",
         "test:ci": "ng test --watch=false --browsers=ChromeHeadlessNoSandbox --code-coverage",
-        "i18n": "ng extract-i18n --build-target=WorldOfWarcraft.Front:esbuild --output-path src/locale --out-file source.json --format=json"
+        "i18n": "ng extract-i18n --build-target=WorldOfWarcraft.Front:esbuild --output-path src/locale --out-file en-US.json --format=json && node prebuild.js absorb",
+        "i18n:push:sources": "babelary push sources",
+        "i18n:push:translations": "babelary push translations",
+        "i18n:pull": "babelary pull && node prebuild.js"
     },
     "gcWorkspace": {
         "defaultTarget": "player",
@@ -64,6 +68,7 @@
         "@angular/build": "21.2.15",
         "@angular/cli": "21.2.15",
         "@angular/compiler-cli": "21.2.17",
+        "@bari77/babelary": "0.2.1",
         "@bari77/gc-lint": "^2.2.0",
         "@bari77/gc-workspace-editor": "^2.2.0",
         "@softarc/native-federation-orchestrator": "^4.2.2",

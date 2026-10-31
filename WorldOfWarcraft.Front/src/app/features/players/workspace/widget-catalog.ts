@@ -32,7 +32,7 @@ export const gameWorkspaceRegistry = {
     catalog: [
         {
             type: PLAYER_WIDGETS.identity,
-            label: $localize`:@@wow.player.widget.identity:Identity`,
+            label: $localize`:@@wow.player.widget.identity.label:Identity`,
             description: $localize`:@@wow.player.widget.identity.desc:Registration date and Platform profile link.`,
             cols: 4,
             rows: 3,
@@ -78,14 +78,14 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: PLAYER_WIDGETS.streams,
-            label: $localize`:@@wow.player.widget.streams:My streams`,
+            label: $localize`:@@wow.player.widget.streams.label:My streams`,
             description: $localize`:@@wow.player.widget.streams.desc:Twitch channels saved on your profile.`,
             cols: 12,
             rows: 6,
         },
         {
             type: PLAYER_WIDGETS.twitch,
-            label: $localize`:@@wow.player.widget.twitch:Twitch player`,
+            label: $localize`:@@wow.player.widget.twitch.label:Twitch player`,
             description: $localize`:@@wow.player.widget.twitch.desc:Embeds a single channel of your choice.`,
             cols: 6,
             rows: 5,
@@ -100,7 +100,7 @@ export const gameWorkspaceRegistry = {
         },
         {
             type: PLAYER_WIDGETS.links,
-            label: $localize`:@@wow.player.widget.links:Links`,
+            label: $localize`:@@wow.player.widget.links.label:Links`,
             description: $localize`:@@wow.player.widget.links.desc:YouTube, X, Instagram, Discord…`,
             cols: 6,
             rows: 3,

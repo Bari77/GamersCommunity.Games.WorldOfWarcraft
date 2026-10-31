@@ -1,0 +1,30 @@
+{
+    "wow": {
+        "links": {
+            "add": "Ajouter",
+            "admin": {
+                "empty": "Aucun lien pour le moment. Ajoutez le premier ci-dessus."
+            },
+            "empty": "Aucun lien partagé pour le moment.",
+            "error": {
+                "label": "Un libellé est obligatoire.",
+                "tooMany": "Vous avez atteint le nombre maximum de liens.",
+                "unknown": "Ce lien n'a pas pu être enregistré.",
+                "url": "Saisissez une adresse http(s) complète."
+            },
+            "field": {
+                "icon": "Icône",
+                "label": {
+                    "hint": "Ma chaîne",
+                    "label": "Libellé"
+                }
+            },
+            "icon": {
+                "auto": "Automatique"
+            },
+            "moveDown": "Descendre",
+            "moveUp": "Monter",
+            "remove": "Supprimer"
+        }
+    }
+}

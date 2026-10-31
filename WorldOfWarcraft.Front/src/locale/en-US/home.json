@@ -1,0 +1,37 @@
+{
+    "wow": {
+        "home": {
+            "characters": {
+                "empty": "No characters yet.",
+                "label": "Latest characters"
+            },
+            "guilds": {
+                "empty": "No guilds yet.",
+                "label": "Latest guilds"
+            },
+            "lfg": {
+                "bodyPlaceholder": "Type a message…",
+                "cooldown": "Please wait",
+                "cooldownHint": " before posting again.",
+                "empty": "No messages yet. Say hello!",
+                "label": "Looking for group",
+                "live": "Live",
+                "loadingOlder": "Loading older messages…",
+                "login": "Log in",
+                "loginHint": " to join the global LFG chat.",
+                "muted": "You are muted and cannot post recruitment messages.",
+                "newMessages": "New messages",
+                "realtime": {
+                    "connecting": "Connecting to live LFG chat…",
+                    "offline": "Live updates are unavailable. New messages may appear with a delay."
+                }
+            },
+            "recruit": {
+                "guildPicker": "Post as…",
+                "label": "Guild recruitment",
+                "noGuild": "Only guild officers can post here.",
+                "pickGuild": "Pick the guild you are posting for to enable the composer."
+            }
+        }
+    }
+}

@@ -1,0 +1,43 @@
+{
+    "wow": {
+        "playground": {
+            "banner": "WoW Playground",
+            "breadcrumb": {
+                "game": "World of Warcraft",
+                "home": "Home"
+            },
+            "nav": {
+                "characters": "Characters",
+                "guilds": "Guilds",
+                "sections": "Game sections",
+                "sheet": "My profile"
+            },
+            "persona": {
+                "detail": {
+                    "characters": "Characters",
+                    "guilds": "Guilds",
+                    "servers": "Servers"
+                },
+                "main": "Main · {$pseudo}, {$spec} {$class}",
+                "noCharacter": "None yet",
+                "noGuild": "No guild",
+                "noMain": "No character",
+                "stat": {
+                    "achievements": "Achievements",
+                    "characters": "Characters",
+                    "ilvl": "Best ilvl",
+                    "mounts": "Mounts"
+                }
+            },
+            "search": "Search a character or a guild",
+            "session": {
+                "findPlaceholder": "Name, guild, server, class…"
+            },
+            "user": {
+                "hint": " In production this page lives on the Platform. The playground only stubs it so game links keep working. ",
+                "sheet": "Open the game sheet",
+                "title": "Community profile"
+            }
+        }
+    }
+}

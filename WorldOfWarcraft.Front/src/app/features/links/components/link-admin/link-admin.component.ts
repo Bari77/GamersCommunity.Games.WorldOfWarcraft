@@ -21,7 +21,7 @@ export class LinkAdminComponent {
     protected readonly items = computed(() => this.store.items.value());
 
     /** The edit rows drop the visible captions to stay compact, so screen readers get these. */
-    protected readonly labelFieldName = $localize`:@@wow.links.field.label:Label`;
+    protected readonly labelFieldName = $localize`:@@wow.links.field.label.label:Label`;
     protected readonly iconFieldName = $localize`:@@wow.links.field.icon:Icon`;
 
     protected readonly label = signal("");

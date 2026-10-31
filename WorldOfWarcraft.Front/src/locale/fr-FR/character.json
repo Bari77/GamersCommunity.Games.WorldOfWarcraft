@@ -1,0 +1,49 @@
+{
+    "wow": {
+        "character": {
+            "achievements": "Hauts faits",
+            "confirmCancel": "Annuler",
+            "confirmDelete": "Supprimer définitivement ce personnage ?",
+            "confirmDeleteAction": "Supprimer",
+            "delete": "Supprimer",
+            "edit": "Modifier",
+            "empty": "Aucun personnage enregistré pour le moment.",
+            "error": {
+                "guildLeader": "Transférez la direction de la guilde avant de supprimer ce personnage.",
+                "level": "Le niveau est hors limites.",
+                "pseudoTaken": "Vous avez déjà un personnage portant ce nom sur ce serveur.",
+                "raceClass": "Cette classe n'est pas disponible pour cette race.",
+                "specMismatch": "Les deux spécialisations doivent appartenir à la même classe.",
+                "tooMany": "Vous avez atteint le nombre maximum de personnages.",
+                "unknown": "Le personnage n'a pas pu être enregistré."
+            },
+            "form": {
+                "achievements": "Points de hauts faits",
+                "cancel": "Annuler",
+                "class": "Classe",
+                "createTitle": "Nouveau personnage",
+                "editTitle": "Modifier le personnage",
+                "faction": "Faction",
+                "ilvl": "Niveau d'objet",
+                "level": "Niveau",
+                "main": "Définir comme personnage principal",
+                "mainSpec": "Spécialisation principale",
+                "pseudo": "Nom",
+                "race": "Race",
+                "role": "Rôle",
+                "save": "Enregistrer",
+                "secondarySpec": "Spécialisation secondaire",
+                "sentence": "Phrase d'accroche",
+                "sentencePlaceholder": "Accroche du personnage…",
+                "server": "Serveur"
+            },
+            "foundGuild": "Fonder une guilde",
+            "ilvl": "Niveau d'objet",
+            "ilvlShort": "iLvl",
+            "level": "Niveau",
+            "main": "Principal",
+            "new": "Nouveau personnage",
+            "noSpec": "Aucune spécialisation"
+        }
+    }
+}

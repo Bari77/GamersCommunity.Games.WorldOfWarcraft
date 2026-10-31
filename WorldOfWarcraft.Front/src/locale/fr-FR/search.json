@@ -1,0 +1,51 @@
+{
+    "wow": {
+        "search": {
+            "allClasses": "Toutes les classes",
+            "allFactions": "Toutes les factions",
+            "allOrientations": "Tous les styles de jeu",
+            "allRaces": "Toutes les races",
+            "allRoles": "Tous les rôles",
+            "allServers": "Tous les serveurs",
+            "allSpecs": " Toutes les spécialisations ",
+            "anyCharacter": "Tous les personnages",
+            "anyGuild": "Avec ou sans guilde",
+            "classPlaceholder": "Classe",
+            "clear": "Effacer",
+            "empty": "Aucun résultat pour ces critères.",
+            "factionPlaceholder": "Faction",
+            "fewerFilters": "Moins de filtres",
+            "group": {
+                "characters": "Personnages",
+                "guilds": "Guildes"
+            },
+            "guildPlaceholder": "Guilde",
+            "inGuild": "Dans une guilde",
+            "loadMore": "Charger plus",
+            "lookingForGuild": "Cherche une guilde",
+            "mainPlaceholder": "Personnage",
+            "mainsOnly": "Principaux uniquement",
+            "memberCount": "membres",
+            "minIlvl": "Niveau d'objet min.",
+            "minLevel": "Niveau min.",
+            "minMembers": "Membres min.",
+            "moreFilters": "Plus de filtres",
+            "orientationPlaceholder": "Style de jeu",
+            "placeholder": "Nom, ou Nom#1234",
+            "racePlaceholder": "Race",
+            "rolePlaceholder": "Rôle",
+            "seeAll": "Tout voir",
+            "serverPlaceholder": "Serveur",
+            "specPlaceholder": "Spécialisation",
+            "submit": "Rechercher",
+            "subtitle": "Trouvez une guilde ou un personnage. Saisissez un identifiant complet comme Nom#1234 pour y accéder directement.",
+            "tab": {
+                "all": "Tout",
+                "characters": "Personnages",
+                "guilds": "Guildes"
+            },
+            "tabsLabel": "Type de résultat",
+            "title": "Recherche"
+        }
+    }
+}
